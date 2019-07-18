@@ -1,0 +1,16 @@
+send() { sleep 1
+  echo "$@" > /dev/tty
+  echo "$@"
+}
+(
+  send ":load loyalty.hs"
+  send 'Card 0'
+  send 'stamp (Card 0)'
+  send 'stamp (stamp (Card 0))'
+  send 'stampTwice (Card 0)'
+  send 'stampTwiceC = stamp . stamp'
+  send 'composeState stamp stamp (Card 0)'
+  send 'evalState ((++) <$> stampm <*> stampm) (Card 0)'
+  send ':q'
+) | 
+stack exec -- ghci
