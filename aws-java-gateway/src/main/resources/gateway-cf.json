@@ -111,7 +111,7 @@
     	    "Properties": {
         	    "RestApiId": { "Ref": "SimpleGateway" },
             	"Description": "Deployed API",
-            	"StageName": "Ignorance"
+            	"StageName": "ignorance"
         	}
     	}
 	}
