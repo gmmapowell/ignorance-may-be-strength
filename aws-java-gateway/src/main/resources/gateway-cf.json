@@ -1,0 +1,118 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Ignorant API Gateway",
+	"Parameters": {
+		"BUCKET": {
+			"Type": "String"
+		}
+	},
+	"Resources": {
+		"Role": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "root",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "*",
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "PolicyName": "execute-lambda",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": "apigateway:GET",
+                                    "Resource": "arn:aws:apigateway:us-east-1::/restapis"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+		},
+		"Lambda1": {
+			"Type" : "AWS::Lambda::Function",
+			"Properties" : {
+		    	"Code" : {
+		    		"S3Bucket": { "Ref": "BUCKET" },
+		    		"S3Key": "lambda1.zip"
+		    	},
+		    	"Handler" : "blog.ignorance.apigateway.Handler",
+		    	"Role" : { "Fn::GetAtt": [ "Role", "Arn" ] },
+		    	"Runtime" : "java8"
+		    }
+		},
+		"GatewayInvokeLambda": {
+			"Type": "AWS::Lambda::Permission",
+			"Properties": {
+				"Action": "lambda:InvokeFunction",
+				"FunctionName": { "Fn::GetAtt": [ "Lambda1", "Arn" ] },
+				"Principal": "apigateway.amazonaws.com"
+			}
+		},
+		"SimpleGateway": {
+			"Type": "AWS::ApiGateway::RestApi",
+			"Properties": {
+				"Name": "ignorance"
+			}
+		},
+		"Hello": {
+			"Type" : "AWS::ApiGateway::Resource",
+			"Properties" : {
+		    	"ParentId" : { "Fn::GetAtt": [ "SimpleGateway", "RootResourceId" ] },
+		    	"PathPart" : "hello",
+		    	"RestApiId" : { "Ref": "SimpleGateway" }
+		    }
+		},
+		"HelloWorld": {
+			"Type": "AWS::ApiGateway::Method",
+			"Properties": {
+				"RestApiId": { "Ref": "SimpleGateway" },
+				"ResourceId": { "Ref": "Hello" },
+				"HttpMethod": "GET",
+				"AuthorizationType": "NONE",
+				"Integration": {
+					"Type": "AWS_PROXY",
+					"IntegrationHttpMethod": "POST",
+					"Uri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda1.Arn}/invocations" }
+				}
+			}
+		},
+		"Deployment": {
+	        "Type": "AWS::ApiGateway::Deployment",
+            "DependsOn": "HelloWorld",
+    	    "Properties": {
+        	    "RestApiId": { "Ref": "SimpleGateway" },
+            	"Description": "Deployed API",
+            	"StageName": "Ignorance"
+        	}
+    	}
+	}
+}

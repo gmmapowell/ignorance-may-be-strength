@@ -1,0 +1,6 @@
+bin/
+build/
+compilelibs/
+libs/
+foo.zip
+upload/
