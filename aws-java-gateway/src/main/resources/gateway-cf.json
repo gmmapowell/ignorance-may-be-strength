@@ -105,6 +105,42 @@
 				}
 			}
 		},
+		"HelloFromBody": {
+			"Type": "AWS::ApiGateway::Method",
+			"Properties": {
+				"RestApiId": { "Ref": "SimpleGateway" },
+				"ResourceId": { "Ref": "Hello" },
+				"HttpMethod": "POST",
+				"AuthorizationType": "NONE",
+				"Integration": {
+					"Type": "AWS_PROXY",
+					"IntegrationHttpMethod": "POST",
+					"Uri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda1.Arn}/invocations" }
+				}
+			}
+		},
+		"Who": {
+			"Type" : "AWS::ApiGateway::Resource",
+			"Properties" : {
+		    	"ParentId" : { "Ref": "Hello" },
+		    	"PathPart" : "{who}",
+		    	"RestApiId" : { "Ref": "SimpleGateway" }
+		    }
+		},
+		"HelloWho": {
+			"Type": "AWS::ApiGateway::Method",
+			"Properties": {
+				"RestApiId": { "Ref": "SimpleGateway" },
+				"ResourceId": { "Ref": "Who" },
+				"HttpMethod": "GET",
+				"AuthorizationType": "NONE",
+				"Integration": {
+					"Type": "AWS_PROXY",
+					"IntegrationHttpMethod": "POST",
+					"Uri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda1.Arn}/invocations" }
+				}
+			}
+		},
 		"Deployment": {
 	        "Type": "AWS::ApiGateway::Deployment",
             "DependsOn": "HelloWorld",
