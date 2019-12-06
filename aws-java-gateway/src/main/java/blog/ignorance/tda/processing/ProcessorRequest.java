@@ -9,11 +9,14 @@ import java.util.TreeMap;
 import com.amazonaws.services.lambda.runtime.Context;
 
 import blog.ignorance.tda.interfaces.BodyConsumer;
+import blog.ignorance.tda.interfaces.DesiresLogger;
 import blog.ignorance.tda.interfaces.ParameterSource;
 import blog.ignorance.tda.interfaces.ProvideHeaders;
 import blog.ignorance.tda.interfaces.ProvideParameters;
+import blog.ignorance.tda.interfaces.ProvidePath;
 import blog.ignorance.tda.interfaces.RequestProcessor;
 import blog.ignorance.tda.interfaces.Responder;
+import blog.ignorance.tda.interfaces.ServerLogger;
 
 public class ProcessorRequest {
 	private String method = null;
@@ -23,6 +26,7 @@ public class ProcessorRequest {
 	private Map<String, String> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	private Map<String, String> pathParams = new HashMap<>();
 	private String body = null;
+	private Map<String, Object> context;
 //	private String contentType;
 
 	public void setHttpMethod(String method) {
@@ -35,6 +39,11 @@ public class ProcessorRequest {
 	
 	public void setResource(String resource) {
 		this.resource = resource;
+	}
+	
+	public void setRequestContext(Map<String, Object> context) {
+		if (context != null)
+			this.context = context;
 	}
 	
 	public void setMultiValueQueryStringParameters(Map<String, List<String>> values) {
@@ -59,12 +68,18 @@ public class ProcessorRequest {
 		this.body = body;
 	}
 	
-	public void handleIt(TDACentralConfiguration central, Responder response, Context cx) throws Exception {
+	public void handleIt(TDACentralConfiguration central, ServerLogger logger, Responder response, Context cx) throws Exception {
 		RequestProcessor handler = central.createHandlerFor(method, resource);
 		if (handler == null) {
 			response.setStatus(404);
 			response.write("There is no handler for " + path);
 			return;
+		}
+		if (handler instanceof DesiresLogger) {
+			((DesiresLogger)handler).provideLogger(logger);
+		}
+		if (handler instanceof ProvidePath) {
+			((ProvidePath)handler).path(this.path);
 		}
 		if (handler instanceof ProvideHeaders) {
 			ProvideHeaders consumer = (ProvideHeaders) handler;

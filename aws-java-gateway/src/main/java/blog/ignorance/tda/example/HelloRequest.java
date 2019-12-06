@@ -1,19 +1,33 @@
 package blog.ignorance.tda.example;
 
 import blog.ignorance.tda.interfaces.BodyConsumer;
+import blog.ignorance.tda.interfaces.DesiresLogger;
 import blog.ignorance.tda.interfaces.ParameterSource;
 import blog.ignorance.tda.interfaces.ProvideHeaders;
 import blog.ignorance.tda.interfaces.ProvideParameters;
+import blog.ignorance.tda.interfaces.ProvidePath;
 import blog.ignorance.tda.interfaces.RequestProcessor;
 import blog.ignorance.tda.interfaces.Responder;
+import blog.ignorance.tda.interfaces.ServerLogger;
 
-public class HelloRequest implements RequestProcessor, ProvideParameters, ProvideHeaders, BodyConsumer {
+public class HelloRequest implements RequestProcessor, DesiresLogger, ProvidePath, ProvideParameters, ProvideHeaders, BodyConsumer {
+	private ServerLogger logger;
 	private String message;
 
 	public HelloRequest(String defaultMessage) {
 		this.message = defaultMessage;
 	}
 	
+	@Override
+	public void provideLogger(ServerLogger logger) {
+		this.logger = logger;
+	}
+
+	@Override
+	public void path(String path) {
+		logger.log("handling path " + path);
+	}
+
 	@Override
 	public void header(String name, String value) {
 		if ("X-USER-NAME".equalsIgnoreCase(name))
