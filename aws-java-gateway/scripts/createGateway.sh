@@ -24,7 +24,7 @@ aws s3 cp foo.zip s3://$BUCKET/lambda1.zip
 aws cloudformation create-stack --stack-name 'ignorant-gateway' --capabilities CAPABILITY_IAM  --parameters "ParameterKey=BUCKET,ParameterValue=$BUCKET" --template-body "`cat src/main/resources/gateway-cf.json`"
 
 # Wait for stack completion to complete.  Note if it gets into a "ROLLBACK" status or some such you'll need to ^C it otherwise it will loop for ever
-while aws cloudformation list-stacks | jq -r '.StackSummaries[] | if .StackStatus != "CREATE_COMPLETE" then .StackName + ": " + .StackStatus else "" end' | grep -v 'DELETE_COMPLETE' | grep -s ignorant ; do
+while aws cloudformation list-stacks | jq -r '.StackSummaries[] | if .StackStatus != "CREATE_COMPLETE" and .StackStatus != "ROLLBACK_COMPLETE" then .StackName + ": " + .StackStatus else "" end' | grep -v 'DELETE_COMPLETE' | grep -s ignorant ; do
   sleep 1
 done
 

@@ -64,9 +64,14 @@
 		    		"S3Bucket": { "Ref": "BUCKET" },
 		    		"S3Key": "lambda1.zip"
 		    	},
-		    	"Handler" : "blog.ignorance.apigateway.Handler",
+		    	"Handler" : "blog.ignorance.tda.processing.TDAHandler",
 		    	"Role" : { "Fn::GetAtt": [ "Role", "Arn" ] },
-		    	"Runtime" : "java8"
+		    	"Runtime" : "java8",
+		    	"Environment": {
+		    		"Variables": {
+		    			"InitializationClass": "blog.ignorance.tda.example.Initialization"
+		    		}
+		    	}
 		    }
 		},
 		"GatewayInvokeLambda": {
