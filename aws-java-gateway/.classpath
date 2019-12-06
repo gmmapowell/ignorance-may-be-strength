@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AmazonAWS"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Testing"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Grizzly"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -17,6 +17,7 @@ import blog.ignorance.tda.interfaces.ProvidePath;
 import blog.ignorance.tda.interfaces.RequestProcessor;
 import blog.ignorance.tda.interfaces.Responder;
 import blog.ignorance.tda.interfaces.ServerLogger;
+import blog.ignorance.tda.interfaces.WSProcessor;
 
 public class ProcessorRequest {
 	private String method = null;
@@ -69,6 +70,14 @@ public class ProcessorRequest {
 	}
 	
 	public void handleIt(TDACentralConfiguration central, ServerLogger logger, Responder response, Context cx) throws Exception {
+		if (context != null && "MESSAGE".equals(context.get("eventType"))) {
+			WSProcessor wsproc = central.websocketHandler();
+			if (wsproc instanceof DesiresLogger) {
+				((DesiresLogger)wsproc).provideLogger(logger);
+			}
+			wsproc.onText(body);
+			return;
+		}
 		RequestProcessor handler = central.createHandlerFor(method, resource);
 		if (handler == null) {
 			response.setStatus(404);

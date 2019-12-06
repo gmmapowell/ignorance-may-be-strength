@@ -6,9 +6,11 @@ import java.util.List;
 import blog.ignorance.tda.interfaces.Central;
 import blog.ignorance.tda.interfaces.Initializer;
 import blog.ignorance.tda.interfaces.RequestProcessor;
+import blog.ignorance.tda.interfaces.WSProcessor;
 
 public class TDACentralConfiguration implements Central {
 	private final List<Mapping> paths = new ArrayList<Mapping>();
+	private Factory<? extends WSProcessor> wsfactory;
 	
 	public TDACentralConfiguration() {
 		String init = System.getenv("InitializationClass");
@@ -32,7 +34,16 @@ public class TDACentralConfiguration implements Central {
 	public void onGet(String path, Factory<? extends RequestProcessor> factory) {
 		paths.add(new Mapping(path, factory, "GET"));
 	}
+	
+	@Override
+	public void websocket(Factory<? extends WSProcessor> factory) {
+		wsfactory = factory;
+	}
 
+	public WSProcessor websocketHandler() {
+		return wsfactory.create();
+	}
+	
 	public RequestProcessor createHandlerFor(String method, String path) {
 		Factory<? extends RequestProcessor> creator = null;
 		for (Mapping m : paths) {

@@ -14,8 +14,15 @@ if [ ! -f compilelibs/aws-lambda-events-2.2.7.jar ] ; then
   curl -o compilelibs/aws-lambda-events-2.2.7.jar http://repo1.maven.org/maven2/com/amazonaws/aws-lambda-java-events/2.2.7/aws-lambda-java-events-2.2.7.jar
 fi
 
+if [ ! -f compilelibs/grizzly-websockets-server-2.4.3.jar ] ; then
+  curl -o compilelibs/grizzly-websockets-server-2.4.3.jar http://repo1.maven.org/maven2/org/glassfish/grizzly/grizzly-websockets-server/2.4.3/grizzly-websockets-server-2.4.3.jar
+fi
+
 # Use javac to compile all our code to build
 javac -cp compilelibs/*:libs/* -d build -sourcepath src/main/java `find src/main/java -name '*.java'`
+if [ $? -ne 0 ] ; then
+  exit 1
+fi
 
 # Create an uploadable jar of our blog files
 jar cf upload/code.jar -C build blog

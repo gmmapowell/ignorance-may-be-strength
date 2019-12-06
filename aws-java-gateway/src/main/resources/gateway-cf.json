@@ -154,6 +154,47 @@
             	"Description": "Deployed API",
             	"StageName": "ignorance"
         	}
-    	}
+    	},
+    	"CounterGateway": {
+ 			"Type": "AWS::ApiGatewayV2::Api",
+			"Properties": {
+				"Name": "counter",
+				"ProtocolType": "WEBSOCKET",
+				"RouteSelectionExpression": "\\$default"
+			}
+		},
+		"CounterIntegration": {
+			"Type": "AWS::ApiGatewayV2::Integration",
+			"Properties": {
+				"ApiId": { "Ref": "CounterGateway" },
+				"IntegrationType": "AWS_PROXY",
+				"IntegrationUri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda1.Arn}/invocations" }
+			}
+		},
+		"CounterRoute": {
+			"Type": "AWS::ApiGatewayV2::Route",
+			"Properties": {
+				"ApiId": { "Ref": "CounterGateway" },
+				"RouteKey": "$default",
+				"Target": {
+					"Fn::Join": [ "/", [ "integrations", { "Ref": "CounterIntegration" } ] ]
+				}
+			}
+		},
+		"CounterDeployment": {
+			"Type": "AWS::ApiGatewayV2::Deployment",
+			"DependsOn": [ "CounterRoute" ],
+			"Properties": {
+				"ApiId": { "Ref": "CounterGateway" }
+			}
+		},
+		"CounterStage": {
+			"Type": "AWS::ApiGatewayV2::Stage",
+			"Properties": {
+				"StageName": "wscli",
+				"DeploymentId": { "Ref": "CounterDeployment" },
+				"ApiId": { "Ref": "CounterGateway" }
+			}
+		}
 	}
 }

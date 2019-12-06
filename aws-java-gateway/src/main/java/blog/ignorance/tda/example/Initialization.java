@@ -12,6 +12,7 @@ public class Initialization implements Initializer {
 		Factory<? extends RequestProcessor> createHello = () -> new HelloRequest("world");
 		central.allMethods("/hello", createHello);
 		central.onGet("/hello/{who}", createHello);
+		central.websocket(() -> new CounterSocket());
 	}
 
 }
