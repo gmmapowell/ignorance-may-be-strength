@@ -1,6 +1,6 @@
 bin/
 build/
 compilelibs/
-libs/
+lib/
 foo.zip
 upload/

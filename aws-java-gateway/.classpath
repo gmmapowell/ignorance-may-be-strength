@@ -5,9 +5,11 @@
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" output="bin/testclasses" path="src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AmazonAWS"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Testing"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Grizzly"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-apigatewaymanagementapi-1.11.688.jar"/>
+	<classpathentry kind="lib" path="lib/aws-java-sdk-core-1.11.688.jar"/>
+	<classpathentry kind="lib" path="compilelibs/aws-lambda-core-1.2.0.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

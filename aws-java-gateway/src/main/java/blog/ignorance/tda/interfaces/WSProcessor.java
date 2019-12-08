@@ -27,10 +27,10 @@ public interface WSProcessor {
 	public void open(WSResponder responder);
 	
 	/** Handle a complete text message
-	 * 
+	 * @param responder the responder to the other end of the socket
 	 * @param text the incoming message
 	 */
-	public void onText(String text);
+	public void onText(WSResponder responder, String text);
 	
 	/** Handle an error on the wire
 	 * 

@@ -34,5 +34,7 @@ done
 # List the resources we created and print out the resource address
 aws cloudformation list-stack-resources --stack-name ignorant-gateway | jq -r '.StackResourceSummaries[] | .LogicalResourceId + ": " + .PhysicalResourceId'
 addr=`aws cloudformation list-stack-resources --stack-name ignorant-gateway | jq -r '.StackResourceSummaries[] | .LogicalResourceId + ": " + .PhysicalResourceId' | sed -ne '/SimpleGateway/s/.*: //p'`
+wsaddr=`aws cloudformation list-stack-resources --stack-name ignorant-gateway | jq -r '.StackResourceSummaries[] | .LogicalResourceId + ": " + .PhysicalResourceId' | sed -ne '/CounterGateway/s/.*: //p'`
 echo "Gateway resource can be found at: https://$addr.execute-api.$REGION.amazonaws.com/ignorance/hello"
+echo "Counter resource can be found at: https://$wsaddr.execute-api.$REGION.amazonaws.com/wscli"
 exit 0

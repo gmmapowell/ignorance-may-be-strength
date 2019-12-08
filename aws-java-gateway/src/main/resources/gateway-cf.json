@@ -67,7 +67,9 @@
 		    	"Handler" : "blog.ignorance.tda.processing.TDAHandler",
 		    	"Role" : { "Fn::GetAtt": [ "Role", "Arn" ] },
 		    	"Runtime" : "java8",
-		    	"Environment": {
+                "MemorySize": 1024,
+                "Timeout": 25,
+                "Environment": {
 		    		"Variables": {
 		    			"InitializationClass": "blog.ignorance.tda.example.Initialization"
 		    		}

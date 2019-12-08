@@ -75,7 +75,7 @@ public class ProcessorRequest {
 			if (wsproc instanceof DesiresLogger) {
 				((DesiresLogger)wsproc).provideLogger(logger);
 			}
-			wsproc.onText(body);
+			wsproc.onText(central.responderFor(logger, (String) context.get("connectionId"), (String)context.get("domainName"), (String)context.get("stage")), body);
 			return;
 		}
 		RequestProcessor handler = central.createHandlerFor(method, resource);
