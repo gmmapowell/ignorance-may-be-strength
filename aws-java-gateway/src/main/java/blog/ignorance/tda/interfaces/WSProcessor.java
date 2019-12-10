@@ -38,7 +38,8 @@ public interface WSProcessor {
 	public void error();
 	
 	/** The other end closed the socket
+	 * @param responder 
 	 * 
 	 */
-	public void close();
+	public void close(WSResponder responder);
 }

@@ -93,6 +93,11 @@ public class TDACentralConfiguration implements Central {
 			}
 
 			@Override
+			public String connectionName() {
+				return connId;
+			}
+			
+			@Override
 			public void close() {
 			}
 		};
