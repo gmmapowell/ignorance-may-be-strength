@@ -19,6 +19,7 @@ fi
 rm foo.zip
 jar cf foo.zip scripts/
 aws s3 cp foo.zip s3://$BUCKET/lambda1.zip
+aws s3 cp foo.zip s3://$BUCKET/timerlambda.zip
 
 # Start the stack creation
 aws cloudformation update-stack \
