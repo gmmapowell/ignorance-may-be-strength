@@ -2,9 +2,11 @@
 	"AWSTemplateFormatVersion": "2010-09-09",
 	"Description": "Ignorant API Gateway",
 	"Parameters": {
-		"BUCKET": {
-			"Type": "String"
-		}
+		"BUCKET": { "Type": "String" },
+		"COUCHBASE": { "Type": "String" },
+		"CBUSER": { "Type": "String" },
+		"CBPASSWD": { "Type": "String" },
+		"CBBUCKET": { "Type": "String" }
 	},
 	"Resources": {
 		"Role": {
@@ -71,7 +73,11 @@
                 "Timeout": 25,
                 "Environment": {
 		    		"Variables": {
-		    			"InitializationClass": "blog.ignorance.tda.example.Initialization"
+		    			"InitializationClass": "blog.ignorance.tda.example.Initialization",
+		    			"COUCHBASE": { "Ref": "COUCHBASE" },
+		    			"CBUSER": { "Ref": "CBUSER" },
+		    			"CBPASSWD": { "Ref": "CBPASSWD" },
+		    			"CBBUCKET": { "Ref": "CBBUCKET" }
 		    		}
 		    	}
 		    }

@@ -17,11 +17,13 @@ import blog.ignorance.tda.interfaces.RequestProcessor;
 import blog.ignorance.tda.interfaces.ServerLogger;
 import blog.ignorance.tda.interfaces.WSProcessor;
 import blog.ignorance.tda.interfaces.WSResponder;
+import blog.ignorance.tda.interfaces.WithCouchbase;
 
 public class TDACentralConfiguration implements Central {
 	private final List<Mapping> paths = new ArrayList<Mapping>();
 	private Factory<? extends WSProcessor> wsfactory;
-	
+	private CouchbaseEnvironment couchbase = new CouchbaseEnvironment();
+
 	public TDACentralConfiguration() {
 		String init = System.getenv("InitializationClass");
 		if (init != null) {
@@ -48,6 +50,10 @@ public class TDACentralConfiguration implements Central {
 	@Override
 	public void websocket(Factory<? extends WSProcessor> factory) {
 		wsfactory = factory;
+	}
+
+	public void applyCouchbase(WithCouchbase userHandler) {
+		couchbase.provideBucketTo(userHandler);
 	}
 
 	public WSProcessor websocketHandler() {

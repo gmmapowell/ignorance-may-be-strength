@@ -21,7 +21,16 @@ jar cf foo.zip scripts/
 aws s3 cp foo.zip s3://$BUCKET/lambda1.zip
 
 # Start the stack creation
-aws cloudformation update-stack --stack-name 'ignorant-gateway' --capabilities CAPABILITY_IAM  --parameters "ParameterKey=BUCKET,ParameterValue=$BUCKET" --template-body "`cat src/main/resources/gateway-cf.json`"
+aws cloudformation update-stack \
+  --stack-name 'ignorant-gateway' \
+  --capabilities CAPABILITY_IAM \
+  --parameters \
+    "ParameterKey=BUCKET,ParameterValue=$BUCKET" \
+    "ParameterKey=COUCHBASE,ParameterValue=$COUCHBASE" \
+    "ParameterKey=CBUSER,ParameterValue=$CBUSER" \
+    "ParameterKey=CBPASSWD,ParameterValue=$CBPASSWD" \
+    "ParameterKey=CBBUCKET,ParameterValue=$CBBUCKET" \
+  --template-body "`cat src/main/resources/gateway-cf.json`"
 if [ $? -ne 0 ] ; then
   exit 1
 fi

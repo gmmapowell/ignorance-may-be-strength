@@ -18,6 +18,7 @@ import blog.ignorance.tda.interfaces.RequestProcessor;
 import blog.ignorance.tda.interfaces.Responder;
 import blog.ignorance.tda.interfaces.ServerLogger;
 import blog.ignorance.tda.interfaces.WSProcessor;
+import blog.ignorance.tda.interfaces.WithCouchbase;
 
 public class ProcessorRequest {
 	private String method = null;
@@ -75,6 +76,9 @@ public class ProcessorRequest {
 			if (wsproc instanceof DesiresLogger) {
 				((DesiresLogger)wsproc).provideLogger(logger);
 			}
+			if (wsproc instanceof WithCouchbase) {
+				central.applyCouchbase((WithCouchbase)wsproc);
+			}
 			wsproc.onText(central.responderFor(logger, (String) context.get("connectionId"), (String)context.get("domainName"), (String)context.get("stage")), body);
 			return;
 		}
@@ -86,6 +90,9 @@ public class ProcessorRequest {
 		}
 		if (handler instanceof DesiresLogger) {
 			((DesiresLogger)handler).provideLogger(logger);
+		}
+		if (handler instanceof WithCouchbase) {
+			central.applyCouchbase((WithCouchbase)handler);
 		}
 		if (handler instanceof ProvidePath) {
 			((ProvidePath)handler).path(this.path);

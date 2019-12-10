@@ -67,6 +67,22 @@ if [ ! -f lib/ion-java-1.0.2.jar ] ; then
   curl -o lib/ion-java-1.0.2.jar http://repo1.maven.org/maven2/software/amazon/ion/ion-java/1.0.2/ion-java-1.0.2.jar
 fi
 
+if [ ! -f  lib/java-client-2.7.11.jar ] ; then
+  curl -o lib/java-client-2.7.11.jar http://repo1.maven.org/maven2/com/couchbase/client/java-client/2.7.11/java-client-2.7.11.jar
+fi
+
+if [ ! -f lib/core-io-1.7.11.jar ] ; then
+  curl -o lib/core-io-1.7.11.jar http://repo1.maven.org/maven2/com/couchbase/client/core-io/1.7.11/core-io-1.7.11.jar
+fi
+
+if [ ! -f lib/rxjava-1.3.8.jar ] ; then
+  curl -o lib/rxjava-1.3.8.jar http://repo1.maven.org/maven2/io/reactivex/rxjava/1.3.8/rxjava-1.3.8.jar
+fi
+
+if [ ! -f lib/opentracing-api-0.31.0.jar ] ; then
+  curl -o lib/opentracing-api-0.31.0.jar http://repo1.maven.org/maven2/io/opentracing/opentracing-api/0.31.0/opentracing-api-0.31.0.jar
+fi
+
 # Use javac to compile all our code to build
 javac -cp compilelibs/*:lib/* -d build -sourcepath src/main/java `find src/main/java -name '*.java'`
 if [ $? -ne 0 ] ; then
