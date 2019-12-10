@@ -13,5 +13,9 @@ public interface WSResponder {
 	 */
 	void send(String text);
 
+	/* Return a unique id that identifies the connection
+	 */
+	String connectionName();
+	
 	void close();
 }

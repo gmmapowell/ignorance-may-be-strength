@@ -1,5 +1,6 @@
 package blog.ignorance.tda.processing;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import blog.ignorance.tda.interfaces.RequestProcessor;
 import blog.ignorance.tda.interfaces.Responder;
 import blog.ignorance.tda.interfaces.ServerLogger;
 import blog.ignorance.tda.interfaces.WSProcessor;
+import blog.ignorance.tda.interfaces.WSResponder;
 import blog.ignorance.tda.interfaces.WithCouchbase;
 
 public class ProcessorRequest {
@@ -71,17 +73,25 @@ public class ProcessorRequest {
 	}
 	
 	public void handleIt(TDACentralConfiguration central, ServerLogger logger, Responder response, Context cx) throws Exception {
-		if (context != null && "MESSAGE".equals(context.get("eventType"))) {
-			WSProcessor wsproc = central.websocketHandler();
-			if (wsproc instanceof DesiresLogger) {
-				((DesiresLogger)wsproc).provideLogger(logger);
-			}
-			if (wsproc instanceof WithCouchbase) {
-				central.applyCouchbase((WithCouchbase)wsproc);
-			}
-			wsproc.onText(central.responderFor(logger, (String) context.get("connectionId"), (String)context.get("domainName"), (String)context.get("stage")), body);
+		// This shouldn't happen, but if it does, I want no part of it
+		if (context == null) {
+			response.setStatus(500);
+			response.write("No context provided");
 			return;
 		}
+		logger.log("Context: " + context);
+		if (context.containsKey("httpMethod")) {
+			handleHTTPMethod(central, logger, response, cx);
+		} else if (context.containsKey("routeKey")) {
+			handleWSEvent(central, logger, response, cx);
+		} else {
+			response.setStatus(400);
+			response.write("Cannot figure out the event type");
+			return;
+		}
+	}
+
+	private void handleHTTPMethod(TDACentralConfiguration central, ServerLogger logger, Responder response, Context cx)	throws IOException, Exception {
 		RequestProcessor handler = central.createHandlerFor(method, resource);
 		if (handler == null) {
 			response.setStatus(404);
@@ -117,5 +127,23 @@ public class ProcessorRequest {
 			((BodyConsumer)handler).consumeBody(body);
 		}
 		handler.process(response);
+	}
+
+	private void handleWSEvent(TDACentralConfiguration central, ServerLogger logger, Responder response, Context cx) {
+		WSProcessor wsproc = central.websocketHandler();
+		if (wsproc instanceof DesiresLogger) {
+			((DesiresLogger)wsproc).provideLogger(logger);
+		}
+		if (wsproc instanceof WithCouchbase) {
+			central.applyCouchbase((WithCouchbase)wsproc);
+		}
+		WSResponder responder = central.responderFor(logger, (String) context.get("connectionId"), (String)context.get("domainName"), (String)context.get("stage"));
+		if ("$connect".equals(context.get("routeKey"))) {
+			wsproc.open(responder);
+		} else if ("$default".equals(context.get("routeKey"))) {
+			wsproc.onText(responder, body);
+		} else	if ("$disconnect".equals(context.get("routeKey"))) {
+			wsproc.close(responder);
+		}
 	}
 }

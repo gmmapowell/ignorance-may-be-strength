@@ -179,6 +179,16 @@
 				"IntegrationUri": { "Fn::Sub": "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda1.Arn}/invocations" }
 			}
 		},
+		"CounterConnect": {
+			"Type": "AWS::ApiGatewayV2::Route",
+			"Properties": {
+				"ApiId": { "Ref": "CounterGateway" },
+				"RouteKey": "$connect",
+				"Target": {
+					"Fn::Join": [ "/", [ "integrations", { "Ref": "CounterIntegration" } ] ]
+				}
+			}
+		},
 		"CounterRoute": {
 			"Type": "AWS::ApiGatewayV2::Route",
 			"Properties": {
@@ -189,9 +199,24 @@
 				}
 			}
 		},
+		"CounterDisconnect": {
+			"Type": "AWS::ApiGatewayV2::Route",
+			"Properties": {
+				"ApiId": { "Ref": "CounterGateway" },
+				"RouteKey": "$disconnect",
+				"OperationName": "DisconnectRoute",
+				"Target": {
+					"Fn::Join": [ "/", [ "integrations", { "Ref": "CounterIntegration" } ] ]
+				}
+			}
+		},
 		"CounterDeployment": {
 			"Type": "AWS::ApiGatewayV2::Deployment",
-			"DependsOn": [ "CounterRoute" ],
+			"DependsOn": [
+				"CounterConnect",
+				"CounterRoute",
+				"CounterDisconnect"
+			],
 			"Properties": {
 				"ApiId": { "Ref": "CounterGateway" }
 			}
