@@ -6,7 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import blog.ignorance.tda.interfaces.ServerLogger;
 
 public class TDAHandler implements RequestHandler<ProcessorRequest, ProcessorResponse> {
-	static TDACentralConfiguration central = new TDACentralConfiguration();
+	private static TDACentralConfiguration central = new TDACentralConfiguration();
 	
 	public ProcessorResponse handleRequest(ProcessorRequest req, Context cx) {
 		try {

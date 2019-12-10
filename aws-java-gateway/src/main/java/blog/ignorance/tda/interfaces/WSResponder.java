@@ -10,8 +10,9 @@ public interface WSResponder {
 	/** Send a text message back to the client
 	 * 
 	 * @param text the message to send
+	 * @return 
 	 */
-	void send(String text);
+	boolean send(String text);
 
 	/* Return a unique id that identifies the connection
 	 */

@@ -94,10 +94,13 @@ jar cf upload/code.jar -C build blog lib
 
 # Upload it to the bucket
 aws s3 cp upload/code.jar s3://$BUCKET/lambda1.zip
+aws s3 cp upload/code.jar s3://$BUCKET/timerlambda.zip
 
 # Now we need to tell the lambda we have updated it
 # First obtain the lambda name from the stack
 lambdaName="`aws cloudformation list-stack-resources --stack-name ignorant-gateway | jq -r '.StackResourceSummaries[] | .LogicalResourceId + ": " + .PhysicalResourceId' | sed -ne 's/Lambda1: //p'`"
+timerLambdaName="`aws cloudformation list-stack-resources --stack-name ignorant-gateway | jq -r '.StackResourceSummaries[] | .LogicalResourceId + ": " + .PhysicalResourceId' | sed -ne 's/TimerLambda: //p'`"
 
 # Then tell it where the code is
 aws lambda update-function-code --function "$lambdaName" --s3-bucket "$BUCKET" --s3-key lambda1.zip | jq -r .LastUpdateStatus
+aws lambda update-function-code --function "$timerLambdaName" --s3-bucket "$BUCKET" --s3-key timerlambda.zip | jq -r .LastUpdateStatus
