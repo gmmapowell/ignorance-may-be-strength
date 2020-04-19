@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="PlayVideo" extends="Scene"> 
+	<children>
+	  <ContentNode id="damian"
+	    url="http://www.gmmapowell.com/downloads/Damian2018.mp4"
+	    StreamFormat="mp4"
+	  />
+      <Video id="playit" 
+        control="play"
+      	width="0" 
+      	height="0" 
+      	/>
+    </children>
+<script type="text/brightscript" >
+<![CDATA[
+  function init()
+    video = m.top.findNode("playit")
+    video.content = m.top.findNode("damian")
+    video.setFocus(true)
+    video.control = "play"
+  end function
+]]>
+</script>
+</component>
