@@ -1,5 +1,6 @@
 package blog.ignorance.tda.processing;
 
+import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,8 @@ public class TDACentralConfiguration implements Central {
 		String init = System.getenv("InitializationClass");
 		if (init != null) {
 			try {
-				((Initializer)Class.forName(init).newInstance()).initialize(this);
-			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+				((Initializer)Class.forName(init).getDeclaredConstructor().newInstance()).initialize(this);
+			} catch (InstantiationException | IllegalAccessException | ClassNotFoundException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				// I'm not sure how easy it is to report this exception because we don't have the context at this point
 				// Probably we should record it and report it on lambda invocation
 				e.printStackTrace();
