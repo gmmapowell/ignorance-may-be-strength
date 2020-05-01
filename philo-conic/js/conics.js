@@ -2,6 +2,7 @@ function loadConics() {
   var dragStart;
   var top, bottom;
   var depth = 0;
+  var showIntersect = false;
 
   function update(comp) {
     var m = comp.matrix;
@@ -42,6 +43,17 @@ function loadConics() {
         depth -= e.wheel;
         update(top);
         update(bottom);
+      },
+      onClick: function(e) {
+        showIntersect = !showIntersect;
+        if (showIntersect) {
+          this.camera.near = 98.75;
+          this.camera.far = 99.25;
+        } else {
+          this.camera.near = 10;
+          this.camera.far = 200;
+        }
+        this.camera.update();
       }
     },
     onError: function() {
