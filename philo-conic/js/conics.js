@@ -16,14 +16,21 @@ function loadConics() {
         dragStart = { x: e.x, y: e.y }
       },
       onDragMove: function(e) {
-        top.rotation.y += -(e.x - dragStart.x) / 100;
-        top.rotation.x += -(e.y - dragStart.y) / 100;
-        top.update();
-        bottom.rotation.y += (e.x - dragStart.x) / 100;
-        bottom.rotation.x += (e.y - dragStart.y) / 100;
-        bottom.update();
+        rot(top, e, -1, -1);
+        rot(bottom, e, 1, 1);
         dragStart.x = e.x;
         dragStart.y = e.y;
+
+        function rot(comp, e, sgnx, sgny) {
+          comp.rotation.y += sgnx * (e.x - dragStart.x) / 100;
+          comp.rotation.x += sgny * (e.y - dragStart.y) / 100;
+
+          var m = comp.matrix;
+          m.id();
+          m.$rotateXYZ(comp.rotation.x, comp.rotation.y, comp.rotation.z);
+          m.$translate(comp.position.x, sgny*comp.position.y, comp.position.z);
+          m.$scale(comp.scale.x, comp.scale.y, comp.scale.z);
+        }
       }
     },
     onError: function() {
