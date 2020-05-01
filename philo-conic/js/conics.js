@@ -2,6 +2,9 @@ function loadConics() {
   var dragStart;
   var top, bottom;
   var depth = 0;
+  var rad = 20;
+  var baserad = 20;
+  var ht = 50;
   var showIntersect = false;
 
   function update(comp) {
@@ -11,6 +14,11 @@ function loadConics() {
     m.$rotateXYZ(comp.rotation.x, comp.rotation.y, comp.rotation.z);
     m.$translate(comp.position.x, comp.position.y, comp.position.z);
     m.$scale(comp.scale.x, comp.scale.y, comp.scale.z);
+  }
+
+  function closeToCenter(e) {
+    var r = e.x * e.x + e.y * e.y;
+    return r < 3600;
   }
 
   PhiloGL('render3d',  {
@@ -40,7 +48,15 @@ function loadConics() {
       },
       onMouseWheel: function(e) {
         e.stop();
-        depth -= e.wheel;
+        if (closeToCenter(e)) {
+          depth -= e.wheel;
+        } else {
+          rad -= e.wheel;
+          top.scale.x = rad / baserad;
+          top.scale.z = rad / baserad;
+          bottom.scale.x = rad / baserad;
+          bottom.scale.z = rad / baserad;
+        }
         update(top);
         update(bottom);
       },
@@ -61,8 +77,8 @@ function loadConics() {
     },
     onLoad: function(app) {
       var gl = app.gl;
-      top = cone(-25, Math.PI);
-      bottom = cone(-25, 0);
+      top = cone(-ht/2, Math.PI);
+      bottom = cone(-ht/2, 0);
 
       app.scene.add(top);
       app.scene.add(bottom);
@@ -71,8 +87,8 @@ function loadConics() {
 
       function cone(yd, rot) {
         var ret = new PhiloGL.O3D.Cone({
-          radius: 20,
-          height: 50,
+          radius: rad,
+          height: ht,
           nradial: 20,
           textures: ['img/balloons.png']
         });
