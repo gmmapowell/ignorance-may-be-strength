@@ -1,6 +1,16 @@
 function loadConics() {
   var dragStart;
   var top, bottom;
+  var depth = 0;
+
+  function update(comp) {
+    var m = comp.matrix;
+    m.id();
+    m.$translate(0, 0, depth);
+    m.$rotateXYZ(comp.rotation.x, comp.rotation.y, comp.rotation.z);
+    m.$translate(comp.position.x, comp.position.y, comp.position.z);
+    m.$scale(comp.scale.x, comp.scale.y, comp.scale.z);
+  }
 
   PhiloGL('render3d',  {
     camera: {
@@ -24,13 +34,14 @@ function loadConics() {
         function rot(comp, e, sgnx, sgny) {
           comp.rotation.y += sgnx * (e.x - dragStart.x) / 100;
           comp.rotation.x += sgny * (e.y - dragStart.y) / 100;
-
-          var m = comp.matrix;
-          m.id();
-          m.$rotateXYZ(comp.rotation.x, comp.rotation.y, comp.rotation.z);
-          m.$translate(comp.position.x, sgny*comp.position.y, comp.position.z);
-          m.$scale(comp.scale.x, comp.scale.y, comp.scale.z);
+          update(comp);
         }
+      },
+      onMouseWheel: function(e) {
+        e.stop();
+        depth -= e.wheel;
+        update(top);
+        update(bottom);
       }
     },
     onError: function() {
@@ -38,7 +49,7 @@ function loadConics() {
     },
     onLoad: function(app) {
       var gl = app.gl;
-      top = cone(25, Math.PI);
+      top = cone(-25, Math.PI);
       bottom = cone(-25, 0);
 
       app.scene.add(top);
@@ -55,7 +66,7 @@ function loadConics() {
         });
         ret.position.y = yd;
         ret.rotation.set(0, 0, rot);
-        ret.update();
+        update(ret);
         return ret;
       }
 
