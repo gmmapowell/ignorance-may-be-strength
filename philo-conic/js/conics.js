@@ -1,4 +1,6 @@
 function loadConics() {
+  var dragStart;
+  var top, bottom;
 
   PhiloGL('render3d',  {
     camera: {
@@ -9,13 +11,28 @@ function loadConics() {
     textures: {
       src: ['img/balloons.png']
     },
+    events: {
+      onDragStart: function (e) {
+        dragStart = { x: e.x, y: e.y }
+      },
+      onDragMove: function(e) {
+        top.rotation.y += -(e.x - dragStart.x) / 100;
+        top.rotation.x += -(e.y - dragStart.y) / 100;
+        top.update();
+        bottom.rotation.y += (e.x - dragStart.x) / 100;
+        bottom.rotation.x += (e.y - dragStart.y) / 100;
+        bottom.update();
+        dragStart.x = e.x;
+        dragStart.y = e.y;
+      }
+    },
     onError: function() {
       alert("There was an error creating the app.");
     },
     onLoad: function(app) {
       var gl = app.gl;
-      var top = cone(25, Math.PI);
-      var bottom = cone(-25, 0);
+      top = cone(25, Math.PI);
+      bottom = cone(-25, 0);
 
       app.scene.add(top);
       app.scene.add(bottom);
@@ -44,6 +61,8 @@ function loadConics() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         app.scene.render();
+
+        PhiloGL.Fx.requestAnimationFrame(draw);
       }
     }
   });
