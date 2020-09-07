@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>Chaos</title>
+    </head>
+    <body>
+        <h1>Instructions</h1>
+        <ul>
+            <li>Click on a link below to go to that plane.
+            <li>Select a region of interest to zoom in.
+            <li>Bookmark any pictures that look interesting.
+        </ul>
+        <h1><a href='chaos.html?function=mandelbrot'>Mandelbrot Set</a></h1>
+        <p>The chaos theory classic in complex number space.</p>
+        <p>Pick any point in the complex plane and call it <tt>c</tt>.  Then, with z<sub>0</sub> = 0, iterate so that z<sub>i+1</sub> = z<sub>i</sub><sup>2</sup>+c.</p>
+        <p>The first question is: is there a z<sub>i</sub> for which |z<sub>i</sub>| > 2; if so, all subsequent points will tend to infinity; if not, the points will be forever trapped close to 0 in the <i>Mandelbrot Set</i>.</p>
+        <p>If it tends to infinity, the second question is: how many iterations does it take to get there?</p>
+        <p>The Mandelbrot Set itself is colored black; all other colors represent different amounts of time to tend to infinity from that starting point.</p>
+        <h1>Newton's Method</a></h1>
+        <p>Newton's method is a numerical technique for finding the roots of a polynomial by "guesswork".  Starting with an arbitrary guess, figure both the function value and the differential.  Use the value of the differential to come up with a better guess (where the root would be if the function were in fact a straight line).  Then repeat.</p>
+        <p>Intuition suggests that there will be consistent areas where each root is found; but in fact the roots can go anywhere.</p>
+        <p>The colors are used to indicate which root was found from an initial guess.</p>
+        <p>The roots are in the complex plane.</p>
+        <p><a href='chaos.html?function=newton3'>Solving n<sup>3</sup>-1 = 0</a></p>
+        <p><a href='chaos.html?function=newton4'>Solving n<sup>4</sup>-1 = 0</a></p>
+    </body>
+</html>
