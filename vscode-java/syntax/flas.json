@@ -1,0 +1,57 @@
+{
+	"name": "flas",
+	"scopeName": "source.flas",
+	"patterns": [
+		{ "include": "#comment" },
+		{ "include": "#contract-intro"},
+		{ "include": "#card-intro"},
+		{ "include": "#state-intro"},
+		{ "include": "#implements-intro"}
+	],
+	"repository" : {
+		"comment": {
+			"name": "comment.line.file",
+			"match": "^[^ \t].*$"
+		},
+		"contract-intro": {
+			"begin": "\tcontract\\b",
+			"beginCaptures": {
+				"0": { "name": "keyword.intro" }
+			},
+			"end": "(//.*$|$)",
+			"name": "statement.contract",
+			"patterns": [{"include":"#typename"}]
+		},
+		"card-intro": {
+			"begin": "\tcard\\b",
+			"beginCaptures": {
+				"0": { "name": "keyword.intro" }
+			},
+			"end": "(//.*$|$)",
+			"name": "statement.card",
+			"patterns": [{"include":"#typename"}]
+		},
+		"state-intro": {
+			"begin": "^\t\tstate\\b",
+			"beginCaptures": {
+				"0": { "name": "keyword.intro" }
+			},
+			"end": "(//.*$|$)",
+			"name": "statement.card",
+			"patterns": [{"include":"#typename"}]
+		},
+		"implements-intro": {
+			"begin": "^\t\timplements\\b",
+			"beginCaptures": {
+				"0": { "name": "keyword.intro" }
+			},
+			"end": "(//.*$|$)",
+			"name": "statement.card",
+			"patterns": [{"include":"#typename"}]
+		},
+		"typename": {
+			"match": "\\b[A-Z][A-Za-z0-9_][A-Za-z0-9_]+\\b",
+			"name": "name.type"
+		}
+	}
+}
