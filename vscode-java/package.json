@@ -41,7 +41,24 @@
 				"path": "./syntax/flas-st.json",
 				"scopeName": "source.flas-st"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Ignorance Settings",
+			"properties": {
+				"IgnorancePlugin.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+							"off",
+							"messages",
+							"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

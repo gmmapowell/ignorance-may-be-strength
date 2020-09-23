@@ -13,3 +13,10 @@ The value is multiplied by 10 every time hit is invoked
 		implements HitMe
 			hit
 				value <- value * 10
+
+
+	error // this is not allowed and should report a message
+
+	hello
+	
+	error

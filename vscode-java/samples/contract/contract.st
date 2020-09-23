@@ -1,4 +1,5 @@
 A fairly minimal setup has a configuration, stage and cleanup
+Does the version number change?
 
 	configure // create the card under test
 		data Multiplier m
