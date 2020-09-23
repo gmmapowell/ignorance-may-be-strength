@@ -1,0 +1,25 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id 'java'
+    id 'application'
+}
+
+mainClassName = 'ignorance.LSPServer'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.1.2'
+}
+
+/*
+jar {
+    manifest {
+	attributes (
+	    "Main-Class": 'ignorance.LSPServer'
+        )
+    }
+}
+*/
