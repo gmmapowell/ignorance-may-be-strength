@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.services.LanguageClient;
 
@@ -56,6 +57,19 @@ public class TokenRepository implements Repository {
 		for (Name n : names) {
 			if (n.name().equals(token)) {
 				ret.add(new Location(n.uri().toString(), n.range()));
+			}
+		}
+		return ret;
+	}
+
+	@Override
+	public List<CompletionItem> complete(String token) {
+		List<CompletionItem> ret = new ArrayList<>();
+		if (token == null)
+			token = "";
+		for (Name n : names) {
+			if (n.name().startsWith(token)) {
+				ret.add(new CompletionItem(n.name()));
 			}
 		}
 		return ret;
