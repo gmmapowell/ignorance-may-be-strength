@@ -78,6 +78,11 @@ class ParsingTextDocumentService implements TextDocumentService {
     }
 
     @Override
+    public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
+    	return CompletableFuture.completedFuture(unresolved);
+    }
+    
+    @Override
     public void didClose(DidCloseTextDocumentParams params) {
     }
 

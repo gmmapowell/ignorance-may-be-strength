@@ -54,7 +54,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         ServerCapabilities capabilities = new ServerCapabilities();
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
         capabilities.setDeclarationProvider(true);
-        capabilities.setCompletionProvider(new CompletionOptions(false, new ArrayList<>()));
+        capabilities.setCompletionProvider(new CompletionOptions(true, new ArrayList<>()));
 
         return CompletableFuture.completedFuture(new InitializeResult(capabilities));
     }
