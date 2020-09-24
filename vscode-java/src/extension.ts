@@ -2,6 +2,7 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
+import * as fs from 'fs';
 import * as path from 'path';
 import { workspace, languages, window, commands, ExtensionContext, Disposable } from 'vscode';
 import {
@@ -13,12 +14,20 @@ import {
 let client : LanguageClient;
 
 export function activate(context: ExtensionContext) {
+	var jarpath;
+	var devpath = path.resolve(context.extensionPath, '..', 'lsp-java');
+	if (fs.existsSync(devpath)) {
+		jarpath = path.resolve(devpath, 'build', 'libs', 'lsp-java-all.jar');
+	} else {
+		jarpath = path.resolve(context.extensionPath, "lsp-java-all.jar");
+	}
+
 	// launch a Java Server
 	let serverOptions: ServerOptions = {
 		command: "java",
 		args: [
 			"-jar",
-			path.resolve(context.extensionPath, '..', 'lsp-java', 'build', 'libs', 'lsp-java-all.jar')
+			jarpath
 		]
 	};
 	
