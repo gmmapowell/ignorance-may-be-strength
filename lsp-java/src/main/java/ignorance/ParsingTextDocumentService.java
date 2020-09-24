@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CodeLens;
 import org.eclipse.lsp4j.CodeLensParams;
+import org.eclipse.lsp4j.DeclarationParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
 import org.eclipse.lsp4j.DidOpenTextDocumentParams;
@@ -14,12 +15,15 @@ import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.DocumentFormattingParams;
 import org.eclipse.lsp4j.DocumentOnTypeFormattingParams;
 import org.eclipse.lsp4j.DocumentRangeFormattingParams;
+import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.RenameParams;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.TextEdit;
 import org.eclipse.lsp4j.WorkspaceEdit;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
@@ -39,26 +43,18 @@ class ParsingTextDocumentService implements TextDocumentService {
 
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
-    	String uris = params.getTextDocument().getUri();
-    	try {
-			URI uri = new URI(uris);
+    	URI uri = parseURI(params.getTextDocument().getUri());
+    	if (uri == null)
+    		return;
 			repository.clean(uri);
-			parser.parse(uri, params.getTextDocument().getText());
-    	} catch (URISyntaxException ex) {
-            client.logMessage(new MessageParams(MessageType.Warning, "Problem parsing " + uris));
-    	}
+		parser.parse(uri, params.getTextDocument().getText());
     }
 
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
-    	URI uri;
-    	String uris = params.getTextDocument().getUri();
-    	try {
-    		uri = new URI(uris);
-    	} catch (URISyntaxException ex) {
-            client.logMessage(new MessageParams(MessageType.Warning, "Problem parsing " + uris));
-            return;
-    	}
+    	URI uri = parseURI(params.getTextDocument().getUri());
+    	if (uri == null)
+    		return;
         for (TextDocumentContentChangeEvent changeEvent : params.getContentChanges()) {
             // Will be full update because we specified that is all we support
             if (changeEvent.getRange() != null) {
@@ -70,6 +66,13 @@ class ParsingTextDocumentService implements TextDocumentService {
 
             parser.parse(uri, changeEvent.getText());
         }
+    }
+
+    @Override
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> declaration(DeclarationParams params) {
+    	String token = parser.tokenAt(parseURI(params.getTextDocument().getUri()), params.getPosition());
+        List<Location> locs = repository.definitionsOf(token);
+        return CompletableFuture.completedFuture(Either.forLeft(locs));
     }
 
     @Override
@@ -109,4 +112,13 @@ class ParsingTextDocumentService implements TextDocumentService {
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
     }
+
+	private URI parseURI(String uris) {
+    	try {
+    		return new URI(uris);
+    	} catch (URISyntaxException ex) {
+            client.logMessage(new MessageParams(MessageType.Warning, "Problem parsing " + uris));
+            return null;
+    	}
+	}
 }

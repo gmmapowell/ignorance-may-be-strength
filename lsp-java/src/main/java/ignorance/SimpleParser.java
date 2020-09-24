@@ -31,6 +31,7 @@ public class SimpleParser implements Parser {
 
 	@Override
 	public void parse(URI uri, String text) {
+		repository.rememberFile(uri, text);
 		try {
 			File path = new File(uri.getPath());
 	        List<Diagnostic> diagnostics = new ArrayList<>();
@@ -65,9 +66,18 @@ public class SimpleParser implements Parser {
 		}
     }
 
+	@Override
+	public String tokenAt(URI uri, Position position) {
+        List<Line> lines = splitLines(uri, repository.getFile(uri));
+        Line l = lines.get(position.getLine());
+        return findTokenAround(l, position.getCharacter());
+	}
+
 	private List<Line> splitLines(URI uri, String text) {
         List<Line> ret = new ArrayList<>();
-        int lineNo = 1;
+        if (uri == null || text == null)
+        	return ret;
+        int lineNo = 0;
 		for (String s : text.split("\\r?\\n"))
 			ret.add(Line.from(uri, lineNo++, s));
 		return ret;
@@ -85,6 +95,18 @@ public class SimpleParser implements Parser {
 		int idx2 = line.text.indexOf(' ', idx+1);
 		if (idx2 == -1)
 			idx2 = line.text.length(); // the token goes to the end of the line
-		return new Name(line.uri, line.line, idx, idx2, line.text.substring(idx, idx2));
+		return new Name(line.uri, line.line, line.ind, idx, idx2, line.text.substring(idx, idx2));
+	}
+
+	private String findTokenAround(Line l, int pos) {
+		pos -= l.ind;
+		String s = l.text;
+		int before = s.lastIndexOf(' ', pos-1);
+		int after = s.indexOf(' ', pos);
+		if (before == -1)
+			before = 0;
+		if (after == -1)
+			after = s.length();
+		return s.substring(before, after).trim();
 	}
 }

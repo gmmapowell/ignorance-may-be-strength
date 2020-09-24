@@ -2,15 +2,20 @@ package ignorance;
 
 import java.net.URI;
 
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+
 public class Name implements Comparable<Name> {
 	private final URI uri;
 	private final int line;
+	private final int lineInd;
 	private final int from, to;
 	private final String name;
 
-	public Name(URI uri, int line, int from, int to, String name) {
+	public Name(URI uri, int line, int lineInd, int from, int to, String name) {
 		this.uri = uri;
 		this.line = line;
+		this.lineInd = lineInd;
 		this.from = from;
 		this.to = to;
 		this.name = name;
@@ -37,5 +42,9 @@ public class Name implements Comparable<Name> {
 
 	public URI uri() {
 		return uri;
+	}
+
+	public Range range() {
+		return new Range(new Position(line, lineInd + from), new Position(line, lineInd + to));
 	}
 }

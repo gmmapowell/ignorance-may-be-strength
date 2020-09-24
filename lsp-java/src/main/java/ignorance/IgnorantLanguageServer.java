@@ -51,6 +51,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
 
         ServerCapabilities capabilities = new ServerCapabilities();
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
+        capabilities.setDeclarationProvider(true);
 
         return CompletableFuture.completedFuture(new InitializeResult(capabilities));
     }
@@ -69,6 +70,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     public TextDocumentService getTextDocumentService() {
         return parsingService;
     }
+    
 
     @Override
     public WorkspaceService getWorkspaceService() {
