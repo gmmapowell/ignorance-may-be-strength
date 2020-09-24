@@ -11,15 +11,5 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.1.2'
+    implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.9.0'
 }
-
-/*
-jar {
-    manifest {
-	attributes (
-	    "Main-Class": 'ignorance.LSPServer'
-        )
-    }
-}
-*/

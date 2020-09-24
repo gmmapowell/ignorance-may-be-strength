@@ -1,9 +1,15 @@
 package ignorance;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
 import org.eclipse.lsp4j.InitializeParams;
@@ -21,15 +27,27 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
 class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
+    private final Repository repo = new TokenRepository();
+    private final Parser parser = new SimpleParser(repo, 100);
+    private final ParsingTextDocumentService parsingService = new ParsingTextDocumentService(repo, parser);
+    private URI workspaceRoot = null;
     private LanguageClient client = null;
-    private final SimpleParser parser = new SimpleParser(100);
-    private ParsingTextDocumentService parsingService = new ParsingTextDocumentService(parser);
-
-    @SuppressWarnings("unused")
-    private String workspaceRoot = null;
+    
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-        workspaceRoot = params.getRootPath();
+        String root = params.getRootUri();
+        if (root == null) {
+        	workspaceRoot = null;
+        } else {
+        	try {
+        		// this is clearly meant as a root path, but because it does not end in "/", will not act as one
+        		// so add the "/" before going any further ...
+	        	workspaceRoot = new URI(root + "/");
+	        	parseAllFiles(new File(workspaceRoot.getPath()));
+        	} catch (URISyntaxException ex) {
+        		workspaceRoot = null;
+        	}
+        }
 
         ServerCapabilities capabilities = new ServerCapabilities();
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
@@ -37,7 +55,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         return CompletableFuture.completedFuture(new InitializeResult(capabilities));
     }
 
-    @Override
+	@Override
     public CompletableFuture<Object> shutdown() {
         return CompletableFuture.completedFuture(null);
     }
@@ -78,6 +96,33 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     @Override
     public void connect(LanguageClient client) {
         this.client = client;
+        this.parsingService.setClient(client);
         this.parser.setClient(client);
+        this.repo.setClient(client);
     }
+
+    private void parseAllFiles(File file) {
+    	for (File f : file.listFiles()) {
+    		try {
+	    		if (f.getName().endsWith(".fl") || f.getName().endsWith(".st")) {
+	    			parser.parse(workspaceRoot.resolve(f.getName()), readFile(f));
+	                client.logMessage(new MessageParams(MessageType.Log, "Parsed " + f.getName() + " during initialization"));
+	    		}
+    		} catch (IOException ex) {
+                client.logMessage(new MessageParams(MessageType.Warning, "Problem parsing " + f.getName()));
+    		}
+    	}
+	}
+
+	private String readFile(File f) throws IOException {
+		try (BufferedReader br = new BufferedReader(new FileReader(f));
+			 StringWriter sw = new StringWriter()) {
+			char[] cbuf = new char[2000];
+			int cnt;
+			while ((cnt = br.read(cbuf)) != -1) {
+				sw.write(cbuf, 0, cnt);
+			}
+			return sw.toString();
+		}
+	}
 }
