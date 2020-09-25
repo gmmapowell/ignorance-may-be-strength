@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "chaos"
+		},
+		{
+			"path": "calendar"
+		},
+		{
+			"path": "vscode-java"
+		}
+	],
+	"settings": {}
+}
