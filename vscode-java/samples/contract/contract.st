@@ -3,6 +3,8 @@ Does the version number change?
 
 	configure // create the card under test
 		data Multiplier m
+
+Test that the card correctly initialized the value
 		
 	test that m was initialized
 		assert (m.value)

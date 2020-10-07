@@ -1,6 +1,6 @@
 A contract to enable us to be invoked
 
-	contract HitMe
+	contract HitMe // this is a contract
 		hit
 
 A card that stores a value.

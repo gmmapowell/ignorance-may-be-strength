@@ -3,10 +3,14 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" output="bin/testclasses" path="src/test/java"/>
 	<classpathentry kind="src" output="bin/testclasses" path="src/test/resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Junit5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Logging"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AmazonAWS"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AmazonAWSv2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HTTP"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Utility"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
