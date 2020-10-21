@@ -79,9 +79,11 @@ function loadConics() {
       var gl = app.gl;
       top = cone(-ht/2, Math.PI);
       bottom = cone(-ht/2, 0);
+      var plane = makePlane();
 
       app.scene.add(top);
       app.scene.add(bottom);
+      app.scene.add(plane);
 
       draw();
 
@@ -98,13 +100,27 @@ function loadConics() {
         return ret;
       }
 
+      function makePlane() {
+        return new PhiloGL.O3D.Plane({
+          type: "x,y",
+          xlen: 100,
+          ylen: 100,
+          offset: 0,
+          colors: [ 0, 0, 0, .3 ]
+        });
+      }
+
       function draw() {
         gl.viewport(0, 0, app.canvas.width, app.canvas.height);
         gl.clearColor(0.7, 0.7, 0.7, 1);
         gl.clearDepth(1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.DEST_ALPHA);
+
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         app.scene.render();
 
