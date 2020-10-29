@@ -3,6 +3,7 @@
 	"short_name": "PWA1",
 	"start_url": "/index.html",
 	"display": "standalone",
+	"background_color": "aliceblue",
 	"icons": [
 		{
 		  "src": "/android-chrome-192x192.png",
