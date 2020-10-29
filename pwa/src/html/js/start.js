@@ -9,3 +9,11 @@ if ('serviceWorker' in navigator) {
 		});
 	});
 }
+
+var a2hsEv = null;
+
+window.addEventListener('beforeinstallprompt', function(ev) {
+	console.log("before install prompt");
+	a2hsEv = ev;
+	document.querySelector('.a2hs').style.display = 'block';
+});
