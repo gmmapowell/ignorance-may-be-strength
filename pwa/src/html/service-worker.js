@@ -31,4 +31,15 @@ self.addEventListener('fetch', function(ev) {
 
 self.addEventListener('push', function(ev) {
 	console.log("received push event", ev.data.text());
+	self.registration.showNotification('New Message', { body: ev.data.text() });
+});
+
+self.addEventListener("notificationclick", function(ev) {
+	const notify = ev.notification;
+	notify.close();
+	var longOp = new Promise(function(resolve, reject) {
+		console.log('notification was clicked');
+		resolve();
+	});
+	ev.waitUntil(longOp);
 });
