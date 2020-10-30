@@ -28,3 +28,7 @@ self.addEventListener('fetch', function(ev) {
 		}).catch(err => console.log("failed to fetch", ev.request.url, err.message))
 	)
 });
+
+self.addEventListener('push', function(ev) {
+	console.log("received push event", ev.data.text());
+});
