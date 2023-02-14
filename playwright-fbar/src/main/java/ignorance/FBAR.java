@@ -2,12 +2,14 @@ package ignorance;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.AriaRole;
 
 class FBAR {
 	public static void main(String[] argv) {
+		Portfolio portfolio = new PortfolioLoader().load();
 		try (Playwright playwright = Playwright.create()) {
 			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(500));
 			Page page = browser.newPage();
@@ -23,6 +25,17 @@ class FBAR {
 //			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("reason")).selectOption("A");
 //			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Explanation")).fill("I keep forgetting the deadline has changed.");
 			
+			boolean first = true;
+			for (JointAsset joint : portfolio.joints()) {
+				if (!first) {
+					throw new RuntimeException("Not implemented");
+				}
+				first = false;
+
+				Locator mypage3 = page.locator("div.subform.Part3");
+				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(joint.getMaximumValue()));
+				mypage3.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(joint.getType());
+			}
 			Thread.sleep(10000);
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
