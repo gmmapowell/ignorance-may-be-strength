@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+mainClassName = 'ignorance.FBAR'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+  implementation 'com.microsoft.playwright:playwright:1.30.0'
+}
+
+task copyToLib(type: Copy) {
+    from configurations.default
+    into "$buildDir/output/lib"
+}
