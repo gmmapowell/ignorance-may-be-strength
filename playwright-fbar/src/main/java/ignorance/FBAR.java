@@ -27,12 +27,13 @@ class FBAR {
 			
 			boolean first = true;
 			for (JointAsset joint : portfolio.joints()) {
+				Locator mypage3 = page.locator("div.subform.Part3");
 				if (!first) {
-					throw new RuntimeException("Not implemented");
+					mypage3.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).click();
+					mypage3 = mypage3.last();
 				}
 				first = false;
 
-				Locator mypage3 = page.locator("div.subform.Part3");
 				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(joint.getMaximumValue()));
 				mypage3.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(joint.getType());
 			}

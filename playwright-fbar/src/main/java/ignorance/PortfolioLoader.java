@@ -9,6 +9,7 @@ public class PortfolioLoader {
 		ret.user(me);
 		
 		ret.joint(new JointAsset().jointWith(other).setMaximumValue(10000).setType("A"));
+		ret.joint(new JointAsset().jointWith(other).setMaximumValue(20000).setType("B"));
 		return ret;
 	}
 
