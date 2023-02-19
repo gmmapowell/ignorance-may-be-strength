@@ -6,7 +6,18 @@ public class PortfolioLoader {
 		Portfolio ret = new Portfolio();
 		AccountInfo me = new AccountInfo();
 		AccountInfo other = new AccountInfo();
+
 		ret.user(me);
+		ret.user(other);
+		
+		other.setTin("999-55-6720");
+		other.setLastName("Mouse");
+		other.setFirstName("Minnie");
+		other.setAddress("2030 Celebration Way");
+		other.setCity("Orlando");
+		other.setState("FL ");
+		other.setPostCode("20890");
+		other.setCountry("US ");
 		
 		ret.joint(
 			new JointAsset().

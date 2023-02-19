@@ -25,6 +25,8 @@ class FBAR {
 //			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("reason")).selectOption("A");
 //			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Explanation")).fill("I keep forgetting the deadline has changed.");
 			
+			// TODO: need to go back and do filer information
+			
 			boolean first = true;
 			for (JointAsset joint : portfolio.joints()) {
 				Locator mypage3 = page.locator("div.subform.Part3");
@@ -48,10 +50,26 @@ class FBAR {
 					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("22")).fill(joint.getPostCode());
 				mypage3.locator("div.partSub div.choicelist.Country select").selectOption(joint.getCountry());
 				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*24")).fill(Integer.toString(joint.getNumOthers()));
+				fillJoint(mypage3.locator("div.PrincipalJointOwner"), joint.getOther());
 			}
-			Thread.sleep(20000);
+			Thread.sleep(600000);
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private static void fillJoint(Locator with, AccountInfo other) {
+		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("25 a")).selectOption(other.getTinType());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("25")).fill(other.getTin());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("26")).fill(other.getLastName());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("27")).fill(other.getFirstName());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("28 M")).fill(other.getMiddleName());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("28a")).fill(other.getSuffix());
+		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("33")).selectOption(other.getCountry());
+		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("33")).dispatchEvent("blur");
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("29")).fill(other.getAddress());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("30")).fill(other.getCity());
+		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("32")).fill(other.getPostCode());
+		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("31")).selectOption(other.getState());
 	}
 }
