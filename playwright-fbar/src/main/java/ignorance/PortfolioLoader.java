@@ -7,10 +7,18 @@ public class PortfolioLoader {
 		AccountInfo me = new AccountInfo();
 		AccountInfo other = new AccountInfo();
 
+		ret.setEmail("mickey.mouse@disney.com");
+		ret.setPhone("7705551234");
+		ret.setFilingName("Mouse FBAR 2022");
+		
 		ret.user(me);
 		ret.user(other);
 		
-		other.setTin("999-55-6720");
+		me.setTin("555330123");
+		me.setLastName("Mouse");
+		me.setFirstName("Mickey");
+		
+		other.setTin("999556720");
 		other.setLastName("Mouse");
 		other.setFirstName("Minnie");
 		other.setAddress("2030 Celebration Way");
