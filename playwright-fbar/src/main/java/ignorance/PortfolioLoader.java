@@ -8,6 +8,7 @@ import java.io.LineNumberReader;
 import java.io.StringWriter;
 import java.util.List;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -77,6 +78,44 @@ public class PortfolioLoader {
 		Portfolio ret = new Portfolio();
 		JSONObject json = new JSONObject(readFile(file));
 		System.out.println(json);
+		ret.setEmail(json.getString("email"));
+		ret.setPhone(json.getString("phone"));
+		ret.setFilingName(json.getString("filingName"));
+		ret.setFilingYear(json.getInt("filingYear"));
+		ret.setYear(json.getString("year"));
+		ret.setMonth(json.getString("month"));
+		ret.setDate(json.getString("date"));
+		JSONArray us = json.getJSONArray("users");
+		for (int i=0;i<us.length();i++) {
+			JSONObject u = us.getJSONObject(i);
+			AccountInfo ai = new AccountInfo();
+			ai.setTin(u.getString("tin"));
+			ai.setFirstName(u.getString("firstName"));
+			ai.setMiddleName(u.getString("middleName"));
+			ai.setLastName(u.getString("lastName"));
+			ai.setAddress(u.getString("address"));
+			ai.setCity(u.getString("city"));
+			ai.setState(u.getString("state") + " ");
+			ai.setPostCode(u.getString("postCode"));
+			ai.setCountry(u.getString("country") + " ");
+			ret.user(ai);
+		}
+		JSONArray js = json.getJSONArray("joints");
+		for (int i=0;i<js.length();i++) {
+			JSONObject j = js.getJSONObject(i);
+			JointAsset ja = new JointAsset();
+			int w = j.getInt("with");
+			ja.jointWith(ret.userNo(w));
+			ja.setMaximumValue(j.getInt("maximumValue"));
+			ja.setType(j.getString("type"));
+			ja.setInstitution(j.getString("institution"));
+			ja.setAccountNo(j.getString("accountNo"));
+			ja.setAddress(j.getString("address"));
+			ja.setCity(j.getString("city"));
+			ja.setPostCode(j.getString("postCode"));
+			ja.setCountry(j.getString("country") + " ");
+			ret.joint(ja);
+		}
 		return ret;
 	}
 

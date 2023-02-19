@@ -43,7 +43,15 @@ public class Portfolio {
 	}
 
 	public AccountInfo getUser() {
+		if (users.isEmpty())
+			throw new RuntimeException("There are no users");
 		return users.get(0);
+	}
+
+	public AccountInfo userNo(int w) {
+		if (users.isEmpty())
+			throw new RuntimeException("There are no users");
+		return users.get(w);
 	}
 
 	public String filingName() {
