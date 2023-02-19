@@ -11,7 +11,7 @@ class FBAR {
 	public static void main(String[] argv) {
 		Portfolio portfolio = new PortfolioLoader().load();
 		try (Playwright playwright = Playwright.create()) {
-			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(500));
+			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50));
 			Page page = browser.newPage();
 			page.navigate("https://bsaefiling1.fincen.treas.gov/lc/content/xfaforms/profiles/htmldefault.html");
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your email address.").setExact(true)).fill("mickey.mouse@disney.com");
@@ -36,8 +36,20 @@ class FBAR {
 
 				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(joint.getMaximumValue()));
 				mypage3.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(joint.getType());
+				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*17")).fill(joint.getInstitution());
+				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Item 18")).fill(joint.getAccountNo());
+				if (joint.hasAddress())
+					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("19")).fill(joint.getAddress());
+				if (joint.hasCity())
+					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("20")).fill(joint.getCity());
+				if (joint.hasState())
+				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("21")).fill(joint.getState());
+				if (joint.hasPostCode())
+					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("22")).fill(joint.getPostCode());
+				mypage3.locator("div.partSub div.choicelist.Country select").selectOption(joint.getCountry());
+				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*24")).fill(Integer.toString(joint.getNumOthers()));
 			}
-			Thread.sleep(10000);
+			Thread.sleep(20000);
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
 		}
