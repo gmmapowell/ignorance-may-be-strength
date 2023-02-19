@@ -1,8 +1,19 @@
 package ignorance;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.io.StringWriter;
+import java.util.List;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 public class PortfolioLoader {
 
-	public Portfolio load() {
+	public Portfolio loadDummy() {
 		Portfolio ret = new Portfolio();
 		AccountInfo me = new AccountInfo();
 		AccountInfo other = new AccountInfo();
@@ -62,4 +73,22 @@ public class PortfolioLoader {
 		return ret;
 	}
 
+	public Portfolio loadJson(File file) throws JSONException, IOException {
+		Portfolio ret = new Portfolio();
+		JSONObject json = new JSONObject(readFile(file));
+		System.out.println(json);
+		return ret;
+	}
+
+	private String readFile(File file) throws IOException {
+		StringWriter sw = new StringWriter();
+		try (LineNumberReader lnr = new LineNumberReader(new FileReader(file))) {
+			String s;
+			while ((s = lnr.readLine()) != null) {
+				sw.write(s);
+				sw.write('\n');
+			}
+		}
+		return sw.toString();
+	}
 }

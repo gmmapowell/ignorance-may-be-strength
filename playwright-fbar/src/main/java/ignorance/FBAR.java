@@ -1,5 +1,7 @@
 package ignorance;
 
+import java.io.File;
+
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Locator;
@@ -9,7 +11,18 @@ import com.microsoft.playwright.options.AriaRole;
 
 class FBAR {
 	public static void main(String[] argv) {
-		Portfolio portfolio = new PortfolioLoader().load();
+		PortfolioLoader loader = new PortfolioLoader();
+		Portfolio portfolio;
+		try {
+			if (argv.length > 0) {
+				portfolio = loader.loadJson(new File(argv[0]));
+			} else {
+				portfolio = loader.loadDummy();
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return;
+		}
 		AccountInfo user = portfolio.getUser();
 
 		try (Playwright playwright = Playwright.create()) {
@@ -82,6 +95,7 @@ class FBAR {
 			Thread.sleep(600000);
 		} catch (InterruptedException ex) {
 			ex.printStackTrace();
+			return;
 		}
 	}
 
