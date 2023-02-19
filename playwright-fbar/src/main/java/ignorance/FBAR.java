@@ -10,14 +10,18 @@ import com.microsoft.playwright.options.AriaRole;
 class FBAR {
 	public static void main(String[] argv) {
 		Portfolio portfolio = new PortfolioLoader().load();
+		AccountInfo user = portfolio.getUser();
+
 		try (Playwright playwright = Playwright.create()) {
 			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50));
+
 			Page page = browser.newPage();
+
 			page.navigate("https://bsaefiling1.fincen.treas.gov/lc/content/xfaforms/profiles/htmldefault.html");
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your email address.").setExact(true)).fill(portfolio.email());
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Re-enter your email address.")).fill(portfolio.email());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your first name.")).fill(portfolio.getUser().getFirstName());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your last name.")).fill(portfolio.getUser().getLastName());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your first name.")).fill(user.getFirstName());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your last name.")).fill(user.getLastName());
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your telephone number. Do not include formatting such as spaces, dashes, or other punctuation.")).fill(portfolio.phone());
 			
 			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Please click this button to begin preparing your FBAR.")).click();
@@ -25,7 +29,30 @@ class FBAR {
 //			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("reason")).selectOption("A");
 //			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Explanation")).fill("I keep forgetting the deadline has changed.");
 			
-			// TODO: need to go back and do filer information
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 1")).fill(Integer.toString(portfolio.getFilingYear()));
+			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("* 2")).selectOption("A");
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 3")).fill(user.getTin());
+			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName(" 3a")).selectOption("B");
+
+			Locator dob = page.locator("div.subform.DobLastSub");
+			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Month")).selectOption(portfolio.getMonth());
+			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Day")).selectOption(portfolio.getDate());
+			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Year")).selectOption(portfolio.getYear());
+
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 6 Last")).fill(user.getLastName());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("7 First name").setExact(true)).fill(user.getFirstName());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8 Middle name").setExact(true)).fill(user.getMiddleName());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8a Suffix").setExact(true)).fill(user.getSuffix());
+
+			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).selectOption(user.getCountry());
+			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).dispatchEvent("blur");
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("9 Address").setExact(true)).fill(user.getAddress());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("10")).fill(user.getCity());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("12 ZIP")).fill(user.getPostCode());
+			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("11")).selectOption(user.getState());
+
+			page.locator("div.subform.InterestAccts").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
+			page.locator("div.subform.SigAuthAcctns").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
 			
 			boolean first = true;
 			for (JointAsset joint : portfolio.joints()) {
