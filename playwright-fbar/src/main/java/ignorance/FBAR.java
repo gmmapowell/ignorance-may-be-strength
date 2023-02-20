@@ -71,7 +71,7 @@ class FBAR {
 			for (JointAsset joint : portfolio.joints()) {
 				Locator mypage3 = page.locator("div.subform.Part3");
 				if (!first) {
-					mypage3.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).click();
+					mypage3.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).last().click();
 					mypage3 = mypage3.last();
 				}
 				first = false;
