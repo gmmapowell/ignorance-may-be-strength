@@ -47,6 +47,16 @@ public class PortfolioLoader {
 		other.setPostCode("20890");
 		other.setCountry("US ");
 		
+		ret.solo(
+			new Asset().
+			setMaximumValue(10000).
+			setType("A").
+			setInstitution("ACME").
+			setAccountNo("10103").
+			setAddress("103 Disney Lane").
+			setCity("Paris").
+			setPostCode("00300").
+			setCountry("FR "));
 		ret.joint(
 			new JointAsset().
 			jointWith(other).
@@ -97,6 +107,20 @@ public class PortfolioLoader {
 			ai.setPostCode(u.getString("postCode"));
 			ai.setCountry(u.getString("country") + " ");
 			ret.user(ai);
+		}
+		JSONArray solos = json.getJSONArray("solos");
+		for (int i=0;i<solos.length();i++) {
+			JSONObject j = solos.getJSONObject(i);
+			Asset sa = new Asset();
+			sa.setMaximumValue(j.getInt("maximumValue"));
+			sa.setType(j.getString("type"));
+			sa.setInstitution(j.getString("institution"));
+			sa.setAccountNo(j.getString("accountNo"));
+			sa.setAddress(j.getString("address"));
+			sa.setCity(j.getString("city"));
+			sa.setPostCode(j.getString("postCode"));
+			sa.setCountry(j.getString("country") + " ");
+			ret.solo(sa);
 		}
 		JSONArray js = json.getJSONArray("joints");
 		for (int i=0;i<js.length();i++) {

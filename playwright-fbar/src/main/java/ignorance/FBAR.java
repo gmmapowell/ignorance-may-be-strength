@@ -68,6 +68,30 @@ class FBAR {
 			page.locator("div.subform.SigAuthAcctns").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
 			
 			boolean first = true;
+			for (Asset solo : portfolio.solos()) {
+				Locator mypage2 = page.locator("div.subform.Part2");
+				if (!first) {
+					mypage2.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).last().click();
+					mypage2 = mypage2.last();
+				}
+				first = false;
+
+				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(solo.getMaximumValue()));
+				mypage2.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(solo.getType());
+				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*17")).fill(solo.getInstitution());
+				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Item 18")).fill(solo.getAccountNo());
+				if (solo.hasAddress())
+					mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("19")).fill(solo.getAddress());
+				if (solo.hasCity())
+					mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("20")).fill(solo.getCity());
+				if (solo.hasState())
+				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("21")).fill(solo.getState());
+				if (solo.hasPostCode())
+					mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("22")).fill(solo.getPostCode());
+				mypage2.locator("div.choicelist.Country select").selectOption(solo.getCountry());
+			}
+			
+			first = true;
 			for (JointAsset joint : portfolio.joints()) {
 				Locator mypage3 = page.locator("div.subform.Part3");
 				if (!first) {

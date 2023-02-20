@@ -8,6 +8,7 @@ public class Portfolio {
 	private String phone;
 	private String filingName;
 	private List<AccountInfo> users = new ArrayList<>();
+	private List<Asset> solos = new ArrayList<>();
 	private List<JointAsset> joints = new ArrayList<>();
 	private int filingYear;
 	private String month;
@@ -18,12 +19,20 @@ public class Portfolio {
 		this.users.add(accountInfo);
 	}
 
+	public void solo(Asset solo) {
+		this.solos.add(solo);
+	}
+
 	public void joint(JointAsset joint) {
 		this.joints.add(joint);
 	}
 
 	public Iterable<JointAsset> joints() {
 		return this.joints;
+	}
+
+	public Iterable<Asset> solos() {
+		return this.solos;
 	}
 
 	public String email() {
