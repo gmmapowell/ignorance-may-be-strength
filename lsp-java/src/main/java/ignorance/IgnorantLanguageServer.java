@@ -1,5 +1,6 @@
 package ignorance;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonPrimitive;
 
 class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     private final Repository repo = new TokenRepository();
@@ -77,7 +78,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         	@Override
         	public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
         		System.err.println("execute command called for " + params.getArguments().get(0));
-        		return CompletableFuture.completedFuture(new JsonArray());
+        		return repo.allTokensFor(URI.create(((JsonPrimitive) params.getArguments().get(0)).getAsString()));
         	}
         	
             @Override

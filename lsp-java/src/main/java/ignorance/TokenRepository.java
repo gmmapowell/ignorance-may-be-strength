@@ -9,11 +9,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Location;
+import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.services.LanguageClient;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class TokenRepository implements Repository {
 	private final Map<URI, String> files = new TreeMap<>();
@@ -78,5 +83,30 @@ public class TokenRepository implements Repository {
 	@Override
 	public Collection<String> info() {
 		return names.stream().map(n -> n.name()).collect(Collectors.toList());
+	}
+
+	@Override
+	public CompletableFuture<Object> allTokensFor(URI uri) {
+		JsonArray ret = new JsonArray();
+		for (Name n : names) {
+			if (n.underUri(uri)) {
+				JsonObject obj = new JsonObject();
+				obj.addProperty("name", n.name());
+				JsonArray locations = new JsonArray();
+				addLocation(locations, n.range().getStart());
+				addLocation(locations, n.range().getEnd());
+				obj.add("locations", locations);
+				ret.add(obj);
+			}
+		}
+		System.err.println(ret);
+		return CompletableFuture.completedFuture(ret);
+	}
+
+	private void addLocation(JsonArray locations, Position pos) {
+		JsonObject p = new JsonObject();
+		p.addProperty("line", pos.getLine());
+		p.addProperty("char", pos.getCharacter());
+		locations.add(p);
 	}
 }

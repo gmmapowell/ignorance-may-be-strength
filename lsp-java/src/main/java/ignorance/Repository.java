@@ -3,6 +3,7 @@ package ignorance;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.Location;
@@ -17,4 +18,5 @@ public interface Repository {
 	List<Location> definitionsOf(String token);
 	List<CompletionItem> complete(String token);
 	Collection<String> info();
+	CompletableFuture<Object> allTokensFor(URI create);
 }

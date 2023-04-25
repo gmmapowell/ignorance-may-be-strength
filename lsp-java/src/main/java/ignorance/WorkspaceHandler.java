@@ -19,12 +19,13 @@ public class WorkspaceHandler {
 	private final URI workspaceRoot;
 
 	public WorkspaceHandler(Parser parser, LanguageClient client, WorkspaceFolder ws) throws URISyntaxException {
-    		this.parser = parser;
-			this.client = client;
-			// this is clearly meant as a root path, but because it does not end in "/", will not act as one
-    		// so add the "/" before going any further ...
-        	workspaceRoot = new URI(ws.getUri() + "/");
-        	parseAllFiles();
+		this.parser = parser;
+		this.client = client;
+		// this is clearly meant as a root path, but because it does not end in "/", will not act as one
+		// so add the "/" before going any further ...
+    	workspaceRoot = new URI(ws.getUri() + "/");
+    	System.err.println("parsing files for " + workspaceRoot);
+    	parseAllFiles();
 	}
 
 	public void client(LanguageClient client) {
@@ -34,9 +35,17 @@ public class WorkspaceHandler {
 
     private void parseAllFiles() {
     	File file = new File(workspaceRoot.getPath());
-    	for (File f : file.listFiles()) {
+    	parseDir(file);
+	}
+
+	private void parseDir(File dir) {
+		System.err.println("parsing files in directory " + dir.getName());
+		for (File f : dir.listFiles()) {
     		try {
-	    		if (f.getName().endsWith(".fl") || f.getName().endsWith(".st")) {
+    			if (f.isDirectory())
+    				parseDir(f);
+    			else if (f.isFile() && (f.getName().endsWith(".fl") || f.getName().endsWith(".st"))) {
+    				System.err.println("parsing file " + f.getName());
 	    			parser.parse(workspaceRoot.resolve(f.getName()), readFile(f));
 	                client.logMessage(new MessageParams(MessageType.Log, "Parsed " + f.getName() + " during initialization"));
 	    		}

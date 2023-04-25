@@ -21,6 +21,10 @@ public class Name implements Comparable<Name> {
 		this.name = name;
 	}
 
+	public boolean underUri(URI uri) {
+		return this.uri.getPath().startsWith(uri.getPath());
+	}
+	
 	public boolean isUri(URI uri) {
 		return uri.equals(this.uri);
 	}

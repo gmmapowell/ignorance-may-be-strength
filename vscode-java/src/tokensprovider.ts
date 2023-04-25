@@ -28,9 +28,27 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 				command: 'java.lsp.requestTokens',
 				arguments: [ uri ]
 			});
-			this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], result));
+			this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], this.tokenize(result)));
 		}
 		this._onDidChangeTreeData.fire();
+	}
+
+	tokenize(list : Array<any>) : Token[] {
+		var ret = [];
+		for (var i=0;i<list.length;i++) {
+			var item  : any = list[i];
+			ret.push(new Token(item.name, this.locationsIn(item.locations)));
+		}
+		return ret;
+	}
+
+	locationsIn(list: Array<any>) : TokenLocation[] {
+		var ret = [];
+		for (var i=0;i<list.length;i++) {
+			var item  : any = list[i];
+			ret.push(new TokenLocation("" + item.line + "." + item.char));
+		}
+		return ret;
 	}
 
 	private _onDidChangeTreeData: vscode.EventEmitter<ProjectTokens | Token | TokenLocation | null | undefined> = new vscode.EventEmitter<ProjectTokens | Token | TokenLocation | null | undefined>();
