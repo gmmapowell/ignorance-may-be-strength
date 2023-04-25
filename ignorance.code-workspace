@@ -2,12 +2,6 @@
 	"folders": [
 		{
 			"path": "vscode-java"
-		},
-		{
-			"path": "chaos"
-		},
-		{
-			"path": "calendar"
 		}
 	],
 	"settings": {}

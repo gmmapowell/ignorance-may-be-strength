@@ -2,14 +2,12 @@
 	"name": "ignorance-plugin",
 	"displayName": "Ignorance Plugin",
 	"description": "Try and build a VSCode plugin that connects to Java",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "GazzaP",
 	"engines": {
-		"vscode": "^1.49.0"
+		"vscode": "^1.77.0"
 	},
 	"activationEvents": [
-		"onLanguage:flas",
-		"onLanguage:flas-st"
 	],
 	"main": "out/extension.js",
 	"categories": [
@@ -58,6 +56,14 @@
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			}
+		},
+		"views": {
+			"explorer": [
+				{
+					"id": "ignorantTokens",
+					"name": "Ignorant Tokens"
+				}
+			]
 		}
 	},
 	"scripts": {

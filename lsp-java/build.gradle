@@ -7,9 +7,9 @@ plugins {
 mainClassName = 'ignorance.LSPServer'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-    implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.9.0'
+    implementation group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.20.1'
 }
