@@ -2,12 +2,15 @@ package ignorance;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.lsp4j.CompletionOptions;
 import org.eclipse.lsp4j.DidChangeConfigurationParams;
 import org.eclipse.lsp4j.DidChangeWatchedFilesParams;
+import org.eclipse.lsp4j.ExecuteCommandOptions;
+import org.eclipse.lsp4j.ExecuteCommandParams;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.MessageParams;
@@ -39,6 +42,8 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     	}
 
         ServerCapabilities capabilities = new ServerCapabilities();
+        ExecuteCommandOptions requestTokens = new ExecuteCommandOptions(Arrays.asList("java.lsp.requestTokens"));
+		capabilities.setExecuteCommandProvider(requestTokens);
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
         capabilities.setDeclarationProvider(true);
         capabilities.setCompletionProvider(new CompletionOptions(true, new ArrayList<>()));
@@ -55,7 +60,8 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     public void exit() {
     }
 
-
+    
+    
     @Override
     public TextDocumentService getTextDocumentService() {
         return parsingService;
@@ -66,6 +72,12 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     public WorkspaceService getWorkspaceService() {
 
         return new WorkspaceService() {
+        	@Override
+        	public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
+        		System.err.println("execute command called for " + params.getArguments().get(0));
+        		return CompletableFuture.completedFuture("hello, world");
+        	}
+        	
             @Override
             public void didChangeConfiguration(DidChangeConfigurationParams params) {
 //                Map<String, Object> settings = (Map<String, Object>) params.getSettings();

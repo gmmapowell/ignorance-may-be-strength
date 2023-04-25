@@ -17,8 +17,6 @@ import { TokensProvider } from './tokensprovider';
 let client : LanguageClient;
 
 export function activate(context: ExtensionContext) {
-	const tokensProvider = new TokensProvider();
-	window.registerTreeDataProvider('ignorantTokens', tokensProvider);
 	var jarpath;
 	var devpath = path.resolve(context.extensionPath, '..', 'lsp-java');
 	if (fs.existsSync(devpath)) {
@@ -60,6 +58,12 @@ export function activate(context: ExtensionContext) {
 	
 	// Start the client. This will also launch the server
 	client.start();
+
+	client.onReady().then(() => {
+		const tokensProvider = new TokensProvider();
+		tokensProvider.loadTokens(client);
+		window.registerTreeDataProvider('ignorantTokens', tokensProvider);
+	});
 }
 
 function connectViaSocket(port: number) {

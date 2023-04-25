@@ -1,13 +1,12 @@
 import { Event, ProviderResult, TreeDataProvider, TreeItem } from "vscode";
 import { ProjectTokens, Token, TokenLocation } from "./tokenlocation";
 import * as vscode from 'vscode';
+import { ExecuteCommandRequest, LanguageClient } from "vscode-languageclient";
 
 export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | TokenLocation> {
 	locations: ProjectTokens[];
 	constructor() {
 		this.locations = [];
-		if (vscode.workspace.workspaceFolders == null)
-			return;
 		const tmp = [
 			new Token("List", [
 				new TokenLocation("46.2"),
@@ -18,8 +17,18 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 				new TokenLocation("28.9")
 			])
 		];
+	}
+
+	async loadTokens(client: LanguageClient) : Promise<undefined> {
+		if (vscode.workspace.workspaceFolders == null)
+			return;
 		for (var wf=0;wf<vscode.workspace.workspaceFolders.length;wf++) {
-			this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], tmp));
+			let uri = vscode.workspace.workspaceFolders[wf].uri.toString();
+			const result = await client.sendRequest(ExecuteCommandRequest.type, {
+				command: 'java.lsp.requestTokens',
+				arguments: [ uri ]
+			})
+			// this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], result));
 		}
 	}
 
