@@ -2,13 +2,15 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
+import * as net from 'net';
 import * as fs from 'fs';
 import * as path from 'path';
 import { workspace, languages, window, commands, ExtensionContext, Disposable } from 'vscode';
 import {
 	LanguageClient,
 	LanguageClientOptions,
-	ServerOptions
+	ServerOptions,
+	StreamInfo
 } from 'vscode-languageclient';
 import { TokensProvider } from './tokensprovider';
   
@@ -25,14 +27,20 @@ export function activate(context: ExtensionContext) {
 		jarpath = path.resolve(context.extensionPath, "lsp-java-all.jar");
 	}
 
-	// launch a Java Server
-	let serverOptions: ServerOptions = {
-		command: "java",
-		args: [
-			"-jar",
-			jarpath
-		]
-	};
+	const connectToServer = 0;
+	var serverOptions : ServerOptions;
+	if (connectToServer) {
+		serverOptions = connectViaSocket(connectToServer);
+	} else {
+		// launch a Java Server
+		serverOptions = {
+			command: "java",
+			args: [
+				"-jar",
+				jarpath
+			]
+		};
+	}
 	
 	// Options to control the language client
 	let clientOptions: LanguageClientOptions = {
@@ -52,4 +60,14 @@ export function activate(context: ExtensionContext) {
 	
 	// Start the client. This will also launch the server
 	client.start();
+}
+
+function connectViaSocket(port: number) {
+	return function() : Promise<StreamInfo> {
+		return new Promise((resolve, reject) => {
+			var sock : net.Socket = net.connect(port);
+			var si : StreamInfo = { reader: sock, writer: sock };
+			resolve(si);
+		});
+	};
 }
