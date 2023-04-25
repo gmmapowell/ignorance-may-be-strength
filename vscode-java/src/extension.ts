@@ -10,10 +10,13 @@ import {
 	LanguageClientOptions,
 	ServerOptions
 } from 'vscode-languageclient';
+import { TokensProvider } from './tokensprovider';
   
 let client : LanguageClient;
 
 export function activate(context: ExtensionContext) {
+	const tokensProvider = new TokensProvider();
+	window.registerTreeDataProvider('ignorantTokens', tokensProvider);
 	var jarpath;
 	var devpath = path.resolve(context.extensionPath, '..', 'lsp-java');
 	if (fs.existsSync(devpath)) {
