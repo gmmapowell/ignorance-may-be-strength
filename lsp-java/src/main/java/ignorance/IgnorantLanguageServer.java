@@ -24,6 +24,8 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
+import com.google.gson.JsonArray;
+
 class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     private final Repository repo = new TokenRepository();
     private final Parser parser = new SimpleParser(repo, 100);
@@ -75,7 +77,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         	@Override
         	public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
         		System.err.println("execute command called for " + params.getArguments().get(0));
-        		return CompletableFuture.completedFuture("hello, world");
+        		return CompletableFuture.completedFuture(new JsonArray());
         	}
         	
             @Override

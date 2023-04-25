@@ -27,12 +27,15 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 			const result = await client.sendRequest(ExecuteCommandRequest.type, {
 				command: 'java.lsp.requestTokens',
 				arguments: [ uri ]
-			})
-			// this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], result));
+			});
+			this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], result));
 		}
+		this._onDidChangeTreeData.fire();
 	}
 
-	onDidChangeTreeData?: Event<ProjectTokens | Token | TokenLocation | null | undefined> | undefined;
+	private _onDidChangeTreeData: vscode.EventEmitter<ProjectTokens | Token | TokenLocation | null | undefined> = new vscode.EventEmitter<ProjectTokens | Token | TokenLocation | null | undefined>();
+	readonly onDidChangeTreeData: vscode.Event<ProjectTokens | Token | TokenLocation | null | undefined> = this._onDidChangeTreeData.event;
+
 	getChildren(element?: ProjectTokens | Token | TokenLocation | undefined): ProviderResult<ProjectTokens[] | Token[] | TokenLocation[]> {
 		if (!element) { // it wants the top list
 			if (!this.locations) {
