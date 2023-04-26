@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
 		jarpath = path.resolve(context.extensionPath, "lsp-java-all.jar");
 	}
 
-	const connectToServer = 9133;
+	const connectToServer = 0;
 	var serverOptions : ServerOptions;
 	if (connectToServer) {
 		serverOptions = connectViaSocket(connectToServer);
@@ -60,6 +60,9 @@ export function activate(context: ExtensionContext) {
 	client.start();
 
 	client.onReady().then(() => {
+		client.onNotification("ignorance/tokens", () => {
+			console.log("received token notification");
+		});
 		const tokensProvider = new TokensProvider();
 		tokensProvider.loadTokens(client);
 		window.registerTreeDataProvider('ignorantTokens', tokensProvider);
