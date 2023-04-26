@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { workspace, languages, window, commands, ExtensionContext, Disposable } from 'vscode';
 import {
+	ExecuteCommandRequest,
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
@@ -63,6 +64,11 @@ export function activate(context: ExtensionContext) {
 		client.onNotification("ignorance/tokens", () => {
 			console.log("received token notification");
 		});
+		client.sendRequest(ExecuteCommandRequest.type, {
+			command: 'ignorance/readyForTokens',
+			arguments: [ ]
+		});
+			
 		const tokensProvider = new TokensProvider();
 		tokensProvider.loadTokens(client);
 		window.registerTreeDataProvider('ignorantTokens', tokensProvider);

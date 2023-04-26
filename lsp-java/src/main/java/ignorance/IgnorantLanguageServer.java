@@ -33,6 +33,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     private final ParsingTextDocumentService parsingService = new ParsingTextDocumentService(repo, parser);
     private LanguageClient client = null;
 	private final List<WorkspaceHandler> handlers = new ArrayList<>();
+	private boolean amReady = false;
     
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
@@ -77,10 +78,23 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         return new WorkspaceService() {
         	@Override
         	public CompletableFuture<Object> executeCommand(ExecuteCommandParams params) {
-        		System.err.println("execute command called for " + params.getArguments().get(0));
-        		return repo.allTokensFor(URI.create(((JsonPrimitive) params.getArguments().get(0)).getAsString()));
+        		switch (params.getCommand()) {
+        		case "java.lsp.requestTokens": {
+        			System.err.println("requestTokens command called for " + params.getArguments().get(0));
+        			return repo.allTokensFor(URI.create(((JsonPrimitive) params.getArguments().get(0)).getAsString()));
+        		}
+        		case "ignorance/readyForTokens": {
+        			System.err.println("readyForTokens");
+        			amReady = true;
+        			return CompletableFuture.completedFuture(null);
+        		}
+        		default: {
+        			System.err.println("cannot handle command " + params.getCommand());
+        			return CompletableFuture.completedFuture(null);
+        		}
+        		}
         	}
-        	
+
             @Override
             public void didChangeConfiguration(DidChangeConfigurationParams params) {
 //                Map<String, Object> settings = (Map<String, Object>) params.getSettings();
