@@ -31,7 +31,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     private final Repository repo = new TokenRepository();
     private final Parser parser = new SimpleParser(repo, 100);
     private final ParsingTextDocumentService parsingService = new ParsingTextDocumentService(repo, parser);
-    private LanguageClient client = null;
+    private ExtendedLanguageClient client = null;
 	private final List<WorkspaceHandler> handlers = new ArrayList<>();
 	private boolean amReady = false;
     
@@ -111,13 +111,13 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
 
     @Override
     public void connect(LanguageClient client) {
-        this.client = client;
+        this.client = (ExtendedLanguageClient)client;
         this.parsingService.setClient(client);
         this.parser.setClient(client);
         this.repo.setClient(client);
         
         for (WorkspaceHandler h : handlers) {
-        	h.client(client);
+        	h.client(this.client);
         }
     }
 }

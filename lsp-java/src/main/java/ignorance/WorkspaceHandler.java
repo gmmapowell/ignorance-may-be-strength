@@ -11,24 +11,22 @@ import java.net.URISyntaxException;
 import org.eclipse.lsp4j.MessageParams;
 import org.eclipse.lsp4j.MessageType;
 import org.eclipse.lsp4j.WorkspaceFolder;
-import org.eclipse.lsp4j.services.LanguageClient;
 
 public class WorkspaceHandler {
 	private final Parser parser;
-	private LanguageClient client;
+	private ExtendedLanguageClient client;
 	private final URI workspaceRoot;
 
-	public WorkspaceHandler(Parser parser, LanguageClient client, WorkspaceFolder ws) throws URISyntaxException {
+	public WorkspaceHandler(Parser parser, ExtendedLanguageClient client, WorkspaceFolder ws) throws URISyntaxException {
 		this.parser = parser;
 		this.client = client;
 		// this is clearly meant as a root path, but because it does not end in "/", will not act as one
 		// so add the "/" before going any further ...
     	workspaceRoot = new URI(ws.getUri() + "/");
     	System.err.println("parsing files for " + workspaceRoot);
-    	parseAllFiles();
 	}
 
-	public void client(LanguageClient client) {
+	public void client(ExtendedLanguageClient client) {
 		this.client = client;
 		parseAllFiles();
 	}
@@ -36,6 +34,7 @@ public class WorkspaceHandler {
     private void parseAllFiles() {
     	File file = new File(workspaceRoot.getPath());
     	parseDir(file);
+    	client.sendTokens("hello, world");
 	}
 
 	private void parseDir(File dir) {
