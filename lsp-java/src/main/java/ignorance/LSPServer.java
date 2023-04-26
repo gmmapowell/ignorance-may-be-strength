@@ -8,7 +8,6 @@ import java.net.Socket;
 
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
-import org.eclipse.lsp4j.services.LanguageClient;
 
 public class LSPServer {
     public static void main(String[] args) {
@@ -31,11 +30,20 @@ public class LSPServer {
 
 	private static void handle(InputStream in, OutputStream out) {
 		IgnorantLanguageServer server = new IgnorantLanguageServer();
-        Launcher<LanguageClient> launcher = LSPLauncher.createServerLauncher(server, in, out);
+        Launcher<ExtendedLanguageClient> launcher = createServerLauncher(server, in, out);
 
-        LanguageClient client = launcher.getRemoteProxy();
+        ExtendedLanguageClient client = launcher.getRemoteProxy();
         server.connect(client);
 
         launcher.startListening();
+	}
+
+	private static Launcher<ExtendedLanguageClient> createServerLauncher(IgnorantLanguageServer server, InputStream in, OutputStream out) {
+		return new LSPLauncher.Builder<ExtendedLanguageClient>()
+			.setLocalService(server)
+			.setRemoteInterface(ExtendedLanguageClient.class)
+			.setInput(in)
+			.setOutput(out)
+			.create();
 	}
 }

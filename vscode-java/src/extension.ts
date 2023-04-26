@@ -25,7 +25,7 @@ export function activate(context: ExtensionContext) {
 		jarpath = path.resolve(context.extensionPath, "lsp-java-all.jar");
 	}
 
-	const connectToServer = 0;
+	const connectToServer = 9133;
 	var serverOptions : ServerOptions;
 	if (connectToServer) {
 		serverOptions = connectViaSocket(connectToServer);
