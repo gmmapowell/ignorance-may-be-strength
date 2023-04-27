@@ -39,7 +39,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
     	for (WorkspaceFolder ws : params.getWorkspaceFolders()) {
     		try {
-	    		WorkspaceHandler handler = new WorkspaceHandler(parser, client, ws);
+	    		WorkspaceHandler handler = new WorkspaceHandler(parser, repo, client, ws);
 	    		handlers.add(handler);
 	    	} catch (URISyntaxException ex) {
 	    	}
@@ -86,6 +86,7 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         		case "ignorance/readyForTokens": {
         			System.err.println("readyForTokens");
         			amReady = true;
+        			doParsing();
         			return CompletableFuture.completedFuture(null);
         		}
         		default: {
@@ -119,5 +120,13 @@ class IgnorantLanguageServer implements LanguageServer, LanguageClientAware {
         for (WorkspaceHandler h : handlers) {
         	h.client(this.client);
         }
+        doParsing();
     }
+    
+    private void doParsing() {
+    	if (amReady && client != null) {
+    		for (WorkspaceHandler h : handlers)
+    			h.parseAllFiles();
+    	}
+	}
 }

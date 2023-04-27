@@ -1,10 +1,17 @@
-import { TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 
 export class ProjectTokens extends TreeItem {
 	tokens: Token[];
+	wfuri: Uri;
+	
 	constructor(wf : WorkspaceFolder, tokens : Token[]) {
 		super(wf.name, TreeItemCollapsibleState.Collapsed);
+		this.wfuri = wf.uri;
 		this.tokens = tokens;
+	}
+
+	uri() {
+		return this.wfuri;
 	}
 
 	children() : Promise<Token[]> {

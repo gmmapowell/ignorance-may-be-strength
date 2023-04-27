@@ -7,16 +7,6 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 	locations: ProjectTokens[];
 	constructor() {
 		this.locations = [];
-		const tmp = [
-			new Token("List", [
-				new TokenLocation("46.2"),
-				new TokenLocation("53.1")
-			]),
-			new Token("Map", [
-				new TokenLocation("15.7"),
-				new TokenLocation("28.9")
-			])
-		];
 	}
 
 	async loadTokens(client: LanguageClient) : Promise<undefined> {
@@ -29,6 +19,43 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 				arguments: [ uri ]
 			});
 			this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], this.tokenize(result)));
+		}
+		this._onDidChangeTreeData.fire();
+	}
+
+	setTokens(tokens: any) {
+		var uri : string = tokens.uri;
+		if (uri.endsWith("/"))
+			uri = uri.substring(0, uri.length-1);
+		if (vscode.workspace.workspaceFolders == null)
+			return;
+		var folder = null;
+		for (var wf=0;wf<vscode.workspace.workspaceFolders.length;wf++) {
+			var f = vscode.workspace.workspaceFolders[wf];
+			if (f.uri.toString() == uri) {
+				folder = f;
+				break;
+			}
+		}
+		if (folder == null)
+			return;
+		var done = false;
+		var curr : ProjectTokens = new ProjectTokens(folder, this.tokenize(tokens.tokens));
+		for (var i=0;i<this.locations.length;i++) {
+			var pt : ProjectTokens = this.locations[i];
+			if (!pt.label) continue;
+			if (folder.name == pt.label) {
+				this.locations[i] = curr;
+				done = true;
+				break;
+			} else if (folder.name < pt.label) {
+				this.locations.splice(i, 0, curr);
+				done = true;
+				break;
+			}
+		}
+		if (!done) {
+			this.locations.push(curr);
 		}
 		this._onDidChangeTreeData.fire();
 	}

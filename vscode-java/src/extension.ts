@@ -61,17 +61,15 @@ export function activate(context: ExtensionContext) {
 	client.start();
 
 	client.onReady().then(() => {
-		client.onNotification("ignorance/tokens", () => {
-			console.log("received token notification");
+		const tokensProvider = new TokensProvider();
+		window.registerTreeDataProvider('ignorantTokens', tokensProvider);
+		client.onNotification("ignorance/tokens", tokens => {
+			tokensProvider.setTokens(tokens);
 		});
 		client.sendRequest(ExecuteCommandRequest.type, {
 			command: 'ignorance/readyForTokens',
 			arguments: [ ]
 		});
-			
-		const tokensProvider = new TokensProvider();
-		tokensProvider.loadTokens(client);
-		window.registerTreeDataProvider('ignorantTokens', tokensProvider);
 	});
 }
 
