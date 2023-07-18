@@ -3,22 +3,23 @@
 		<title>Planning Calendar</title>
 		<link rel="stylesheet" href="css/controls.css">
 		<link rel="stylesheet" href="css/feedback.css">
+		<script src="js/controls.js"></script>
 	</head>
-	<body>
+	<body onload="init()">
 		<div id="controls">
 			<label for="start-date">Start date:</label>
-			<input type="date" id="start-date">
+			<input type="date" id="start-date" onchange="redraw()">
 			<label for="end-date">End date:</label>
-			<input type="date" id="end-date">
+			<input type="date" id="end-date" onchange="redraw()">
 			<label for="first-day">First Day:</label>
-			<select id="first-day">
-				<option value="0">Monday</option>
-				<option value="1">Tuesday</option>
-				<option value="2">Wednesday</option>
-				<option value="3">Thursday</option>
-				<option value="4">Friday</option>
-				<option value="5">Saturday</option>
-				<option value="6">Sunday</option>
+			<select id="first-day" onchange="redraw()">
+				<option value="1">Monday</option>
+				<option value="2">Tuesday</option>
+				<option value="3">Wednesday</option>
+				<option value="4">Thursday</option>
+				<option value="5">Friday</option>
+				<option value="6">Saturday</option>
+				<option value="0">Sunday</option>
 			</select>
 		</div>
 		<div id="feedback">
