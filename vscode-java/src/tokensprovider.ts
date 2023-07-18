@@ -57,7 +57,7 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 		if (!done) {
 			this.locations.push(curr);
 		}
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(null);
 	}
 
 	tokenize(list : Array<any>) : Token[] {
