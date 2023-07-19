@@ -26,6 +26,7 @@ function redraw() {
 	if (leftDate > from) {
 		leftDate.setDate(leftDate.getDate() - 7);
 	}
+	var numRows = 0;
 	do {
 		console.log(" showing week with", leftDate, "in the left column");
 
@@ -55,7 +56,8 @@ function redraw() {
 
 		// advance to next week
 		leftDate.setDate(leftDate.getDate() + 7);
+		numRows++;
 	} while (leftDate <= to);
 
-	fitToPageSize();
+	fitToPageSize(numRows);
 }
