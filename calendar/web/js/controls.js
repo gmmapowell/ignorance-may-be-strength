@@ -9,6 +9,8 @@ function init() {
 	start.valueAsDate = new Date();
 	end.valueAsDate = new Date();
 
+	initStyling(fbdiv);
+
 	redraw();
 }
 
@@ -58,4 +60,6 @@ function redraw() {
 		// advance to next week
 		leftDate.setDate(leftDate.getDate() + 7);
 	} while (leftDate <= to);
+
+	fitToPageSize();
 }

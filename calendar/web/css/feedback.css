@@ -5,17 +5,11 @@
 .body-day {
 	display: inline-block;
 	border: 0.1mm solid black;
-	margin: 2mm;
-	width: 25mm;
-	height: 25mm;
 	position: relative;
 }
 
 .body-day-date {
 	position: absolute;
-	top: 3mm;
-	left: 3mm;
 	font-family: 'Courier New', Courier, monospace;
 	font-weight: bold;
-	font-size: 5mm;
 }
