@@ -1,10 +1,10 @@
 .feedback {
-	border: 0.1mm solid black;
+	border: solid black;
 }
 
 .body-day {
 	display: inline-block;
-	border: 0.1mm solid black;
+	border: solid black;
 	position: relative;
 }
 
