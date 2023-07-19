@@ -11,6 +11,7 @@ function init() {
 
 	initStyling(fbdiv);
 
+	addEventListener("resize", redraw);
 	redraw();
 }
 
