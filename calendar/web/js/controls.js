@@ -48,7 +48,7 @@ function redraw() {
 
 			// and set the date text in here
 			var dateValue = document.createTextNode(cellDate.getDate());
-			day.appendChild(dateValue);
+			date.appendChild(dateValue);
 
 			// add a space between days until we style this
 			var space = document.createTextNode(" ");
