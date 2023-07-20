@@ -1,0 +1,7 @@
+.watermark {
+	font-family: sans-serif;
+	font-weight: bold;
+	color: lightgrey;
+	position: absolute;
+	z-index: -1;
+}
