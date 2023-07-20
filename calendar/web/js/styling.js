@@ -14,7 +14,7 @@ function initStyling(fbdiv) {
 	printSheet = new CSSStyleSheet({ media: "print" });
 	document.adoptedStyleSheets = [sheet, printSheet];
 	cx = canvas.getContext("2d");
-	cx.font = metricFontSize + "px sans-serif";
+	cx.font = metricFontSize + "pt sans-serif";
 }
 
 function fitToPageSize(rowInfo) {
@@ -55,6 +55,30 @@ function pageLayout(sheet, rowInfo, pageSize) {
 	sheet.insertRule(".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + pageSize.x + pageSize.unitIn + "; height: " + pageSize.y + pageSize.unitIn + "; }");
 	sheet.insertRule(".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 	sheet.insertRule(".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+
+	for (var i=0;i<rowInfo.months.length;i++) {
+		handleWatermarks(sheet, i, rowInfo.months[i], xday, xmargin, yweek, ymargin);
+	}
+}
+
+function handleWatermarks(sheet, idx, rowInfo, xcell, xmargin, ycell, ymargin) {
+	var mx = cx.measureText(rowInfo.text);
+	var width = mx.actualBoundingBoxRight + mx.actualBoundingBoxLeft;
+	var height = mx.actualBoundingBoxDescent + mx.actualBoundingBoxAscent;
+
+	var availx = 7 * xcell + 6 * xmargin * 2;
+	var availy = rowInfo.numRows * ycell + (rowInfo.numRows-1) * ymargin * 2;
+	
+	var scalex = availx/width;
+	var scaley = availy/height;
+	var scale = Math.min(scalex, scaley) * .75; // .75 to leave some space around the edges
+
+	var usedx = scale * width;
+	var usedy = scale * height;
+	var left = (availx - usedx) / 2;
+	var top = (availy - usedy) / 2 + rowInfo.from * (ycell + ymargin * 2);
+
+	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; left: " + left + "px; top: " + top + "px; }");
 }
 
 function calculateSizeOfFeedbackDiv() {
