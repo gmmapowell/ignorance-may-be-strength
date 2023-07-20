@@ -5,6 +5,8 @@ var controlPane;
 function initStyling(fbdiv) {
 	styledDiv = fbdiv;
 	controlPane = document.getElementById('controls');
+	pageSizer = document.getElementById('page-size');
+	isLandscape = document.getElementById('landscape');
 	sheet = new CSSStyleSheet({ media: "screen" });
 	printSheet = new CSSStyleSheet({ media: "print" });
 	document.adoptedStyleSheets = [sheet, printSheet];
@@ -60,6 +62,33 @@ function calculateSizeOfFeedbackDiv() {
 }
 
 function calculatePaperSize() {
+	var currentSize = pageSizer.value;
+	var andLandscape = isLandscape.checked;
+	console.log("laying out for", currentSize, andLandscape);
 	var borderX = 1, borderY = 1;
-	return { media: "print", margin: 6, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX, borderY };
+	var ret;
+	switch (currentSize) {
+		case "letter":
+			borderX = borderY = 0.04;
+			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 8.5, y : 11, unitIn: "in", borderX, borderY };
+			break;
+		case "tabloid":
+			borderX = borderY = 0.04;
+			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 11, y : 17, unitIn: "in", borderX, borderY };
+			break;
+		case "a3":
+			ret = { media: "print", margin: 6, orientation: "portrait", x : 297, y : 420, unitIn: "mm", borderX, borderY };
+			break;
+		default: /* use A4 as default, just in case */
+			ret = { media: "print", margin: 6, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX, borderY };
+			break;
+	}
+	if (andLandscape) {
+		var tmp = ret.x;
+		ret.x = ret.y;
+		ret.y = tmp;
+		ret.borderX = borderY;
+		ret.borderY = borderX;
+	}
+	return ret;
 }
