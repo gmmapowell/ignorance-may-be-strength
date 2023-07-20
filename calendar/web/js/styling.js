@@ -33,7 +33,7 @@ function pageLayout(sheet, rowInfo, pageSize) {
 	if (pageSize.media == "print") {
 		sheet.insertRule("@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 2 * pageSize.margin;
-		innerY -= 2 * pageSize.margin;
+		innerY -= 3 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I chose 3.  Maybe at some point I will discover what I've missed
 	}
 
 	// calculate desired box sizes
@@ -52,19 +52,31 @@ function pageLayout(sheet, rowInfo, pageSize) {
 	var dateSize = Math.min(xsize, ysize);
 
 	// generate new rules
-	sheet.insertRule(".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + pageSize.x + pageSize.unitIn + "; height: " + pageSize.y + pageSize.unitIn + "; }");
+	sheet.insertRule(".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
 	sheet.insertRule(".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 	sheet.insertRule(".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	for (var i=0;i<rowInfo.months.length;i++) {
-		handleWatermarks(sheet, i, rowInfo.months[i], xday, xmargin, yweek, ymargin);
+		handleWatermarks(sheet, i, rowInfo.months[i], pageSize.unitIn, xday, xmargin, yweek, ymargin);
 	}
 }
 
-function handleWatermarks(sheet, idx, rowInfo, xcell, xmargin, ycell, ymargin) {
+function handleWatermarks(sheet, idx, rowInfo, unitIn, xcell, xmargin, ycell, ymargin) {
 	var mx = cx.measureText(rowInfo.text);
 	var width = mx.actualBoundingBoxRight + mx.actualBoundingBoxLeft;
 	var height = mx.actualBoundingBoxDescent + mx.actualBoundingBoxAscent;
+	switch (unitIn) {
+		case "mm": {
+			width /= 3.78;
+			height /= 3.78;
+			break;
+		}
+		case "in": {
+			width /= 96;
+			height /= 96;
+			break;
+		}
+	}
 
 	var availx = 7 * xcell + 6 * xmargin * 2;
 	var availy = rowInfo.numRows * ycell + (rowInfo.numRows-1) * ymargin * 2;
@@ -78,7 +90,7 @@ function handleWatermarks(sheet, idx, rowInfo, xcell, xmargin, ycell, ymargin) {
 	var left = (availx - usedx) / 2;
 	var top = (availy - usedy) / 2 + rowInfo.from * (ycell + ymargin * 2);
 
-	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; left: " + left + "px; top: " + top + "px; }");
+	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; left: " + left + unitIn + "; top: " + top + unitIn + "; }");
 }
 
 function calculateSizeOfFeedbackDiv() {
@@ -89,7 +101,7 @@ function calculateSizeOfFeedbackDiv() {
 	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
 	var fby = viewy - controlPane.clientHeight - 16 - borderY * 2;
 
-	return { media: "screen", x : fbx, y : fby, unitIn: "px", borderX, borderY };
+	return { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
 }
 
 function calculatePaperSize() {

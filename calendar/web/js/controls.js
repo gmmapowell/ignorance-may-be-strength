@@ -81,6 +81,5 @@ function redraw() {
 		rowInfo.numRows++;
 	} while (leftDate <= to);
 
-	console.log(rowInfo);
 	fitToPageSize(rowInfo);
 }
