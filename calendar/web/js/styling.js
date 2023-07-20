@@ -12,6 +12,7 @@ function initStyling(fbdiv) {
 
 function fitToPageSize(rows) {
 	pageLayout(sheet, rows, calculateSizeOfFeedbackDiv());
+	pageLayout(printSheet, rows, calculatePaperSize());
 }
 
 function pageLayout(sheet, rows, pageSize) {
@@ -49,4 +50,9 @@ function calculateSizeOfFeedbackDiv() {
 	var fby = viewy - controlPane.clientHeight - 16 - borderY * 2;
 
 	return { x : fbx, y : fby, unitIn: "px", borderX, borderY };
+}
+
+function calculatePaperSize() {
+	var borderX = 1, borderY = 1;
+	return { x : 210, y : 297, unitIn: "mm", borderX, borderY };
 }
