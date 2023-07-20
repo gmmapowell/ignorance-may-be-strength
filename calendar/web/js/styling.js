@@ -1,13 +1,14 @@
 var styledDiv;
-var sheet;
+var sheet, printSheet;
 var controlPane;
 var borderX = 1, borderY = 1;
 
 function initStyling(fbdiv) {
 	styledDiv = fbdiv;
 	controlPane = document.getElementById('controls');
-	sheet = new CSSStyleSheet();
-	document.adoptedStyleSheets = [sheet];
+	sheet = new CSSStyleSheet({ media: "screen" });
+	printSheet = new CSSStyleSheet({ media: "print" });
+	document.adoptedStyleSheets = [sheet, printSheet];
 }
 
 function fitToPageSize(rows) {
