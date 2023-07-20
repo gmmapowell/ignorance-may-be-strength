@@ -1,0 +1,9 @@
+/* hide everything by default */
+.print, .a4, .a3, .letter, .tabloid { visibility: hidden }
+
+@media print {
+	.print { visibility: visible; }
+}
+@media print and (min-width: 518mm) and (max-width: 519mm) {
+	.a4 { visibility: visible; }
+}
