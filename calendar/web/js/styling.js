@@ -20,14 +20,21 @@ function pageLayout(sheet, rows, pageSize) {
 	while (sheet.cssRules.length > 0)
 		sheet.deleteRule(0);
 
+	var innerX = pageSize.x, innerY = pageSize.y;
+	if (pageSize.media == "print") {
+		sheet.insertRule("@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
+		innerX -= 2 * pageSize.margin;
+		innerY -= 2 * pageSize.margin;
+	}
+
 	// calculate desired box sizes
-	var xunit = (pageSize.x - 14 * pageSize.borderX) / 91;
+	var xunit = (innerX - 14 * pageSize.borderX) / 91;
 	var xday = xunit*12;
 	var xmargin = xunit/2;
 	var xpos = xday / 5;
 	var xsize = xday / 8;
 
-	var yunit = (pageSize.y - pageSize.borderY * 2 * rows)/ (rows * 13);
+	var yunit = (innerY - pageSize.borderY * 2 * rows)/ (rows * 13);
 	var yweek = yunit*12;
 	var ymargin = yunit/2;
 	var ypos = yweek / 5;
@@ -49,10 +56,10 @@ function calculateSizeOfFeedbackDiv() {
 	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
 	var fby = viewy - controlPane.clientHeight - 16 - borderY * 2;
 
-	return { x : fbx, y : fby, unitIn: "px", borderX, borderY };
+	return { media: "screen", x : fbx, y : fby, unitIn: "px", borderX, borderY };
 }
 
 function calculatePaperSize() {
 	var borderX = 1, borderY = 1;
-	return { x : 210, y : 297, unitIn: "mm", borderX, borderY };
+	return { media: "print", margin: 6, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX, borderY };
 }
