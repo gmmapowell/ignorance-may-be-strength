@@ -12,12 +12,14 @@ function initStyling(fbdiv) {
 	document.adoptedStyleSheets = [sheet, printSheet];
 }
 
-function fitToPageSize(rows) {
-	pageLayout(sheet, rows, calculateSizeOfFeedbackDiv());
-	pageLayout(printSheet, rows, calculatePaperSize());
+function fitToPageSize(rowInfo) {
+	pageLayout(sheet, rowInfo, calculateSizeOfFeedbackDiv());
+	pageLayout(printSheet, rowInfo, calculatePaperSize());
 }
 
-function pageLayout(sheet, rows, pageSize) {
+function pageLayout(sheet, rowInfo, pageSize) {
+	var rows = rowInfo.numRows;
+
 	// delete the old rules
 	while (sheet.cssRules.length > 0)
 		sheet.deleteRule(0);
@@ -64,7 +66,6 @@ function calculateSizeOfFeedbackDiv() {
 function calculatePaperSize() {
 	var currentSize = pageSizer.value;
 	var andLandscape = isLandscape.checked;
-	console.log("laying out for", currentSize, andLandscape);
 	var borderX = 1, borderY = 1;
 	var ret;
 	switch (currentSize) {

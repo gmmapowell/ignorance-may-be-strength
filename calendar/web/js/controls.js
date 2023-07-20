@@ -27,9 +27,23 @@ function redraw() {
 	if (leftDate > from) {
 		leftDate.setDate(leftDate.getDate() - 7);
 	}
-	var numRows = 0;
+	var rowInfo = { numRows: 0, months: [] };
+	var thisMonth = null;
 	do {
-		console.log(" showing week with", leftDate, "in the left column");
+		var rightDate = new Date(leftDate);
+		rightDate.setDate(rightDate.getDate() + 6);
+		console.log(" showing week with", leftDate, "in the left column and", rightDate, "in the right column");
+
+		// figure out if this is worthy of making a month
+		if (leftDate.getMonth() != rightDate.getMonth()) {
+			// we are not interested
+			thisMonth = null;
+		} else if (thisMonth && thisMonth.month == leftDate.getMonth()) { // if we are already recording this month, increment it
+			thisMonth.numRows++;
+		} else { // this week is all in this month and is a different month to what has gone before
+			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1 };
+			rowInfo.months.push(thisMonth);
+		}
 
 		// create a div for the whole week
 		var week = document.createElement("div");
@@ -38,7 +52,6 @@ function redraw() {
 		for (var i=0;i<7;i++) {
 			var cellDate = new Date(leftDate);
 			cellDate.setDate(cellDate.getDate() + i);
-			console.log("  cell", i, "has date", cellDate);
 
 			// create a div for each day, to contain all the aspects we will have
 			var day = document.createElement("div");
@@ -57,8 +70,9 @@ function redraw() {
 
 		// advance to next week
 		leftDate.setDate(leftDate.getDate() + 7);
-		numRows++;
+		rowInfo.numRows++;
 	} while (leftDate <= to);
 
-	fitToPageSize(numRows);
+	console.log(rowInfo);
+	fitToPageSize(rowInfo);
 }
