@@ -29,6 +29,7 @@ function redraw() {
 	}
 	var rowInfo = { numRows: 0, months: [] };
 	var thisMonth = null;
+	var watermarkNo = 0;
 	do {
 		var rightDate = new Date(leftDate);
 		rightDate.setDate(rightDate.getDate() + 6);
@@ -43,6 +44,13 @@ function redraw() {
 		} else { // this week is all in this month and is a different month to what has gone before
 			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1 };
 			rowInfo.months.push(thisMonth);
+			var watermark = document.createElement("div");
+			watermark.classList = 'watermark watermark-' + watermarkNo;
+			watermarkNo++;
+			var text = leftDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric'});
+			var wktext = document.createTextNode(text);
+			watermark.appendChild(wktext);
+			fbdiv.appendChild(watermark);
 		}
 
 		// create a div for the whole week
