@@ -1,15 +1,20 @@
 var styledDiv;
 var sheet, printSheet;
 var controlPane;
+var canvas, cx;
+var metricFontSize = 10;
 
 function initStyling(fbdiv) {
 	styledDiv = fbdiv;
 	controlPane = document.getElementById('controls');
 	pageSizer = document.getElementById('page-size');
 	isLandscape = document.getElementById('landscape');
+	canvas = document.getElementById("canvas");
 	sheet = new CSSStyleSheet({ media: "screen" });
 	printSheet = new CSSStyleSheet({ media: "print" });
 	document.adoptedStyleSheets = [sheet, printSheet];
+	cx = canvas.getContext("2d");
+	cx.font = metricFontSize + "px sans-serif";
 }
 
 function fitToPageSize(rowInfo) {

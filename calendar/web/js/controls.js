@@ -42,8 +42,6 @@ function redraw() {
 		} else if (thisMonth && thisMonth.month == leftDate.getMonth()) { // if we are already recording this month, increment it
 			thisMonth.numRows++;
 		} else { // this week is all in this month and is a different month to what has gone before
-			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1 };
-			rowInfo.months.push(thisMonth);
 			var watermark = document.createElement("div");
 			watermark.classList = 'watermark watermark-' + watermarkNo;
 			watermarkNo++;
@@ -51,6 +49,8 @@ function redraw() {
 			var wktext = document.createTextNode(text);
 			watermark.appendChild(wktext);
 			fbdiv.appendChild(watermark);
+			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1, text };
+			rowInfo.months.push(thisMonth);
 		}
 
 		// create a div for the whole week
