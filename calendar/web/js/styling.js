@@ -51,10 +51,13 @@ function pageLayout(sheet, rowInfo, pageSize) {
 	
 	var dateSize = Math.min(xsize, ysize);
 
+	var eventsContainerY = 2 * ypos;
+
 	// generate new rules
 	sheet.insertRule(".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
 	sheet.insertRule(".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 	sheet.insertRule(".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+	sheet.insertRule(".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	for (var i=0;i<rowInfo.months.length;i++) {
 		handleWatermarks(sheet, i, rowInfo.months[i], pageSize.unitIn, xday, xmargin, yweek, ymargin);
