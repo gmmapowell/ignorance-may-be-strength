@@ -7,6 +7,8 @@
 		<link rel="stylesheet" href="css/watermark.css">
 		<script src="js/controls.js"></script>
 		<script src="js/styling.js"></script>
+		<script src="js/ics.js"></script>
+		<script src="js/ajax.js"></script>
 	</head>
 	<body onload="init()">
 		<div id='controls' class="controls">
@@ -34,6 +36,9 @@
 			</select>
 			<input type="checkbox" id="landscape" onchange="redraw()">
 			<label for="landscape">Landscape</label>
+			<label for="loadURL">Load ICS URL:</label>
+			<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
+			<input type="button" value="Load ICS" onclick="loadICS()">
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">

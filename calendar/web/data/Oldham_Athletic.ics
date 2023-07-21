@@ -1,0 +1,1184 @@
+BEGIN:VCALENDAR
+PRODID:-//E-DIARY//E-DIARY 1.0//EN
+VERSION:2.0
+METHOD:PUBLISH
+X-WR-CALNAME:Oldham Athletic
+X-Built-On-Cache-Miss:true
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Roots Hall\, Southend
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230805T140000Z
+DTEND:20230805T160000Z
+SUMMARY:⚽️ Southend United vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e5c4b171d99
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKn8/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKn9/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKnb/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnc/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKnd/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230812T140000Z
+DTEND:20230812T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Aldershot Town
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e5c4b171d9a
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKnf/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKng/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKnh/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnj/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKnk/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230815T184500Z
+DTEND:20230815T204500Z
+SUMMARY:⚽️ Oldham Athletic vs FC Halifax Town
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e5c4b171d9b
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKnl/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKnm/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKnn/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnp/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKnq/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:SMH Group Stadium\, Chesterfield
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230819T113000Z
+DTEND:20230819T133000Z
+SUMMARY:⚽️ Chesterfield FC vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e5c4b171d9c
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKnr/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKns/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKnt/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnv/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKnw/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230828T140000Z
+DTEND:20230828T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Solihull Moors
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e5c4b171d9e
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKnD/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKnF/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKnG/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnH/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKnJ/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Meadow Park\, Borehamwood
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230826T140000Z
+DTEND:20230826T160000Z
+SUMMARY:⚽️ Boreham Wood vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e5c4b171d9d
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKnx/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKny/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKnz/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnB/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKnC/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Aggborough Stadium\, Kidderminster
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230926T184500Z
+DTEND:20230926T204500Z
+SUMMARY:⚽️ Kidderminster Harriers vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d73
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKpd/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpf/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKpg/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKph/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKpj/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Gateshead International Stadium\, Gateshead
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230902T140000Z
+DTEND:20230902T160000Z
+SUMMARY:⚽️ Gateshead vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d6e
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKnK/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKnL/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKnM/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnN/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKnP/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230909T140000Z
+DTEND:20230909T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Dorking Wanderers
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d6f
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKnQ/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKnR/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKnS/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnT/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKnV/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Hayes Lane\, Bromley
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230916T140000Z
+DTEND:20230916T160000Z
+SUMMARY:⚽️ Bromley vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d70
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKnW/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKnX/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKnY/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKnZ/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKp1/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230919T184500Z
+DTEND:20230919T204500Z
+SUMMARY:⚽️ Oldham Athletic vs York City
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d71
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKp2/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKp3/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKp4/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKp5/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKp6/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230923T140000Z
+DTEND:20230923T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Oxford City
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d72
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKp7/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKp8/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKp9/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpb/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKpc/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Grosvenor Vale\, Ruislip
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20230930T140000Z
+DTEND:20230930T160000Z
+SUMMARY:⚽️ Wealdstone vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d74
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKpk/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpl/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKpm/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpn/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKpp/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231003T184500Z
+DTEND:20231003T204500Z
+SUMMARY:⚽️ Oldham Athletic vs Maidenhead United
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d75
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKpq/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpr/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKps/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpt/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKpv/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231007T140000Z
+DTEND:20231007T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Dagenhamand Redbridge
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d76
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKpw/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpx/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKpy/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpz/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKpB/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Crown Oil Arena\, Rochdale
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231021T140000Z
+DTEND:20231021T160000Z
+SUMMARY:⚽️ Rochdale vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d77
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKpC/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpD/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKpF/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpG/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKpH/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Mill Farm\, Preston
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231024T184500Z
+DTEND:20231024T204500Z
+SUMMARY:⚽️ AFC Fylde vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d78
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKpJ/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpK/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKpL/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpM/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKpN/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231028T140000Z
+DTEND:20231028T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Altrincham
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d79
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKpP/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpQ/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKpR/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpS/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKpT/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231111T150000Z
+DTEND:20231111T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Eastleigh
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d7a
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKpV/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKpW/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKpX/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKpY/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKpZ/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:The Laithwaite Community Stadium\, Woking
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231118T150000Z
+DTEND:20231118T170000Z
+SUMMARY:⚽️ Woking vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d7b
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKq1/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKq2/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKq3/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKq4/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKq5/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:The Hive Stadium\, Barnet
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231121T194500Z
+DTEND:20231121T214500Z
+SUMMARY:⚽️ Barnet FC vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d7c
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKq6/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKq7/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKq8/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKq9/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKqb/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231202T150000Z
+DTEND:20231202T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Boreham Wood
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d7e
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKqj/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqk/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKql/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqm/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKqn/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:ARMCO Arena\, Solihull
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231216T150000Z
+DTEND:20231216T170000Z
+SUMMARY:⚽️ Solihull Moors vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d7f
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKqp/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqq/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKqr/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqs/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKqt/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231223T150000Z
+DTEND:20231223T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Gateshead
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d80
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKqv/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqw/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKqx/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqy/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKqz/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:The Suit Direct Stadium\, Hartlepool
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231226T150000Z
+DTEND:20231226T170000Z
+SUMMARY:⚽️ Hartlepool United vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d81
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKqB/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqC/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKqD/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqF/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKqG/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240101T150000Z
+DTEND:20240101T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Hartlepool United
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d82
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKqH/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqJ/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKqK/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqL/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKqM/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Meadowbank\, Dorking
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240106T150000Z
+DTEND:20240106T170000Z
+SUMMARY:⚽️ Dorking Wanderers vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d83
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKqN/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqP/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKqQ/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqR/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKqS/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Silverlake Stadium\, Eastleigh
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240120T150000Z
+DTEND:20240120T170000Z
+SUMMARY:⚽️ Eastleigh vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d84
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKqT/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqV/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKqW/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqX/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKqY/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240123T194500Z
+DTEND:20240123T214500Z
+SUMMARY:⚽️ Oldham Athletic vs Barnet FC
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d85
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKqZ/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKr1/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKr2/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKr3/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKr4/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240127T150000Z
+DTEND:20240127T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Woking
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d86
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKr5/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKr6/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKr7/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKr8/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKr9/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240210T150000Z
+DTEND:20240210T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Bromley
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d88
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKrh/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrj/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKrk/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrl/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKrm/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240224T150000Z
+DTEND:20240224T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Kidderminster Harriers
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b0
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKrz/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrB/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKrC/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrD/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKrF/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240302T150000Z
+DTEND:20240302T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Southend United
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b1
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKrG/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrH/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKrJ/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrK/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKrL/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:The EBB Stadium\, Aldershot
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240309T150000Z
+DTEND:20240309T170000Z
+SUMMARY:⚽️ Aldershot Town vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b2
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKrM/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrN/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKrP/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrQ/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKrR/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:The MBi Shay Stadium\, Halifax
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240312T194500Z
+DTEND:20240312T214500Z
+SUMMARY:⚽️ FC Halifax Town vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b3
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKrS/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrT/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKrV/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrW/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKrX/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240316T150000Z
+DTEND:20240316T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Chesterfield FC
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b4
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKrY/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrZ/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKs1/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKs2/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKs3/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Chigwell Construction Stadium\, Dagenham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240323T150000Z
+DTEND:20240323T170000Z
+SUMMARY:⚽️ Dagenhamand Redbridge vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b5
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKs4/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKs5/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKs6/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKs7/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKs8/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240329T150000Z
+DTEND:20240329T170000Z
+SUMMARY:⚽️ Oldham Athletic vs AFC Fylde
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b6
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKs9/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKsb/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKsc/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKsd/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKsf/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:J. Davidson Stadium\, Altrincham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240401T140000Z
+DTEND:20240401T160000Z
+SUMMARY:⚽️ Altrincham vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b7
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKsg/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKsh/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKsj/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKsk/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKsl/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240406T140000Z
+DTEND:20240406T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Rochdale
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b8
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKsm/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKsn/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKsp/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKsq/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKsr/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:RAW Charging Stadium\, Oxford
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240413T140000Z
+DTEND:20240413T160000Z
+SUMMARY:⚽️ Oxford City vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416b9
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKss/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKst/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKsv/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKsw/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKsx/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240420T140000Z
+DTEND:20240420T160000Z
+SUMMARY:⚽️ Oldham Athletic vs Wealdstone
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416ba
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKsy/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKsz/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKsB/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKsC/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKsD/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Boundary Park\, Oldham
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20231125T150000Z
+DTEND:20231125T170000Z
+SUMMARY:⚽️ Oldham Athletic vs Ebbsfleet United
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d7d
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League |  Join in: #oafc\n\nMatch Centre\nhtt
+ ps://ecal.ai/f/lgKqc/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKqd/27nWk\n\nSh
+ op\nhttps://ecal.ai/f/lgKqf/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKqg/27n
+ Wk\n\nInstagram\nhttps://ecal.ai/f/lgKqh/27nWk\n\nManage my ECAL\nhttps://
+ support.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Kuflink Stadium\, Northfleet
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240203T150000Z
+DTEND:20240203T170000Z
+SUMMARY:⚽️ Ebbsfleet United vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e10c2533d87
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKrb/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrc/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKrd/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrf/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKrg/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:York Road\, Maidenhead
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240217T150000Z
+DTEND:20240217T170000Z
+SUMMARY:⚽️ Maidenhead United vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416ae
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKrn/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrp/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKrq/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrr/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKrs/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:LNER Community Stadium\, York
+X-ECAL-SCHEDULE:5d08b69b1ac243b8e0feb716
+DTSTART:20240220T194500Z
+DTEND:20240220T214500Z
+SUMMARY:⚽️ York City vs Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64a5b24bf4b46e6f492416af
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:Vanarama National League | Join in: #oafc\n\nMatch Centre\nhttp
+ s://ecal.ai/f/lgKrt/27nWk\n\nTwitter\nhttps://ecal.ai/f/lgKrv/27nWk\n\nSho
+ p\nhttps://ecal.ai/f/lgKrw/27nWk\n\nFacebook\nhttps://ecal.ai/f/lgKrx/27nW
+ k\n\nInstagram\nhttps://ecal.ai/f/lgKry/27nWk\n\nManage my ECAL\nhttps://s
+ upport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+LAST-MODIFIED:20230720T160847Z
+DTSTAMP:20230720T160847Z
+LOCATION:Proudly powered by ECAL
+X-ECAL-SCHEDULE:64b95bf4c29a33000df99ac4
+DTSTART:20230720T162300Z
+DTEND:20230720T163800Z
+SUMMARY:Success! You're connected to Oldham Athletic
+TRANSP:TRANSPARENT
+SEQUENCE:0
+UID:64b95bf40a5e58000ffc350d
+PRIORITY:5
+X-MICROSOFT-CDO-IMPORTANCE:1
+CLASS:PUBLIC
+DESCRIPTION:You'll now have the most up-to-date info about events from Oldh
+ am Athletic.\n\nIf dates\, times or details change\, these will automatica
+ lly update in your calendar. How good is that!\n\nWe hope you enjoy this s
+ ervice and welcome any feedback via our Support Centre http://support.ecal
+ .com.\n------\n\nThis service is powered by ECAL\, the world's leading & m
+ ost trusted calendar communications service.\n\nManage my ECAL\nhttps://su
+ pport.ecal.com
+BEGIN:VALARM
+TRIGGER:-PT1M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+END:VCALENDAR
