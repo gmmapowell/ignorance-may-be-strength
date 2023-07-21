@@ -1,10 +1,12 @@
 var start, end, first, fbdiv;
+var calendars;
 
 function init() {
 	start = document.getElementById('start-date');
 	end = document.getElementById('end-date');
 	first = document.getElementById('first-day');
 	fbdiv = document.getElementById('feedback');
+	calendars = {};
 
 	start.valueAsDate = new Date();
 	end.valueAsDate = new Date();
@@ -74,6 +76,51 @@ function redraw() {
 			// and set the date text in here
 			var dateValue = document.createTextNode(cellDate.getDate());
 			date.appendChild(dateValue);
+
+			var calDate = cellDate.getFullYear() + "-" + (cellDate.getMonth()+1).toString().padStart(2, '0') + "-" + cellDate.getDate().toString().padStart(2, '0');
+
+			var toShow = [];
+			for (var url in calendars) {
+				var cal = calendars[url];
+				var today = cal[calDate];
+				if (!today)
+					continue;
+				for (var j=0;j<today.length;j++) {
+					var next = today[j];
+					for (var k=0;k<toShow.length;k++) {
+						if (next.time < toShow[k].time) {
+							toShow.splice(k, 0, next);
+							next = null;
+							break;
+						}
+					}
+					if (next != null)
+						toShow.push(next);
+				}
+			}
+			console.log("calDate is", calDate, "have", toShow);
+
+			if (toShow.length > 0) {
+				var events = document.createElement("div");
+				events.className = "body-day-events-container";
+				day.appendChild(events);
+
+				for (var j=0;j<toShow.length;j++) {
+					var event = document.createElement("div");
+					event.className = "body-day-event";
+					events.appendChild(event);
+					var timeText = document.createTextNode(toShow[j].time);
+					var timeSpan = document.createElement("span");
+					timeSpan.className = "body-day-event-time";
+					timeSpan.appendChild(timeText);
+					event.appendChild(timeSpan);
+					var eventText = document.createTextNode(" " + toShow[j].summary);
+					var eventSpan = document.createElement("span");
+					eventSpan.className = "body-day-event-text";
+					eventSpan.appendChild(eventText);
+					event.appendChild(eventSpan);
+				}
+			}
 		}
 
 		// advance to next week
@@ -82,4 +129,8 @@ function redraw() {
 	} while (leftDate <= to);
 
 	fitToPageSize(rowInfo);
+}
+
+function addCalendar(url, cal) {
+	calendars[url] = cal;
 }

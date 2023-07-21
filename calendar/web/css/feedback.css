@@ -14,3 +14,19 @@
 	font-family: 'Courier New', Courier, monospace;
 	font-weight: bold;
 }
+
+.body-day-events-container {
+	position: absolute;
+}
+
+.body-day-event {
+	border: none;
+}
+
+.body-day-event-time {
+	font-weight: bold;
+}
+
+.body-day-event-text {
+	font-style: normal;
+}

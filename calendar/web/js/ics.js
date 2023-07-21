@@ -1,16 +1,18 @@
 function loadICS() {
 	var urlEntry = document.getElementById("ics-url");
 	var url = urlEntry.value;
-	ajax(url, handleICS);
+	ajax(url, (status, response) => handleICS(url, status, response));
 }
 
-function handleICS(status, response) {
+function handleICS(url, status, response) {
 	console.log("ajax returned status", status);
 	if (status / 100 == 2) { 
 		var lines = joinLongLines(response.split(/\r\n/));
 		var blocked = makeHierarchical(lines);
 		if (blocked) {
 			var table = makeTabular(blocked);
+			addCalendar(url, table);
+			redraw();
 		}
 	} else {
 		// TODO: handle status error cases somehow (e.g. 401, 404, 500)
@@ -77,7 +79,7 @@ function makeTabular(blocks) {
 		}
 		var entry = { time, summary: b.fields.SUMMARY, fields: b.fields };
 		for (var j=0;j<ret[date].length;j++) {
-			if (ret[date][j].time < entry.time) {
+			if (entry.time < ret[date][j].time) {
 				ret[date].splice(j, 0, entry);
 				entry = null;
 				break;
