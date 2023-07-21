@@ -9,6 +9,9 @@ function handleICS(status, response) {
 	if (status / 100 == 2) { 
 		var lines = joinLongLines(response.split(/\r\n/));
 		var blocked = makeHierarchical(lines);
+		if (blocked) {
+			var table = makeTabular(blocked);
+		}
 	} else {
 		// TODO: handle status error cases somehow (e.g. 401, 404, 500)
 		console.log("error status", status);
@@ -55,4 +58,38 @@ function makeHierarchical(lines) {
 		}
 	}
 	return ret;
+}
+
+function makeTabular(blocks) {
+	// This assumes that blocks is a VCALENDAR containing VEVENT objects
+	// It will ignore other events
+
+	var ret = {};
+	for (var i=0;i<blocks.blocks.length;i++) {
+		var b = blocks.blocks[i];
+		if (b.type != "VEVENT")
+			continue;
+		var starts = new Date(Date.parse(toStandard(b.fields["DTSTART"])));
+		var date = starts.getFullYear() + "-" + (starts.getMonth()+1).toString().padStart(2, '0') + "-" + starts.getDate().toString().padStart(2, '0');
+		var time = starts.getHours().toString().padStart(2, '0') + starts.getMinutes().toString().padStart(2, '0');
+		if (!ret[date]) {
+			ret[date] = [];
+		}
+		var entry = { time, summary: b.fields.SUMMARY, fields: b.fields };
+		for (var j=0;j<ret[date].length;j++) {
+			if (ret[date][j].time < entry.time) {
+				ret[date].splice(j, 0, entry);
+				entry = null;
+				break;
+			}
+		}
+		if (entry) { // was not spliced in, append
+			ret[date].push(entry);
+		}
+	}
+	return ret;
+}
+
+function toStandard(date) {
+	return date.substring(0, 4) + "-" + date.substring(4,6) + "-" + date.substring(6,11) + ":" + date.substring(11,13) + ":" + date.substring(13);
 }
