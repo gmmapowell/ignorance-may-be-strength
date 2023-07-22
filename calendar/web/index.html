@@ -8,7 +8,9 @@
 		<script src="js/controls.js"></script>
 		<script src="js/styling.js"></script>
 		<script src="js/ics.js"></script>
+		<script src="js/sharing.js"></script>
 		<script src="js/ajax.js"></script>
+		<script src="js/download.js"></script>
 	</head>
 	<body onload="init()">
 		<div id='controls' class="controls">
@@ -39,6 +41,7 @@
 			<label for="loadURL">Load ICS URL:</label>
 			<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
 			<input type="button" value="Load ICS" onclick="loadICS()">
+			<input type="button" value="Share as Json" onclick="shareJson()">
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">

@@ -12,6 +12,7 @@ function init() {
 	end.valueAsDate = new Date();
 
 	initStyling(fbdiv);
+	initSharing();
 
 	addEventListener("resize", redraw);
 	redraw();
