@@ -42,6 +42,8 @@
 			<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
 			<input type="button" value="Load ICS" onclick="loadICS()">
 			<input type="button" value="Share as Json" onclick="shareJson()">
+			<label for="sharing-file">Load JSON from:</label>
+			<input type="file" id="sharing-file" onchange="loadJsonFromFile()">
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">
