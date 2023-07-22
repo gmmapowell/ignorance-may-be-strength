@@ -3,6 +3,7 @@ var sharingFile, sharingURL;
 function initSharing() {
 	sharingFile = document.getElementById('sharing-file');
 	sharingURL = document.getElementById('sharing-url');
+	readConfigFromParameter();
 }
 
 function shareJson() {
@@ -45,5 +46,12 @@ function handleConfig(status, response) {
 		configureWith(JSON.parse(response));
 	} else {
 		console.log(status, response);
+	}
+}
+
+function readConfigFromParameter() {
+	var params = new URLSearchParams(window.location.search);
+	if (params.has("config")) {
+		ajax(params.get("config"), handleConfig);
 	}
 }
