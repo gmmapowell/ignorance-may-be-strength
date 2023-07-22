@@ -6,5 +6,10 @@ function shareJson() {
 }
 
 function assemblePropertiesObject() {
-	return {};
+	return {
+		start: start.value,
+		end: end.value,
+		firstDay: first.value,
+		calendars: Object.keys(calendars)
+	};
 }
