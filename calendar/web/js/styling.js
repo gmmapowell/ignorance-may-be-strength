@@ -30,14 +30,17 @@ function pageLayout(sheet, rowInfo, pageSize) {
 		sheet.deleteRule(0);
 
 	var innerX = pageSize.x, innerY = pageSize.y;
+	var hackX = 1;
 	if (pageSize.media == "print") {
 		sheet.insertRule("@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
-		innerX -= 2 * pageSize.margin;
+		innerX -= 3 * pageSize.margin;
 		innerY -= 3 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I chose 3.  Maybe at some point I will discover what I've missed
+		hackX = 0.95;
 	}
 
 	// calculate desired box sizes
 	var xunit = (innerX - 14 * pageSize.borderX) / 91;
+	xunit *= hackX; // a hack because I don't understand what causes the printer version to wrap
 	var xday = xunit*12;
 	var xmargin = xunit/2;
 	var xpos = xday / 5;
@@ -110,22 +113,19 @@ function calculateSizeOfFeedbackDiv() {
 function calculatePaperSize() {
 	var currentSize = pageSizer.value;
 	var andLandscape = isLandscape.checked;
-	var borderX = 1, borderY = 1;
 	var ret;
 	switch (currentSize) {
 		case "letter":
-			borderX = borderY = 0.04;
-			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 8.5, y : 11, unitIn: "in", borderX, borderY };
+			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 8.5, y : 11, unitIn: "in", borderX: 0.01, borderY: 0.01 };
 			break;
 		case "tabloid":
-			borderX = borderY = 0.04;
-			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 11, y : 17, unitIn: "in", borderX, borderY };
+			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 11, y : 17, unitIn: "in", borderX: 0.01, borderY: 0.01 };
 			break;
 		case "a3":
-			ret = { media: "print", margin: 6, orientation: "portrait", x : 297, y : 420, unitIn: "mm", borderX, borderY };
+			ret = { media: "print", margin: 6, orientation: "portrait", x : 297, y : 420, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
 			break;
 		default: /* use A4 as default, just in case */
-			ret = { media: "print", margin: 6, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX, borderY };
+			ret = { media: "print", margin: 6, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
 			break;
 	}
 	if (andLandscape) {
