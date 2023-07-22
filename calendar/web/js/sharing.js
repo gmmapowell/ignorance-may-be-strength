@@ -1,7 +1,8 @@
-var sharingFile;
+var sharingFile, sharingURL;
 
 function initSharing() {
 	sharingFile = document.getElementById('sharing-file');
+	sharingURL = document.getElementById('sharing-url');
 }
 
 function shareJson() {
@@ -32,4 +33,17 @@ function configureWith(json) {
 
 function loadCalendar(url) {
 	ajax(url, (status, response) => handleICS(url, status, response));
+}
+
+function loadSharedJson() {
+	var from = sharingURL.value;
+	ajax(from, handleConfig);
+}
+
+function handleConfig(status, response) {
+	if (status / 100 == 2) {
+		configureWith(JSON.parse(response));
+	} else {
+		console.log(status, response);
+	}
 }

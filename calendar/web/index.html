@@ -44,6 +44,8 @@
 			<input type="button" value="Share as Json" onclick="shareJson()">
 			<label for="sharing-file">Load JSON from:</label>
 			<input type="file" id="sharing-file" onchange="loadJsonFromFile()">
+			<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
+			<input type="button" value="Load shared" onclick="loadSharedJson()">
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">
