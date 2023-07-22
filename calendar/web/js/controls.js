@@ -1,4 +1,4 @@
-var start, end, first, fbdiv;
+var start, end, first, fbdiv, scdiv;
 var calendars;
 
 function init() {
@@ -6,6 +6,8 @@ function init() {
 	end = document.getElementById('end-date');
 	first = document.getElementById('first-day');
 	fbdiv = document.getElementById('feedback');
+	scdiv = document.getElementById('select-calendars');
+
 	calendars = {};
 
 	start.valueAsDate = new Date();
@@ -22,7 +24,6 @@ function redraw() {
 	var from = new Date(start.value);
 	var to = new Date(end.value);
 	var leftColumn = parseInt(first.value);
-	console.log("Generating calendar from", from, "to", to, "based on", leftColumn);
 
 	fbdiv.innerHTML = '';
 	var leftDate = new Date(from);
@@ -36,7 +37,6 @@ function redraw() {
 	do {
 		var rightDate = new Date(leftDate);
 		rightDate.setDate(rightDate.getDate() + 6);
-		console.log(" showing week with", leftDate, "in the left column and", rightDate, "in the right column");
 
 		// figure out if this is worthy of making a month
 		if (leftDate.getMonth() != rightDate.getMonth()) {
@@ -83,7 +83,9 @@ function redraw() {
 			var toShow = [];
 			for (var url in calendars) {
 				var cal = calendars[url];
-				var today = cal[calDate];
+				if (!cal.used)
+					continue;
+				var today = cal.info[calDate];
 				if (!today)
 					continue;
 				for (var j=0;j<today.length;j++) {
@@ -99,7 +101,6 @@ function redraw() {
 						toShow.push(next);
 				}
 			}
-			console.log("calDate is", calDate, "have", toShow);
 
 			if (toShow.length > 0) {
 				var events = document.createElement("div");
@@ -133,5 +134,24 @@ function redraw() {
 }
 
 function addCalendar(url, cal) {
-	calendars[url] = cal;
+	calendars[url] = { info: cal, used: true };
+	scdiv.innerHTML = '';
+	for (var u in calendars) {
+		var elt = document.createElement("div");
+		elt.class = 'select-one-calendar';
+		var cb = document.createElement("input");
+		cb.type = 'checkbox';
+		cb.checked = calendars[u].used;
+		cb.myurl = u;
+		cb.onclick = toggleCalendar;
+		elt.appendChild(cb);
+		var tx = document.createTextNode(u);
+		elt.appendChild(tx);
+		scdiv.appendChild(elt);
+	}
+}
+
+function toggleCalendar(event) {
+	calendars[event.target.myurl].used = event.target.checked;
+	redraw();
 }
