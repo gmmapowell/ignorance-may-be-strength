@@ -9,6 +9,10 @@
 	position: relative;
 }
 
+.body-day.weekend {
+	background-color: rgba(120, 120, 120, 0.1);
+}
+
 .body-day-date {
 	position: absolute;
 	font-family: 'Courier New', Courier, monospace;

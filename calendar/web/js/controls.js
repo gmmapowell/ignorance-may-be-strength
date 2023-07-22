@@ -1,4 +1,4 @@
-var start, end, first, fbdiv, scdiv;
+var start, end, first, fbdiv, scdiv, weekendShadeOption;
 var calendars;
 
 function init() {
@@ -7,6 +7,7 @@ function init() {
 	first = document.getElementById('first-day');
 	fbdiv = document.getElementById('feedback');
 	scdiv = document.getElementById('select-calendars');
+	weekendShadeOption = document.getElementById('shade-weekends');
 
 	calendars = {};
 
@@ -24,6 +25,7 @@ function redraw() {
 	var from = new Date(start.value);
 	var to = new Date(end.value);
 	var leftColumn = parseInt(first.value);
+	var shadeWeekends = weekendShadeOption.checked;
 
 	fbdiv.innerHTML = '';
 	var leftDate = new Date(from);
@@ -67,6 +69,9 @@ function redraw() {
 			// create a div for each day, to contain all the aspects we will have
 			var day = document.createElement("div");
 			day.className = "body-day";
+			if (shadeWeekends && (cellDate.getDay() ==0 || cellDate.getDay() == 6)) {
+				day.classList.add('weekend');
+			}
 			week.appendChild(day);
 
 			// the first aspect is the date

@@ -46,6 +46,8 @@
 			<input type="file" id="sharing-file" onchange="loadJsonFromFile()">
 			<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
 			<input type="button" value="Load shared" onclick="loadSharedJson()">
+			<input type="checkbox" id="shade-weekends" checked='true' onchange="redraw()">
+			<label for="landscape">Shade Weekends</label>
 			<div id="select-calendars"></div>
 		</div>
 		<div id='feedback' class="feedback">
