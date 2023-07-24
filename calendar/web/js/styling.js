@@ -39,7 +39,7 @@ function pageLayout(sheets, rowInfo, pageSize) {
 	if (pageSize.media == "print") {
 		insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 3 * pageSize.margin;
-		innerY -= 3 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I chose 3.  Maybe at some point I will discover what I've missed
+		innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
 		hackX = 0.95;
 	}
 
@@ -70,7 +70,6 @@ function pageLayout(sheets, rowInfo, pageSize) {
 	for (var i=0;i<rowInfo.months.length;i++) {
 		handleWatermarks(pageSize.media == "screen", i, rowInfo.months[i]);
 	}
-	console.log(printSheet);
 }
 
 function insertRuleIntoSheets(sheets, rule) {
@@ -81,7 +80,7 @@ function insertRuleIntoSheets(sheets, rule) {
 
 function handleWatermarks(forScreen, idx, rowInfo) {
 	var availx, availy;
-	var usedx, usedy, scale;
+	var usedx, usedy, scale, fontSize;
 	var sheet;
 
 	if (forScreen) {
@@ -98,32 +97,27 @@ function handleWatermarks(forScreen, idx, rowInfo) {
 		var scaley = availy/height;
 		scale = Math.min(scalex, scaley) * .75; // .75 to leave some space around the edges
 		sheet.deleteRule(ruleIdx);
-		ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; }");
+		fontSize = metricFontSize*scale;
+		ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + fontSize + "pt; }");
 		
 		var adiv = rowInfo.div.querySelector(".watermark");
 		usedx = adiv.clientWidth;
 		usedy = adiv.clientHeight;
 
-		screenWatermarks[idx] = { scale, usedx, usedy };
+		screenWatermarks[idx] = { scale, width, height };
 		sheet.deleteRule(ruleIdx);
 	} else {
 		sheet = printSheet;
 		availx = rowInfo.div.clientWidth;
 		availy = rowInfo.div.clientHeight;
 		var sw = screenWatermarks[idx];
-		console.log("# ", idx," = ", sw, availx, availy);
-		usedx = sw.usedx;
-		usedy = sw.usedy;
-		var scalex = availx / usedx;
-		var scaley = availy / usedy;
-		scale = Math.min(scalex, scaley);
-		usedx *= scale;
-		usedy *= scale;
-		scale *= sw.scale; // to keep the multiplication of font size
-		console.log('scale=', scale);
+		var scalex = availx / sw.width;
+		var scaley = availy / sw.height;
+		scale = Math.min(scalex, scaley) * .75;
+		usedx = sw.width * scale;
+		usedy = sw.height * scale;
+		fontSize = metricFontSize*scale*sw.scale;
 	}
-
-	console.log(forScreen, idx, availx, availy);
 
 	var left = (availx - usedx) / 2;
 	var top = (availy - usedy) / 2;
@@ -164,8 +158,9 @@ function calculatePaperSize() {
 		var tmp = ret.x;
 		ret.x = ret.y;
 		ret.y = tmp;
-		ret.borderX = borderY;
-		ret.borderY = borderX;
+		var tmp = ret.borderX;
+		ret.borderX = ret.borderY;
+		ret.borderY = tmp;
 	}
 	return ret;
 }

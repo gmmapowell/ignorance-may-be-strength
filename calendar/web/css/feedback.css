@@ -13,7 +13,8 @@
 }
 
 .body-day.weekend {
-	background-color: rgba(120, 120, 120, 0.1);
+	/* background-color: rgba(120, 120, 120, 0.1); */
+	outline: 3px solid grey;
 }
 
 .body-day-date {
