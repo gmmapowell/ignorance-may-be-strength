@@ -47,21 +47,30 @@ function redraw() {
 		} else if (thisMonth && thisMonth.month == leftDate.getMonth()) { // if we are already recording this month, increment it
 			thisMonth.numRows++;
 		} else { // this week is all in this month and is a different month to what has gone before
+			var namedMonth = document.createElement("div");
+			namedMonth.className = 'namedMonth';
+
 			var watermark = document.createElement("div");
 			watermark.classList = 'watermark watermark-' + watermarkNo;
-			watermarkNo++;
 			var text = leftDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric'});
 			var wktext = document.createTextNode(text);
 			watermark.appendChild(wktext);
-			fbdiv.appendChild(watermark);
-			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1, text };
+			namedMonth.appendChild(watermark)
+			fbdiv.appendChild(namedMonth);
+			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1, text, div: namedMonth };
 			rowInfo.months.push(thisMonth);
+
+			watermarkNo++;
 		}
 
 		// create a div for the whole week
 		var week = document.createElement("div");
 		week.className = "body-week";
-		fbdiv.appendChild(week);
+		if (thisMonth) {
+			thisMonth.div.appendChild(week);
+		} else {
+			fbdiv.appendChild(week);
+		}
 		for (var i=0;i<7;i++) {
 			var cellDate = new Date(leftDate);
 			cellDate.setDate(cellDate.getDate() + i);

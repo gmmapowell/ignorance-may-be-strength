@@ -5,7 +5,6 @@ function loadICS() {
 }
 
 function handleICS(url, status, response) {
-	console.log("ajax returned status", status);
 	if (status / 100 == 2) { 
 		var lines = joinLongLines(response.split(/\r\n/));
 		var blocked = makeHierarchical(lines);

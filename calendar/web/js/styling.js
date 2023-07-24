@@ -84,19 +84,23 @@ function handleWatermarks(sheet, idx, rowInfo, unitIn, xcell, xmargin, ycell, ym
 		}
 	}
 
-	var availx = 7 * xcell + 6 * xmargin * 2;
-	var availy = rowInfo.numRows * ycell + (rowInfo.numRows-1) * ymargin * 2;
+	var availx = rowInfo.div.clientWidth; // 7 * xcell + 6 * xmargin * 2;
+	var availy = rowInfo.div.clientHeight; // rowInfo.numRows * ycell + (rowInfo.numRows-1) * ymargin * 2;
 	
 	var scalex = availx/width;
-	var scaley = availy/height;
+	var scaley = availy/height * 0.8; // there is a margin at the top and bottom we need to consider
 	var scale = Math.min(scalex, scaley) * .75; // .75 to leave some space around the edges
+	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; }");
 
-	var usedx = scale * width;
-	var usedy = scale * height;
+	var adiv = rowInfo.div.querySelector(".watermark");
+	var usedx = adiv.clientWidth;
+	var usedy = adiv.clientHeight;
 	var left = (availx - usedx) / 2;
-	var top = (availy - usedy) / 2 + rowInfo.from * (ycell + ymargin * 2);
+	var top = (availy - usedy) / 2;
 
+	// sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; }");
 	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; left: " + left + unitIn + "; top: " + top + unitIn + "; }");
+	// sheet.insertRule(".watermarkBox-" +  idx + "{ left: 0" + unitIn + "; width: " + availx + unitIn + "; top: " + (rowInfo.from * (ycell + ymargin * 2)) + unitIn + "; height: " + availy + unitIn +"; }");
 }
 
 function calculateSizeOfFeedbackDiv() {
