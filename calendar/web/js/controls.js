@@ -1,5 +1,6 @@
 var start, end, first, fbdiv, scdiv, weekendShadeOption;
 var calendars;
+var redrawWhenResized = true;
 
 function init() {
 	start = document.getElementById('start-date');
@@ -17,8 +18,20 @@ function init() {
 	initStyling(fbdiv);
 	initSharing();
 
-	addEventListener("resize", redraw);
+	addEventListener("beforeprint", ev => redrawMode(false));
+	addEventListener("resize", redrawOnResize);
+	addEventListener("afterprint", ev => redrawMode(true));
 	redraw();
+}
+
+function redrawMode(b) {
+	redrawWhenResized = b;
+}
+
+function redrawOnResize(ev) {
+	console.log(redrawWhenResized);
+	if (redrawWhenResized)
+		redraw();
 }
 
 function redraw() {
