@@ -1,5 +1,7 @@
 .feedback {
 	border: solid black;
+	print-color-adjust: exact;
+	-webkit-print-color-adjust: exact;
 }
 
 .namedMonth {
@@ -37,4 +39,57 @@
 
 .body-day-event-text {
 	font-style: normal;
+}
+
+.body-day-color-bars {
+	height: 10%;
+	width: 100%;
+}
+
+.body-day-color-bar {
+	font-size: 50%;
+	height: 10%;
+    text-align: center;
+    position: absolute;
+}
+
+.body-day-color-bar-1 {
+	width: 100%;
+}
+
+.body-day-color-bar-2 {
+	width: 50%;
+}
+
+.body-day-color-bar-2-of-2 {
+	left: 50%;
+}
+
+.body-day-color-bar-3 {
+	width: 33%;
+}
+
+.body-day-color-bar-2-of-3 {
+	left: 33%;
+}
+
+.body-day-color-bar-3-of-3 {
+	left: 66%;
+	width: 34%;
+}
+
+.body-day-color-red {
+	background-color: red;
+}
+
+.body-day-color-green {
+	background-color: green;
+}
+
+.body-day-color-yellow {
+	background-color: yellow;
+}
+
+.body-day-color-blue {
+	background-color: blue;
 }

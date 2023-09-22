@@ -1,5 +1,5 @@
 var start, end, first, fbdiv, scdiv, weekendShadeOption;
-var calendars;
+var calendars, colors;
 var redrawWhenResized = true;
 
 function init() {
@@ -11,6 +11,7 @@ function init() {
 	weekendShadeOption = document.getElementById('shade-weekends');
 
 	calendars = {};
+	colors = {};
 
 	start.valueAsDate = new Date();
 	end.valueAsDate = new Date();
@@ -107,6 +108,24 @@ function redraw() {
 
 			var calDate = cellDate.getFullYear() + "-" + (cellDate.getMonth()+1).toString().padStart(2, '0') + "-" + cellDate.getDate().toString().padStart(2, '0');
 
+			var cd = colors[calDate];
+			if (cd) {
+				var colorBars = document.createElement("div");
+				colorBars.className = "body-day-color-bars";
+				day.appendChild(colorBars);
+				for (var j=0;j<cd.length;j++) {
+					var bar = document.createElement("div");
+					var itemNo = "";
+					if (j > 0) {
+						itemNo = " body-day-color-bar-" + (j+1) + "-of-" + cd.length;
+					}
+					bar.className = "body-day-color-bar body-day-color-bar-" + cd.length + itemNo + " body-day-color-" + cd[j].color;
+					var tx = document.createTextNode(cd[j].label);
+					bar.appendChild(tx);
+					colorBars.appendChild(bar);
+				}
+			}
+			
 			var toShow = [];
 			for (var url in calendars) {
 				var cal = calendars[url];

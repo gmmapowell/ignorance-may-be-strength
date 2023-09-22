@@ -30,6 +30,11 @@ function configureWith(json) {
 	for (var i=0;i<json.calendars.length;i++) {
 		loadCalendar(json.calendars[i]);
 	}
+	if (json.colors) {
+		for (var i=0;i<json.colors.length;i++) {
+			colorRange(json.colors[i]);
+		}
+	}
 }
 
 function loadCalendar(url) {

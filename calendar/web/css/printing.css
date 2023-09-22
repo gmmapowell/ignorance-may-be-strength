@@ -5,3 +5,18 @@
 .feedback {
 	border: none;
 }
+
+.body-day-color-red {
+	background-color: none;
+	color: red;
+}
+
+.body-day-color-green {
+	background-color: none;
+	color: green;
+}
+
+.body-day-color-blue {
+	background-color: none;
+	color: blue;
+}
