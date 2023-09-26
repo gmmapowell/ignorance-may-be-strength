@@ -1,16 +1,22 @@
+import parser from "./parser.js";
+import TopLevelParser from "./toplevel.js";
+
 function initialize() {
 	var updateButton = document.getElementsByClassName("toolbar-update")[0];
 	updateButton.addEventListener("click", pipeline);
 }
 
 function pipeline(ev) {
+	var errors = new ErrorReporter(); // TODO: this will need a DOM node somewhere
 	var model = new DiagramModel();
-	readText("text-input", parser(model));
+	readText("text-input", parser(new TopLevelParser(model), errors));
 	var portfolio = new Portfolio();
 	model.partitionInto(portfolio);
 	tabModel("tabs-row", ensureTabs(portfolio));
 	portfolio.each((graph, tab) => graph.layout(d => d.drawInto(tab)));
 }
+
+window.addEventListener('load', initialize);
 
 // TODO: everything below here needs to broken out into modules
 
@@ -31,13 +37,6 @@ function ensureTabs(portfolio) {
 	}
 }
 
-// parser.js
-function parser() {
-	return function(text) {
-		console.log(text);
-	}
-}
-
 // model.js
 class DiagramModel {
 	partitionInto(c) {
@@ -53,5 +52,12 @@ class Portfolio {
 
 	each(f) {
 		console.log("iterate over graphs and provide tabs");
+	}
+}
+
+// errors.js
+class ErrorReporter {
+	raise(s) {
+		console.log("error: " + s);
 	}
 }

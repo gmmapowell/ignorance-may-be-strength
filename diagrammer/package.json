@@ -1,0 +1,14 @@
+{
+	"name": "diagrammer-client",
+	"version": "1.0.0",
+	"description": "diagrammer client",
+	"type": "module",
+	"scripts": {
+	  "test": "mocha client/test/unit/*.spec.js"
+	},
+	"devDependencies": {
+	  "mocha": "^10.2.0",
+	  "chai": "^4.3.8"
+	}
+  }
+  

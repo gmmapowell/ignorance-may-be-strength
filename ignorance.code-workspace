@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "calendar"
+		},
+		{
+			"path": "diagrammer"
 		}
 	],
 	"settings": {}
