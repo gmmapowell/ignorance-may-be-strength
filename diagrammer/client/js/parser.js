@@ -8,6 +8,7 @@ function parser(top, errors) {
 		for (var i=0;i<lines.length;i++) {
 			tokenize(lines[i], blocker, errors);
 		}
+		blocker.complete();
 	}
 }
 

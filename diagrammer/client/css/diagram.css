@@ -1,0 +1,66 @@
+body {
+	margin: 0px;
+}
+
+.tab-title.hidden {
+	display: none;
+}
+.tab-body.hidden {
+	display: none;
+}
+
+.toolbar {
+	width: 100%;
+	background: silver;
+	padding: 10px;
+}
+
+.tabbed-window {
+	width: 100%;
+	padding: 25px;
+}
+
+.tabs-row {
+	padding-left: 5px;
+	padding-top: 3px;
+}
+
+.tab-title {
+	display: inline-block;
+	border: 1px solid black;
+	border-bottom: none;
+	margin-right: 4px;
+	padding: 4px;
+	background-color: aliceblue;
+	cursor: pointer;
+}
+
+.tab-title.selected-tab {
+	background-color: lightblue;
+}
+
+.tab-body {
+	display: none;
+}
+
+.tab-body.selected-tab {
+	display: block;
+}
+
+.text-input {
+	width: calc(100% - 80px);
+	min-height: 700px;
+}
+
+.error-tab.tab-body {
+	border: 1px solid black;
+}
+
+.diagram-tab.tab-body {
+	border: 1px solid black;
+}
+
+.error-messages {
+	color: red;
+	padding: 10px;
+}

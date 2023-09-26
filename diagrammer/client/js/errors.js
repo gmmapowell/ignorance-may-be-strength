@@ -1,3 +1,5 @@
+import { selectTab } from "./tabbing.js";
+
 class ErrorReporter {
 	constructor() {
 		this.errors = [];
@@ -21,6 +23,16 @@ class ErrorReporter {
 			msgdiv.appendChild(msgtext);
 			elt.appendChild(msgdiv);
 		}
+
+		selectTab("error-tab");
+	}
+
+	unhide(elt) {
+		elt.classList.remove("hidden");
+	}
+
+	hide(elt) {
+		elt.classList.add("hidden");
 	}
 }
 

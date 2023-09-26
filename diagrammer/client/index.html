@@ -2,6 +2,7 @@
 	<head>
 		<title>Diagrammer</title>
 		<script type="module" src="js/main.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/diagram.css">
 	</head>
 	<body>
 		<div>
@@ -10,21 +11,17 @@
 			</div>
 			<div class="tabbed-window">
 				<div class="tabs-row">
-					<div class="input-tab">
-						<div class="tab-title">Input</div>
+					<div class="input-tab tab-title selected-tab">Input</div>
+					<div class="error-tab tab-title hidden">Errors</div>
+				</div>
+				<div class="tab-display">
+					<div class="input-tab tab-body selected-tab">
 						<div>
 							<textarea class="text-input"></textarea>
 						</div>
 					</div>
-					<div class="error-tab">
-						<div class="tab-title">Errors</div>
+					<div class="error-tab tab-body hidden">
 						<div class="error-messages">
-						</div>
-					</div>
-					<div class="output-tab">
-						<div class="tab-title">Output</div>
-						<div>
-							<canvas class="diagram"></canvas>
 						</div>
 					</div>
 				</div>

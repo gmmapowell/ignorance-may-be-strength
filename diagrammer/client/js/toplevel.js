@@ -49,6 +49,11 @@ class TopLevelParser {
 			}
 		}
 	}
+	
+	// called by the blocker at end of input
+	complete() {
+		this.model.validate();
+	}
 }
 
 export default TopLevelParser;

@@ -34,7 +34,13 @@ class Blocker {
 	}
 
 	complete() { // on end of input
-		this.top.complete();
+		while (this.stack.length > 0) {
+			var mh = this.stack.shift();
+			if (mh.handler && mh.handler.complete)
+				mh.handler.complete();
+		}
+		if (this.top.complete)
+			this.top.complete();
 	}
 }
 
