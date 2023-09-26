@@ -1,4 +1,5 @@
 import { tokenize } from "../../js/tokenize.js";
+import { NoError, ExpectedErrors } from "./errorsupport.js";
 import { expect } from "chai";
 
 describe('Tokenizer', () => {
@@ -82,34 +83,6 @@ class MatchTokens {
 		expect(l.tokens.length).to.equal(this.toks.length);
 		for (var i=0;i<l.tokens.length;i++) {
 			expect(l.tokens[i]).to.equal(this.toks[i]);
-		}
-	}
-}
-
-class NoError {
-	raise(msg) {
-		throw Error("unexpected error: " + msg);
-	}
-}
-
-class ExpectedErrors {
-	constructor(...errs) {
-		this.errs = errs;
-	}
-
-	raise(l) {
-		for (var i=0;i<this.errs.length;i++) {
-			if (this.errs[i] == l) {
-				this.errs[i] = undefined;
-				return;
-			}
-		}
-	}
-
-	check() {
-		for (var i=0;i<this.errs.length;i++) {
-			if (this.errs[i])
-				throw Error("did not see: " + this.errs[i]);
 		}
 	}
 }
