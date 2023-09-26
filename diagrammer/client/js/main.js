@@ -1,6 +1,7 @@
 import parser from "./parser.js";
 import TopLevelParser from "./toplevel.js";
 import DiagramModel from "./model/diagram.js";
+import ErrorReporter from "./errors.js";
 
 function initialize() {
 	var updateButton = document.getElementsByClassName("toolbar-update")[0];
@@ -8,13 +9,18 @@ function initialize() {
 }
 
 function pipeline(ev) {
-	var errors = new ErrorReporter(); // TODO: this will need a DOM node somewhere
+	var errors = new ErrorReporter();
 	var model = new DiagramModel(errors);
 	readText("text-input", parser(new TopLevelParser(model, errors), errors));
-	var portfolio = new Portfolio();
-	model.partitionInto(portfolio);
-	tabModel("tabs-row", ensureTabs(portfolio));
-	portfolio.each((graph, tab) => graph.layout(d => d.drawInto(tab)));
+	if (errors.hasErrors()) {
+		applyToDiv("error-messages", tab => errors.show(tab));
+	} else {
+		applyToDiv("error-messages", tab => tab.innerHTML = '');
+		var portfolio = new Portfolio();
+		model.partitionInto(portfolio);
+		applyToDiv("tabs-row", ensureTabs(portfolio));
+		portfolio.each((graph, tab) => graph.layout(d => d.drawInto(tab)));
+	}
 }
 
 window.addEventListener('load', initialize);
@@ -27,7 +33,7 @@ function readText(label, processor) {
 	processor(input.value);
 }
 
-function tabModel(label, processor) {
+function applyToDiv(label, processor) {
 	var tabrow = document.getElementsByClassName(label)[0];
 	processor(tabrow);
 }
@@ -46,12 +52,5 @@ class Portfolio {
 
 	each(f) {
 		console.log("iterate over graphs and provide tabs");
-	}
-}
-
-// errors.js
-class ErrorReporter {
-	raise(s) {
-		console.log("error: " + s);
 	}
 }
