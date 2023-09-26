@@ -1,7 +1,11 @@
 class Edge {
+	constructor() {
+		this.ends = [];
+	}
 
 	add(end) {
-		
+		this.ends.push(end);
+		return this;	
 	}
 }
 
