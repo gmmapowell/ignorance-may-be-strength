@@ -19,7 +19,7 @@ class Portfolio {
 	each(f) {
 		for (var i=0;i<this.diagrams.length;i++) {
 			var d = this.diagrams[i];
-			f(d, null);
+			f(d.named, d.diagram);
 		}
 	}
 }

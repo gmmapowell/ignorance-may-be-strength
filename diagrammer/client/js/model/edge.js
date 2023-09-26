@@ -10,9 +10,9 @@ class Edge {
 }
 
 class EdgeEnd {
-	constructor(dir, node) {
+	constructor(dir, name) {
 		this.dir = dir;
-		this.node = node;
+		this.name = name;
 	}
 
 	add(prop) {

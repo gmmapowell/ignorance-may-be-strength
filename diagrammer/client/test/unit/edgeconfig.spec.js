@@ -31,7 +31,7 @@ describe('EdgeConfigParser', () => {
 	});
 	
 	it('the from property builds an object and returns an EdgeEndPropertiesParser', () => {
-		model.expect(EdgeEnd, n => { expect(n.dir).to.equal("from"); expect(n.node).to.equal("hello"); });
+		model.expect(EdgeEnd, n => { expect(n.dir).to.equal("from"); expect(n.name).to.equal("hello"); });
 		var errs = new NoError();
 		var nested = new EdgeConfigParser(model, errs).line(new Line(0, ["from", "hello"]));
 		expect(nested).to.be.instanceOf(EdgeEndPropertiesParser);
@@ -51,7 +51,7 @@ describe('EdgeConfigParser', () => {
 	});
 	
 	it('the to property builds an object and returns an EdgeEndPropertiesParser', () => {
-		model.expect(EdgeEnd, n => { expect(n.dir).to.equal("to"); expect(n.node).to.equal("hello"); });
+		model.expect(EdgeEnd, n => { expect(n.dir).to.equal("to"); expect(n.name).to.equal("hello"); });
 		var errs = new NoError();
 		var nested = new EdgeConfigParser(model, errs).line(new Line(0, ["to", "hello"]));
 		expect(nested).to.be.instanceOf(EdgeEndPropertiesParser);

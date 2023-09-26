@@ -32,13 +32,14 @@ describe('Diagram Partitioning', () => {
 	it('two connected nodes form one diagram with the lower name', () => {
 		var first = new Node("first");
 		var second = new Node("second")
-		diag.nodes.push(first);
-		diag.nodes.push(second);
-		diag.edges.push(new Edge().add(new EdgeEnd("from", first)).add(new EdgeEnd("to", second)));
+		diag.add(first);
+		diag.add(second);
+		diag.add(new Edge().add(new EdgeEnd("from", "first")).add(new EdgeEnd("to", "second")));
+		diag.validate();
 		portfolio.expectDiagrams("first");
 		diag.partitionInto(portfolio);
 		portfolio.check();
-		portfolio.assertDiagram("first", d => expect(d.diagram.nodes.length).to.equal(2));
+		portfolio.assertDiagram("first", d => expect(d.nodes.length).to.equal(2));
 	});
 
 	it('three nodes with two connected form two diagrams', () => {
@@ -48,20 +49,21 @@ describe('Diagram Partitioning', () => {
 		diag.add(first);
 		diag.add(second);
 		diag.add(third);
-		diag.add(new Edge().add(new EdgeEnd("from", first)).add(new EdgeEnd("to", second)));
+		diag.add(new Edge().add(new EdgeEnd("from", "first")).add(new EdgeEnd("to", "second")));
+		diag.validate();
 		portfolio.expectDiagrams("first", "third");
 		diag.partitionInto(portfolio);
 		portfolio.check();
 		portfolio.assertDiagram("first", d => {
-			expect(d.diagram.nodes.length).to.equal(2);
-			expect(d.diagram.nodes[0].name).to.equal("first");
-			expect(d.diagram.nodes[1].name).to.equal("second");
-			expect(d.diagram.edges.length).to.equal(1);
+			expect(d.nodes.length).to.equal(2);
+			expect(d.nodes[0].name).to.equal("first");
+			expect(d.nodes[1].name).to.equal("second");
+			expect(d.edges.length).to.equal(1);
 		});
 		portfolio.assertDiagram("third", d => {
-			expect(d.diagram.nodes.length).to.equal(1)
-			expect(d.diagram.nodes[0].name).to.equal("third");
-			expect(d.diagram.edges.length).to.equal(0);
+			expect(d.nodes.length).to.equal(1)
+			expect(d.nodes[0].name).to.equal("third");
+			expect(d.edges.length).to.equal(0);
 		});
 	});
 
@@ -72,14 +74,15 @@ describe('Diagram Partitioning', () => {
 		diag.add(first);
 		diag.add(second);
 		diag.add(third);
-		diag.add(new Edge().add(new EdgeEnd("from", first)).add(new EdgeEnd("to", second)));
-		diag.add(new Edge().add(new EdgeEnd("from", third)).add(new EdgeEnd("to", second)));
+		diag.add(new Edge().add(new EdgeEnd("from", "first")).add(new EdgeEnd("to", "second")));
+		diag.add(new Edge().add(new EdgeEnd("from", "third")).add(new EdgeEnd("to", "second")));
+		diag.validate();
 		portfolio.expectDiagrams("first");
 		diag.partitionInto(portfolio);
 		portfolio.check();
 		portfolio.assertDiagram("first", d => {
-			expect(d.diagram.nodes.length).to.equal(3);
-			expect(d.diagram.edges.length).to.equal(2);
+			expect(d.nodes.length).to.equal(3);
+			expect(d.edges.length).to.equal(2);
 		});
 	});
 });
@@ -101,8 +104,8 @@ class MockPortfolio {
 
 	assertDiagram(name, fn) {
 		var seen = false;
-		this.proxy.each((g, t) => { 
-			if (g.named == name) { fn(g); seen = true; }
+		this.proxy.each((n, g, t) => { 
+			if (n == name) { fn(g); seen = true; }
 		 });
 		expect(seen, "there was no diagram created called " + name).to.be.true;
 	}
