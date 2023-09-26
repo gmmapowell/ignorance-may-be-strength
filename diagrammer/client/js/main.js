@@ -1,5 +1,6 @@
 import parser from "./parser.js";
 import TopLevelParser from "./toplevel.js";
+import DiagramModel from "./model/diagram.js";
 
 function initialize() {
 	var updateButton = document.getElementsByClassName("toolbar-update")[0];
@@ -8,7 +9,7 @@ function initialize() {
 
 function pipeline(ev) {
 	var errors = new ErrorReporter(); // TODO: this will need a DOM node somewhere
-	var model = new DiagramModel();
+	var model = new DiagramModel(errors);
 	readText("text-input", parser(new TopLevelParser(model, errors), errors));
 	var portfolio = new Portfolio();
 	model.partitionInto(portfolio);
@@ -34,13 +35,6 @@ function tabModel(label, processor) {
 function ensureTabs(portfolio) {
 	return function(tabrow) {
 		portfolio.ensureTabs(tabrow);
-	}
-}
-
-// model.js
-class DiagramModel {
-	partitionInto(c) {
-		console.log("partition model into", c);
 	}
 }
 

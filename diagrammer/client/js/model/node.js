@@ -2,6 +2,16 @@ class Node {
 	constructor(name) {
 		this.name = name;
 	}
+
+	add(prop) {
+		
+	}
 }
 
-export default Node;
+class NodeLabel {
+	constructor(label) {
+		this.name = label;
+	}
+}
+
+export { Node, NodeLabel };

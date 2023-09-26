@@ -1,7 +1,7 @@
 import NodeConfigParser from "./nodeconfig.js";
 import EdgeConfigParser from "./edgeconfig.js";
-import Node from "./model/node.js";
-import Edge from "./model/edge.js";
+import { Node } from "./model/node.js";
+import { Edge } from "./model/edge.js";
 
 class TopLevelParser {
 	constructor(model, errors) {
@@ -21,7 +21,7 @@ class TopLevelParser {
 					case 2: {
 						var node = new Node(l.tokens[1]);
 						this.model.add(node);
-						return new NodeConfigParser(node);
+						return new NodeConfigParser(node, this.errors);
 					}
 					default: {
 						this.errors.raise("node: too many arguments");
@@ -35,7 +35,7 @@ class TopLevelParser {
 					case 1: {
 						var edge = new Edge();
 						this.model.add(edge);
-						return new EdgeConfigParser(edge);
+						return new EdgeConfigParser(edge, this.errors);
 					}
 					default: {
 						this.errors.raise("edge: not allowed arguments");

@@ -1,7 +1,6 @@
-import EdgeEndPropertiesParser from "./edgeendparser.js";
-import { EdgeEnd } from "./model/edge.js";
+import { EdgeEndStyle } from "./model/edge.js";
 
-class EdgeConfigParser {
+class EdgeEndPropertiesParser {
 	constructor(model, errors) {
 		this.model = model;
 		this.errors = errors;	
@@ -10,18 +9,16 @@ class EdgeConfigParser {
 	line(l) {
 		var cmd = l.tokens[0];
 		switch (cmd) {
-			case "from": 
-			case "to":
-			{
+			case "cap": {
 				switch (l.tokens.length) {
 					case 1: {
-						this.errors.raise(cmd + " property requires a node reference");
+						this.errors.raise(cmd + " property requires a style");
 						break;
 					}
 					case 2: {
-						var end = new EdgeEnd(cmd, l.tokens[1]);
+						var end = new EdgeEndStyle(l.tokens[1]);
 						this.model.add(end);
-						return new EdgeEndPropertiesParser(end, this.errors);
+						break;
 					}
 					default: {
 						this.errors.raise(cmd + ": too many arguments");
@@ -37,4 +34,4 @@ class EdgeConfigParser {
 	}
 }
 
-export default EdgeConfigParser;
+export default EdgeEndPropertiesParser;
