@@ -9,7 +9,7 @@ function initialize() {
 function pipeline(ev) {
 	var errors = new ErrorReporter(); // TODO: this will need a DOM node somewhere
 	var model = new DiagramModel();
-	readText("text-input", parser(new TopLevelParser(model), errors));
+	readText("text-input", parser(new TopLevelParser(model, errors), errors));
 	var portfolio = new Portfolio();
 	model.partitionInto(portfolio);
 	tabModel("tabs-row", ensureTabs(portfolio));
