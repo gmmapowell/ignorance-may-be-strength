@@ -1,6 +1,7 @@
 // Support the GIMP header file format
 
 static mut BUF:[u8;6] = [0;6];
+static mut BUF8:[u8;8] = [0;8];
 static mut IMAGE:[u8;HOMER_BYTES] = [0;HOMER_BYTES];
 
 const HOMER_HEIGHT : u32 = 64;
@@ -26,7 +27,7 @@ pub fn read_homer(homer: &str) -> &'static[u8;HOMER_BYTES] {
     }
 }
 
-pub fn hex(n : u32) -> &'static[u8;6] {
+pub fn hex24(n : u32) -> &'static[u8;6] {
     unsafe {
         BUF[0] = digit((n >> 20) & 0xf);
         BUF[1] = digit((n >> 16) & 0xf);
@@ -35,6 +36,21 @@ pub fn hex(n : u32) -> &'static[u8;6] {
         BUF[4] = digit((n >> 4) & 0xf);
         BUF[5] = digit(n & 0xf);
         &BUF
+    }
+}
+
+
+pub fn hex32(n : u32) -> &'static[u8;8] {
+    unsafe {
+        BUF8[0] = digit((n >> 28) & 0xf);
+        BUF8[1] = digit((n >> 24) & 0xf);
+        BUF8[2] = digit((n >> 20) & 0xf);
+        BUF8[3] = digit((n >> 16) & 0xf);
+        BUF8[4] = digit((n >> 12) & 0xf);
+        BUF8[5] = digit((n >> 8) & 0xf);
+        BUF8[6] = digit((n >> 4) & 0xf);
+        BUF8[7] = digit(n & 0xf);
+        &BUF8
     }
 }
 
