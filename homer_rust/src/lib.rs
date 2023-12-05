@@ -4,8 +4,11 @@ mod homer;
 mod ghff;
 use core::ptr::read_volatile;
 use core::ptr::write_volatile;
-// use crate::homer::HOMER_DATA;
+
+use crate::homer::HOMER_DATA;
+use crate::ghff::HOMER_BYTES;
 use crate::ghff::hex;
+use crate::ghff::read_homer;
 
 // raspi2 and raspi3 have peripheral base address 0x3F000000,
 // but raspi1 has peripheral base address 0x20000000. Ensure
@@ -54,7 +57,21 @@ fn write_chars(msg: &[u8;6]) {
 
 #[no_mangle]
 pub extern fn kernel_main() {
-    write_chars(hex(0x9a3cb0));
+    let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
+    let mut off : usize = 0;
+    while off < 200 {
+        let x : u32 =
+        (homer[off + 0] as u32) << 24 |
+        (homer[off + 1] as u32) << 16 |
+        (homer[off + 2] as u32) << 8 |
+        (homer[off + 3] as u32);
+        write_chars(hex(x));
+        writec(32);
+        off += 4;
+        if off % 40 == 0 {
+            writec(10);
+        }
+    }
     // write(HOMER_DATA);
     loop {
         writec(getc())
