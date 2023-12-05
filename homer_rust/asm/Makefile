@@ -2,7 +2,7 @@
 # for example, -s -S
 GDB = 
 DEBUG_WITH_GDB = -s -S
-LIB = ../target/aarch64-unknown-linux-gnu/debug/libhomer_rust.rlib
+LIB = ../target/aarch64-unknown-linux-gnu/release/libhomer_rust.rlib
 
 all: kernel8.img
 

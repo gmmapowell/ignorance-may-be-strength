@@ -1,7 +1,11 @@
 #![no_std]
 
+mod homer;
+mod ghff;
 use core::ptr::read_volatile;
 use core::ptr::write_volatile;
+// use crate::homer::HOMER_DATA;
+use crate::ghff::hex;
 
 // raspi2 and raspi3 have peripheral base address 0x3F000000,
 // but raspi1 has peripheral base address 0x20000000. Ensure
@@ -42,9 +46,16 @@ fn write(msg: &str) {
     }
 }
 
+fn write_chars(msg: &[u8;6]) {
+    for c in msg {
+        writec(*c)
+    }
+}
+
 #[no_mangle]
 pub extern fn kernel_main() {
-    write("Hello Rust Kernel world!");
+    write_chars(hex(0x9a3cb0));
+    // write(HOMER_DATA);
     loop {
         writec(getc())
     }
