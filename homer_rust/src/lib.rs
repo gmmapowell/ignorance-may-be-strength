@@ -7,6 +7,8 @@ use core::ptr::write_volatile;
 
 use crate::homer::HOMER_DATA;
 use crate::ghff::HOMER_BYTES;
+use crate::ghff::HOMER_WIDTH;
+use crate::ghff::HOMER_HEIGHT;
 use crate::ghff::hex24;
 use crate::ghff::hex32;
 use crate::ghff::read_homer;
@@ -44,6 +46,12 @@ const MBOX_BUSY: u32 = 0x80000000;
 // If the mailbox has seen our request but has not yet responded, we need to wait ...
 const MBOX_PENDING: u32 = 0x40000000;
 
+struct FrameBufferInfo {
+    width : u32,
+    height : u32,
+    pitch: u32,
+    base_addr: u32
+}
 
 fn mmio_write(reg: u32, val: u32) {
     unsafe { write_volatile(reg as *mut u32, val) }
@@ -91,8 +99,11 @@ fn write_8_chars(msg: &[u8;8]) {
 
 #[no_mangle]
 pub extern fn kernel_main() {
-    lfb_init();
+    let mut fb = FrameBufferInfo{width: 0, height: 0, pitch: 0, base_addr: 0};
+    lfb_init(&mut fb);
     let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
+    show_homer(&fb, &homer);
+
     let mut off : usize = 0;
     while off < 200 {
         let x : u32 =
@@ -116,7 +127,7 @@ pub extern fn kernel_main() {
 // For more information, you may want to start at
 // https://github.com/raspberrypi/firmware/wiki/Mailbox-property-interface
 
-fn lfb_init() {
+fn lfb_init(fb : &mut FrameBufferInfo) {
     let mut buf: [u32;36] = [0; 36];
 
     // The header of the message has a length and a status (0 = REQUEST; 0x8000xxxx = RESPONSE)
@@ -184,6 +195,40 @@ fn lfb_init() {
     }
     
     mbox_send(8, &mut buf);
+
+    let volbuf = &mut buf as *mut u32;
+    fb.width = unsafe { read_volatile(volbuf.add(5)) };
+    fb.height = unsafe { read_volatile(volbuf.add(6)) };
+    fb.pitch = unsafe { read_volatile(volbuf.add(33)) };
+    fb.base_addr = unsafe { read_volatile(volbuf.add(28)) } & 0x3fffffff;
+}
+
+fn show_homer(fb : &FrameBufferInfo, homer : &[u8; HOMER_BYTES]) {
+    // Because we want to put Homer in the middle of the screen, we need to first figure out where
+    // he should go.  We have a framebuffer width and height, and a homer width and height.
+    // So we need to put half of the distance in each direction as an initial value for x and y
+
+    let xoff = fb.width/2 - HOMER_WIDTH/2;
+    let yoff = fb.height/2 - HOMER_HEIGHT/2;
+
+    // Now we want to go over each of the scan lines, having the ptr be the base (from fb.base_addr)
+    // plus the current y multiplied by the pitch, plus the above xoff
+
+    let mut homer_index: usize = 0;
+    let mut y = 0;
+    while y < HOMER_HEIGHT {
+        let ptr = fb.base_addr + (yoff + y) * fb.pitch + xoff*4;
+        let mut x: u32 = 0;
+        while x < HOMER_WIDTH {
+            unsafe { *((ptr + x*4 + 0) as *mut u8) = homer[homer_index + 0]; }
+            unsafe { *((ptr + x*4 + 1) as *mut u8) = homer[homer_index + 1]; }
+            unsafe { *((ptr + x*4 + 2) as *mut u8) = homer[homer_index + 2]; }
+            unsafe { *((ptr + x*4 + 3) as *mut u8) = homer[homer_index + 3]; }
+            x += 1;
+            homer_index += 4;
+        }
+        y += 1;
+    }
 }
 
 fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
