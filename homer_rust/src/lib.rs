@@ -104,6 +104,7 @@ pub extern fn kernel_main() {
     let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
     show_homer(&fb, &homer);
 
+    /*
     let mut off : usize = 0;
     while off < 200 {
         let x : u32 =
@@ -118,9 +119,39 @@ pub extern fn kernel_main() {
             writec(10);
         }
     }
+    */
     // write(HOMER_DATA);
     loop {
         writec(getc())
+    }
+}
+
+#[repr(align(16))]
+struct Message {
+    pub buf: [u32; 36]
+}
+
+#[no_mangle]
+pub extern fn memset(mut buf: *mut u8, val: u8, cnt: usize) {
+    let mut i=0;
+    while i<cnt {
+        unsafe { *buf = val;
+            buf = buf.add(1);
+        }
+        i+=1;
+
+    }
+}
+
+#[no_mangle]
+pub extern fn memcpy(mut dest: *mut u8, mut src: *const u8, cnt: usize) {
+    let mut i=0;
+    while i<cnt {
+        unsafe { *dest = *src;
+            dest = dest.add(1);
+            src = src.add(1);
+        }
+        i+=1;
     }
 }
 
@@ -178,7 +209,7 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     buf[28] = 4096; // the modulus of the alignment we want (i.e. only the top 20 bits are significant)
     buf[29] = 0;
 
-    // And we want to check that we were given RGB (or not)
+    // And we want to check the pitch we received
     buf[30] = 0x40008;
     buf[31] = 4;
     buf[32] = 0;
@@ -194,9 +225,10 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
         mmio_read(MBOX_STATUS); // do something to waste time
     }
     
-    mbox_send(8, &mut buf);
+    let mut msg = Message { buf: buf };
+    mbox_send(8, &mut msg.buf);
 
-    let volbuf = &mut buf as *mut u32;
+    let volbuf: *mut u32 = &mut msg.buf as *mut u32;
     fb.width = unsafe { read_volatile(volbuf.add(5)) };
     fb.height = unsafe { read_volatile(volbuf.add(6)) };
     fb.pitch = unsafe { read_volatile(volbuf.add(33)) };
@@ -251,6 +283,7 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
     while mmio_read(MBOX_STATUS) & MBOX_PENDING != 0 {
     }
 
+    /*
     // show the returned buffer contents
     write("returned buffer contents:\n");
     let mut x = 0;
@@ -259,6 +292,7 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
         write("\n");
         x = x + 1;
     }
+    */
     
     // The compiler optimizes away (or something) reads into buf and returns what we wrote
     // We need to be sure we read what was written

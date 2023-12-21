@@ -35,3 +35,6 @@ halt:
 _ZN4core9panicking18panic_bounds_check17h75f9d87f2a814b7bE:
     b halt
 
+.globl _ZN4core9panicking5panic17h8f06a2df29fa4962E
+_ZN4core9panicking5panic17h8f06a2df29fa4962E:
+    b halt
