@@ -13,16 +13,28 @@ use crate::ghff::hex24;
 use crate::ghff::hex32;
 use crate::ghff::read_homer;
 
-// raspi2 and raspi3 have peripheral base address 0x3F000000,
-// but raspi1 has peripheral base address 0x20000000. Ensure
-// you are using the correct peripheral address for your
-// hardware.
-const UART_DR: u32 = 0x3F201000;
-const UART_FR: u32 = 0x3F201018;
+const ALT0: u32 = 0b100;
+
 
 // This is an all-but-random number which is used everywhere (see above)
 // but the best authority I have is https://forums.raspberrypi.com//viewtopic.php?t=142439#p941751
 const PERIPHERAL_BASE: u32 = 0x3F000000;
+
+// This is the base offset of the GPIO registers.
+// See https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf, Section 6
+const GPIO_BASE: u32 = 0x00200000;
+
+const GPPUD: u32 = PERIPHERAL_BASE + GPIO_BASE + 0x94;
+const GPPUDCLK0: u32 = PERIPHERAL_BASE + GPIO_BASE + 0x98;
+
+const UART_BASE: u32 = 0x00201000;
+const UART_DR: u32 = PERIPHERAL_BASE + UART_BASE + 0x00;
+const UART_FR: u32 = PERIPHERAL_BASE + UART_BASE + 0x18;
+const UART_IBRD: u32 = PERIPHERAL_BASE + UART_BASE + 0x24;
+const UART_FBRD: u32 = PERIPHERAL_BASE + UART_BASE + 0x28;
+const UART_LCRH: u32 = PERIPHERAL_BASE + UART_BASE + 0x2c;
+const UART_CR: u32 = PERIPHERAL_BASE + UART_BASE + 0x30;
+const UART_ICR: u32 = PERIPHERAL_BASE + UART_BASE + 0x44;
 
 // I just have nothing for this random number, other than other code
 // But it would appear to be where to send mailbox messages to the GPU
@@ -30,13 +42,14 @@ const PERIPHERAL_BASE: u32 = 0x3F000000;
 const MBOX_BASE: u32 = 0x0000B880;
 
 // The best I can do for this is the table at https://github.com/raspberrypi/firmware/wiki/Mailboxes#mailbox-registers
+const MBOX_READ_OFFSET: u32 = 0x0;
 const MBOX_STATUS_OFFSET: u32 = 0x18;
 const MBOX_WRITE_OFFSET: u32 = 0x20;
 
 // So now we can combine all these things to make the actual address we want
 const MBOX_STATUS: u32 = PERIPHERAL_BASE | MBOX_BASE | MBOX_STATUS_OFFSET;
 const MBOX_WRITE: u32 = PERIPHERAL_BASE | MBOX_BASE | MBOX_WRITE_OFFSET;
-
+const MBOX_READ: u32 = PERIPHERAL_BASE | MBOX_BASE | MBOX_READ_OFFSET;
 
 // Flags to look at in the mailbox
 
@@ -99,6 +112,8 @@ fn write_8_chars(msg: &[u8;8]) {
 
 #[no_mangle]
 pub extern fn kernel_main() {
+    avoid_emulator_segv();
+    uart_init();
     let mut fb = FrameBufferInfo{width: 0, height: 0, pitch: 0, base_addr: 0};
     lfb_init(&mut fb);
     let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
@@ -157,6 +172,68 @@ pub extern fn memcpy(mut dest: *mut u8, mut src: *const u8, cnt: usize) {
 
 // For more information, you may want to start at
 // https://github.com/raspberrypi/firmware/wiki/Mailbox-property-interface
+
+fn uart_init() {
+    // Turn off UART0 while we configure it
+    mmio_write(UART_CR, 0);
+
+    // Now, set the UART clock (yes, the Raspberry Pi seems 
+    // to have about 10 separate clocks) to 4MHz.
+    let mut buf: [u32;36] = [0; 36];
+
+    buf[0] = 9 * 4; // this message has 9 4-byte words
+    buf[1] = 0;
+    buf[2] = 0x38002; // set one of the clock rates
+    buf[3] = 12; // request has three words of data
+    buf[4] = 0;  // space for response length, but is zero for request
+    buf[5] = 2;  // 2 selects the "UART" clock
+    buf[6] = 4000000; // set it to 4MHz
+    buf[7] = 0;  // avoid setting "turbo" mode
+    buf[8] = 0;
+
+    let mut msg = Message { buf: buf };
+    mbox_send(8, &mut msg.buf);
+
+    let mut fs1 = gpfsel_read(1);
+    
+    gpf_select(&mut fs1, 4, ALT0);
+    gpf_select(&mut fs1, 5, ALT0);
+    gpfsel_write(1, fs1);
+
+    mmio_write(GPPUD, 0);
+    wait_a_while(150);
+    mmio_write(GPPUDCLK0, (1<<14) | (1<<15));
+    wait_a_while(150);
+    mmio_write(GPPUDCLK0, 0);
+
+    mmio_write(UART_ICR, 0x7ff);
+    mmio_write(UART_IBRD, 2);
+    mmio_write(UART_FBRD, 11);
+    mmio_write(UART_LCRH, 0x70);
+    mmio_write(UART_CR, 0x301); // Enable UART with Rx and Tx
+}
+
+fn gpfsel_read(reg: u32) -> u32 {
+    let addr = PERIPHERAL_BASE + GPIO_BASE + (reg*4);
+    mmio_read(addr)
+}
+
+fn gpf_select(flags: &mut u32, pos: u32, fun: u32) {
+    let lsb = pos * 3;
+    *flags = *flags & !(7 << lsb); // clear these bits
+    *flags = *flags | (fun << lsb);  // set these bits
+}
+
+fn gpfsel_write(reg: u32, value: u32) {
+    let addr = PERIPHERAL_BASE + GPIO_BASE + (reg*4);
+    mmio_write(addr, value);
+}
+
+fn wait_a_while(mut ncycles: u32) {
+    while ncycles > 0 {
+        ncycles -= 1;
+    }
+}
 
 fn lfb_init(fb : &mut FrameBufferInfo) {
     let mut buf: [u32;36] = [0; 36];
@@ -218,17 +295,35 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     // We have no more tags
     buf[34] = 0;
 
-    // avoid a SEGV in the emulator
-    let mut y = 0;
-    while y < 1000000 {
-        y = y + 1;
-        mmio_read(MBOX_STATUS); // do something to waste time
-    }
-    
     let mut msg = Message { buf: buf };
     mbox_send(8, &mut msg.buf);
 
     let volbuf: *mut u32 = &mut msg.buf as *mut u32;
+    
+    // The compiler optimizes away (or something) reads into buf and returns what we wrote
+    // We need to be sure we read what was written
+    let stat = unsafe { read_volatile(volbuf.add(1)) };
+    
+    // test that we received valid data
+    if stat != 0x80000000 {
+        write("error returned from getfb ");
+        write_8_chars(hex32(stat));
+        write("\n");
+        return;
+    }
+
+    let pixdepth = unsafe { read_volatile(volbuf.add(20)) };
+    if pixdepth != 32 {
+        write("pixel depth is not 32");
+        return;
+    }
+
+    let alignment = unsafe { read_volatile(volbuf.add(28)) };
+    if alignment == 0 {
+        write("alignment is zero");
+        return;
+    }
+
     fb.width = unsafe { read_volatile(volbuf.add(5)) };
     fb.height = unsafe { read_volatile(volbuf.add(6)) };
     fb.pitch = unsafe { read_volatile(volbuf.add(33)) };
@@ -263,6 +358,15 @@ fn show_homer(fb : &FrameBufferInfo, homer : &[u8; HOMER_BYTES]) {
     }
 }
 
+fn avoid_emulator_segv() {
+        // avoid a SEGV in the emulator
+        let mut y = 0;
+        while y < 1000000 {
+            y = y + 1;
+            mmio_read(MBOX_STATUS); // do something to waste time
+        }    
+}
+
 fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
     while mmio_read(MBOX_STATUS) & MBOX_BUSY != 0 {
     }
@@ -283,6 +387,12 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
     while mmio_read(MBOX_STATUS) & MBOX_PENDING != 0 {
     }
 
+    loop {
+        let rb = mmio_read(MBOX_READ);
+        if rb == addr {
+            break;
+        }
+    }
     /*
     // show the returned buffer contents
     write("returned buffer contents:\n");
@@ -293,28 +403,19 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
         x = x + 1;
     }
     */
-    
-    // The compiler optimizes away (or something) reads into buf and returns what we wrote
-    // We need to be sure we read what was written
-    let stat = unsafe { read_volatile(volbuf.add(1)) };
-    
-    // test that we received valid data
-    if stat != 0x80000000 {
-        write("error returned from getfb ");
-        write_8_chars(hex32(stat));
-        write("\n");
-        return;
-    }
+}
 
-    let pixdepth = unsafe { read_volatile(volbuf.add(20)) };
-    if pixdepth != 32 {
-        write("pixel depth is not 32");
-        return;
-    }
 
-    let alignment = unsafe { read_volatile(volbuf.add(28)) };
-    if alignment == 0 {
-        write("alignment is zero");
-        return;
+#[cfg(tests)]
+mod tests {
+    use alloc::collections::btree_map::Values;
+
+    use super::*;
+
+    #[test]
+    fn test_set_4_in_1_from_0() {
+        let mut val = 0;
+        gpf_select(&mut val, 1, ALT0);
+        assert_eq!(val, 0b100000);
     }
 }
