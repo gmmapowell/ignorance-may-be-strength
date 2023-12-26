@@ -15,7 +15,6 @@ use crate::ghff::read_homer;
 
 const ALT0: u32 = 0b100;
 
-
 // This is an all-but-random number which is used everywhere (see above)
 // but the best authority I have is https://forums.raspberrypi.com//viewtopic.php?t=142439#p941751
 const PERIPHERAL_BASE: u32 = 0x3F000000;
@@ -59,11 +58,18 @@ const MBOX_BUSY: u32 = 0x80000000;
 // If the mailbox has seen our request but has not yet responded, we need to wait ...
 const MBOX_PENDING: u32 = 0x40000000;
 
+#[derive(PartialEq)]
+enum PixelOrder {
+    BGR,
+    RGB
+}
+
 struct FrameBufferInfo {
     width : u32,
     height : u32,
     pitch: u32,
-    base_addr: u32
+    base_addr: u32,
+    pixorder: PixelOrder
 }
 
 fn mmio_write(reg: u32, val: u32) {
@@ -114,7 +120,7 @@ fn write_8_chars(msg: &[u8;8]) {
 pub extern fn kernel_main() {
     avoid_emulator_segv();
     uart_init();
-    let mut fb = FrameBufferInfo{width: 0, height: 0, pitch: 0, base_addr: 0};
+    let mut fb = FrameBufferInfo{width: 0, height: 0, pitch: 0, base_addr: 0, pixorder: PixelOrder::RGB};
     lfb_init(&mut fb);
     let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
     show_homer(&fb, &homer);
@@ -308,19 +314,24 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     if stat != 0x80000000 {
         write("error returned from getfb ");
         write_8_chars(hex32(stat));
-        write("\n");
+        write("\r\n");
         return;
     }
 
     let pixdepth = unsafe { read_volatile(volbuf.add(20)) };
     if pixdepth != 32 {
-        write("pixel depth is not 32");
+        write("pixel depth is not 32\r\n");
         return;
     }
 
+    let pixorder = unsafe { read_volatile(volbuf.add(24)) };
+    write("pixel order is ");
+    write_8_chars(hex32(pixorder));
+    write("\r\n");
+
     let alignment = unsafe { read_volatile(volbuf.add(28)) };
     if alignment == 0 {
-        write("alignment is zero");
+        write("alignment is zero\r\n");
         return;
     }
 
@@ -328,6 +339,7 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     fb.height = unsafe { read_volatile(volbuf.add(6)) };
     fb.pitch = unsafe { read_volatile(volbuf.add(33)) };
     fb.base_addr = unsafe { read_volatile(volbuf.add(28)) } & 0x3fffffff;
+    fb.pixorder = if pixorder == 1 { PixelOrder::RGB } else { PixelOrder::BGR };
 }
 
 fn show_homer(fb : &FrameBufferInfo, homer : &[u8; HOMER_BYTES]) {
@@ -347,10 +359,17 @@ fn show_homer(fb : &FrameBufferInfo, homer : &[u8; HOMER_BYTES]) {
         let ptr = fb.base_addr + (yoff + y) * fb.pitch + xoff*4;
         let mut x: u32 = 0;
         while x < HOMER_WIDTH {
-            unsafe { *((ptr + x*4 + 0) as *mut u8) = homer[homer_index + 0]; }
-            unsafe { *((ptr + x*4 + 1) as *mut u8) = homer[homer_index + 1]; }
-            unsafe { *((ptr + x*4 + 2) as *mut u8) = homer[homer_index + 2]; }
-            unsafe { *((ptr + x*4 + 3) as *mut u8) = homer[homer_index + 3]; }
+            if (fb.pixorder == PixelOrder::RGB) {
+                unsafe { *((ptr + x*4 + 0) as *mut u8) = homer[homer_index + 0]; }
+                unsafe { *((ptr + x*4 + 1) as *mut u8) = homer[homer_index + 1]; }
+                unsafe { *((ptr + x*4 + 2) as *mut u8) = homer[homer_index + 2]; }
+                unsafe { *((ptr + x*4 + 3) as *mut u8) = homer[homer_index + 3]; }
+            } else {
+                unsafe { *((ptr + x*4 + 2) as *mut u8) = homer[homer_index + 0]; }
+                unsafe { *((ptr + x*4 + 1) as *mut u8) = homer[homer_index + 1]; }
+                unsafe { *((ptr + x*4 + 0) as *mut u8) = homer[homer_index + 2]; }
+                unsafe { *((ptr + x*4 + 3) as *mut u8) = homer[homer_index + 3]; }
+            }
             x += 1;
             homer_index += 4;
         }
