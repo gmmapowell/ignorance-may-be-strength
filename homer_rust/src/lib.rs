@@ -9,7 +9,6 @@ use crate::homer::HOMER_DATA;
 use crate::ghff::HOMER_BYTES;
 use crate::ghff::HOMER_WIDTH;
 use crate::ghff::HOMER_HEIGHT;
-use crate::ghff::hex24;
 use crate::ghff::hex32;
 use crate::ghff::read_homer;
 
@@ -104,12 +103,6 @@ fn write(msg: &str) {
     }
 }
 
-fn write_6_chars(msg: &[u8;6]) {
-    for c in msg {
-        writec(*c)
-    }
-}
-
 fn write_8_chars(msg: &[u8;8]) {
     for c in msg {
         writec(*c)
@@ -125,23 +118,6 @@ pub extern fn kernel_main() {
     let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
     show_homer(&fb, &homer);
 
-    /*
-    let mut off : usize = 0;
-    while off < 200 {
-        let x : u32 =
-        (homer[off + 0] as u32) << 24 |
-        (homer[off + 1] as u32) << 16 |
-        (homer[off + 2] as u32) << 8 |
-        (homer[off + 3] as u32);
-        write_6_chars(hex24(x));
-        writec(32);
-        off += 4;
-        if off % 40 == 0 {
-            writec(10);
-        }
-    }
-    */
-    // write(HOMER_DATA);
     loop {
         writec(getc())
     }
@@ -359,7 +335,7 @@ fn show_homer(fb : &FrameBufferInfo, homer : &[u8; HOMER_BYTES]) {
         let ptr = fb.base_addr + (yoff + y) * fb.pitch + xoff*4;
         let mut x: u32 = 0;
         while x < HOMER_WIDTH {
-            if (fb.pixorder == PixelOrder::RGB) {
+            if fb.pixorder == PixelOrder::RGB {
                 unsafe { *((ptr + x*4 + 0) as *mut u8) = homer[homer_index + 0]; }
                 unsafe { *((ptr + x*4 + 1) as *mut u8) = homer[homer_index + 1]; }
                 unsafe { *((ptr + x*4 + 2) as *mut u8) = homer[homer_index + 2]; }
@@ -412,16 +388,6 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
             break;
         }
     }
-    /*
-    // show the returned buffer contents
-    write("returned buffer contents:\n");
-    let mut x = 0;
-    while x < 36 {
-        write_8_chars(hex32(buf[x]));
-        write("\n");
-        x = x + 1;
-    }
-    */
 }
 
 
