@@ -391,10 +391,8 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
 }
 
 
-#[cfg(tests)]
+#[cfg(test)]
 mod tests {
-    use alloc::collections::btree_map::Values;
-
     use super::*;
 
     #[test]
