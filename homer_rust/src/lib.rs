@@ -1,7 +1,9 @@
 #![no_std]
-
+extern crate alloc;
+    
 mod homer;
 mod ghff;
+mod allocator;
 use core::ptr::read_volatile;
 use core::ptr::write_volatile;
 
@@ -218,7 +220,10 @@ fn wait_a_while(mut ncycles: u32) {
 }
 
 fn lfb_init(fb : &mut FrameBufferInfo) {
-    let mut buf: [u32;36] = [0; 36];
+    let mut buf: &mut [u32] = allocate_message_buffer(35);
+
+    write_8_chars(hex32(buf.as_ptr() as u32));
+    write("\r\n");
 
     // The header of the message has a length and a status (0 = REQUEST; 0x8000xxxx = RESPONSE)
     buf[0] = 35 * 4; // the buffer has 35 4-byte words
@@ -277,10 +282,9 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     // We have no more tags
     buf[34] = 0;
 
-    let mut msg = Message { buf: buf };
-    mbox_send(8, &mut msg.buf);
+    mbox_send(8, &mut buf);
 
-    let volbuf: *mut u32 = &mut msg.buf as *mut u32;
+    let volbuf: *mut u32 = buf.as_mut_ptr();
     
     // The compiler optimizes away (or something) reads into buf and returns what we wrote
     // We need to be sure we read what was written
@@ -362,12 +366,12 @@ fn avoid_emulator_segv() {
         }    
 }
 
-fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
+fn mbox_send(ch: u8, buf: &mut[u32]) {
     while mmio_read(MBOX_STATUS) & MBOX_BUSY != 0 {
     }
 
     // obtain the address of buf as a raw pointer
-    let volbuf = buf as *const u32;
+    let volbuf = buf.as_mut_ptr();
 
     // then convert that to just a plain integer
     let ptr:u32 = volbuf as u32;
@@ -390,6 +394,12 @@ fn mbox_send(ch: u8, buf: &mut[u32; 36]) {
     }
 }
 
+fn allocate_message_buffer(nwords: usize) -> &'static mut [u32] {
+    unsafe {
+        let ptr = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align_unchecked(nwords * 4, 16)) as *mut u32;
+        alloc::slice::from_raw_parts_mut(ptr, nwords)
+    }
+}
 
 #[cfg(test)]
 mod tests {

@@ -39,5 +39,15 @@ SECTIONS
     . = ALIGN(4096); /* align to page size */
     __bss_end = .;
     __bss_size = __bss_end - __bss_start;
+
+    __heap_start = .;
+    .heap :
+    {
+
+    }
+    . = 0x100000;
+    __heap_end = .;
+    __heap_size = __heap_end - __heap_start;
+    
     __end = .;
 }
