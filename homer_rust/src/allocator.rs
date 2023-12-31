@@ -8,10 +8,12 @@ extern {
     pub static __heap_end : u32;
 }
 
+#[cfg(not(test))]
 #[allow(non_upper_case_globals)]
 #[no_mangle]
 pub static __rust_no_alloc_shim_is_unstable: u8 = 0;
 
+#[cfg(not(test))]
 #[global_allocator]
 static HEAP: PageAllocator = PageAllocator {
     next_page: UnsafeCell::new(0),
