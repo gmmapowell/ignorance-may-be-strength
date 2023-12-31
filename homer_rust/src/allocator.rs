@@ -1,3 +1,5 @@
+mod tests;
+
 use core::alloc::GlobalAlloc;
 use core::cell::UnsafeCell;
 
