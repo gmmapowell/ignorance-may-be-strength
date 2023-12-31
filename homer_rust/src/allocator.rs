@@ -52,7 +52,7 @@ unsafe impl GlobalAlloc for PageAllocator {
 
 impl PageAllocator {
     unsafe fn next(&self, list: &UnsafeCell<usize>) -> *mut u8 {
-        let lp = list.get();
+        let lp: *mut usize = list.get();
         if *lp == 0 {
             let np = self.next_page.get();
             // we don't have any free memory, allocate next page

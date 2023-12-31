@@ -19,7 +19,7 @@ mod tests {
 
     fn simple_allocator() -> PageAllocator {
         return PageAllocator{
-            next_page: UnsafeCell::new(4096),
+            next_page: UnsafeCell::new(0),
             free_16: UnsafeCell::new(0),
             free_256: UnsafeCell::new(0),
             free_4096: UnsafeCell::new(0)        
