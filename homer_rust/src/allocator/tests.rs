@@ -154,7 +154,6 @@ mod tests {
         }
     }
 
-
     #[test]
     fn test_allocate_deallocate_reallocate_two_pages_backwards_reuse_blocks_in_reverse_order() {
         let (start, pa) = simple_allocator(2);
@@ -172,6 +171,78 @@ mod tests {
             assert_eq!(readdr2 as usize, start);
             let oom = pa.alloc(l);
             assert_eq!(oom as *const u8, core::ptr::null());
+        }
+    }
+
+    #[test]
+    fn test_allocate_deallocate_reallocate_two_16_byte_blocks_in_order_reuse_blocks() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(16, 16).unwrap();
+            let addr1 = pa.alloc(l);
+            let addr2 = pa.alloc(l);
+            assert_eq!(addr1 as usize, start+16);
+            assert_eq!(addr2 as usize, start+32);
+            pa.dealloc(addr2, l);
+            pa.dealloc(addr1, l);
+            let readdr1 = pa.alloc(l);
+            assert_eq!(readdr1 as usize, start+16);
+            let readdr2 = pa.alloc(l);
+            assert_eq!(readdr2 as usize, start+32);
+        }
+    }
+
+    #[test]
+    fn test_allocate_deallocate_reallocate_two_16_byte_blocks_in_reverse_order_reuse_blocks() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(16, 16).unwrap();
+            let addr1 = pa.alloc(l);
+            let addr2 = pa.alloc(l);
+            assert_eq!(addr1 as usize, start+16);
+            assert_eq!(addr2 as usize, start+32);
+            pa.dealloc(addr1, l);
+            pa.dealloc(addr2, l);
+            let readdr2 = pa.alloc(l);
+            assert_eq!(readdr2 as usize, start+32);
+            let readdr1 = pa.alloc(l);
+            assert_eq!(readdr1 as usize, start+16);
+        }
+    }
+
+    #[test]
+    fn test_allocate_deallocate_reallocate_two_256_byte_blocks_in_order_reuse_blocks() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(256, 256).unwrap();
+            let addr1 = pa.alloc(l);
+            let addr2 = pa.alloc(l);
+            assert_eq!(addr1 as usize, start+256);
+            assert_eq!(addr2 as usize, start+512);
+            pa.dealloc(addr2, l);
+            pa.dealloc(addr1, l);
+            let readdr1 = pa.alloc(l);
+            assert_eq!(readdr1 as usize, start+256);
+            let readdr2 = pa.alloc(l);
+            assert_eq!(readdr2 as usize, start+512);
+        }
+    }
+
+    #[test]
+    fn test_allocate_deallocate_reallocate_two_256_byte_blocks_in_reverse_order_reuse_blocks() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(256, 256).unwrap();
+            let addr1 = pa.alloc(l);
+            let addr2 = pa.alloc(l);
+            assert_eq!(addr1 as usize, start+256);
+            assert_eq!(addr2 as usize, start+512);
+            pa.dealloc(addr1, l);
+            pa.dealloc(addr2, l);
+            let readdr2 = pa.alloc(l);
+            assert_eq!(readdr2 as usize, start+512);
+            let readdr1 = pa.alloc(l);
+            assert_eq!(readdr1 as usize, start+256);
         }
     }
 

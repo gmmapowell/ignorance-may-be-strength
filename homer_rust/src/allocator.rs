@@ -35,7 +35,15 @@ unsafe impl<F> GlobalAlloc for PageAllocator<F> where F: Fn() -> (usize,usize) {
             *(ptr as *mut usize) = *self.free_4096.get();
             *self.free_4096.get() = ptr as usize;
         } else {
-            panic!("not 4096");
+            let page = ((ptr as usize) & !0xfff) as *mut usize;
+            let size = *page;
+            if size == 16 {
+                *(ptr as *mut usize) = *self.free_16.get();
+                *self.free_16.get() = ptr as usize;
+            } else {
+                *(ptr as *mut usize) = *self.free_256.get();
+                *self.free_256.get() = ptr as usize;
+            }
         }
     }
 }
