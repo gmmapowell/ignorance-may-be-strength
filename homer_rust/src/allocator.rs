@@ -1,38 +1,22 @@
 mod tests;
+mod init_alloc;
 
 use core::alloc::GlobalAlloc;
 use core::cell::UnsafeCell;
 
-extern {
-    pub static __heap_start : u32;
-    pub static __heap_end : u32;
-}
-
-#[cfg(not(test))]
-#[allow(non_upper_case_globals)]
-#[no_mangle]
-pub static __rust_no_alloc_shim_is_unstable: u8 = 0;
-
-#[cfg(not(test))]
-#[global_allocator]
-static HEAP: PageAllocator = PageAllocator {
-    next_page: UnsafeCell::new(0),
-    free_16: UnsafeCell::new(0),
-    free_256: UnsafeCell::new(0),
-    free_4096: UnsafeCell::new(0)
-};
-
-struct PageAllocator {
+struct PageAllocator<F> where F: Fn() -> (usize,usize) {
     next_page: UnsafeCell<usize>,
+    end: UnsafeCell<usize>,
     free_16: UnsafeCell<usize>,
     free_256: UnsafeCell<usize>,
-    free_4096: UnsafeCell<usize>
+    free_4096: UnsafeCell<usize>,
+    init: F
 }
 
 // OK to hack this because we are single threaded for now
-unsafe impl Sync for PageAllocator {}
+unsafe impl<F> Sync for PageAllocator<F> where F: Fn() -> (usize,usize) {}
 
-unsafe impl GlobalAlloc for PageAllocator {
+unsafe impl<F> GlobalAlloc for PageAllocator<F> where F: Fn() -> (usize,usize) {
     unsafe fn alloc(&self, layout: core::alloc::Layout) -> *mut u8 {
         if layout.size() <= 16 && layout.align() <= 16 {
             self.next(&self.free_16)
@@ -50,16 +34,18 @@ unsafe impl GlobalAlloc for PageAllocator {
     }
 }
 
-impl PageAllocator {
+impl<F> PageAllocator<F> where F: Fn() -> (usize,usize) {
     unsafe fn next(&self, list: &UnsafeCell<usize>) -> *mut u8 {
         let lp: *mut usize = list.get();
         if *lp == 0 {
             let np = self.next_page.get();
             // we don't have any free memory, allocate next page
             if *np == 0 {
-                *np = (&__heap_start as *const _) as usize;
+                let (start, end) = (self.init)();
+                *np = start;
+                *self.end.get() = end;
             }
-            if *np >= (&__heap_end as *const _) as usize {
+            if *np >= *self.end.get() {
                 return core::ptr::null_mut(); // we are out of memory
             }
 
