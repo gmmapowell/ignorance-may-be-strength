@@ -105,12 +105,6 @@ fn write(msg: &str) {
     }
 }
 
-fn write_8_chars(msg: &[u8;8]) {
-    for c in msg {
-        writec(*c)
-    }
-}
-
 #[no_mangle]
 pub extern fn kernel_main() {
     avoid_emulator_segv();
@@ -123,11 +117,6 @@ pub extern fn kernel_main() {
     loop {
         writec(getc())
     }
-}
-
-#[repr(align(16))]
-struct Message {
-    pub buf: [u32; 36]
 }
 
 #[no_mangle]
@@ -163,7 +152,7 @@ fn uart_init() {
 
     // Now, set the UART clock (yes, the Raspberry Pi seems 
     // to have about 10 separate clocks) to 4MHz.
-    let mut buf: [u32;36] = [0; 36];
+    let mut buf: &mut [u32] = allocate_message_buffer(9);
 
     buf[0] = 9 * 4; // this message has 9 4-byte words
     buf[1] = 0;
@@ -175,8 +164,7 @@ fn uart_init() {
     buf[7] = 0;  // avoid setting "turbo" mode
     buf[8] = 0;
 
-    let mut msg = Message { buf: buf };
-    mbox_send(8, &mut msg.buf);
+    mbox_send(8, &mut buf);
 
     let mut fs1 = gpfsel_read(1);
     
@@ -222,7 +210,7 @@ fn wait_a_while(mut ncycles: u32) {
 fn lfb_init(fb : &mut FrameBufferInfo) {
     let mut buf: &mut [u32] = allocate_message_buffer(35);
 
-    write_8_chars(hex32(buf.as_ptr() as u32));
+    write(hex32(buf.as_ptr() as u32));
     write("\r\n");
 
     // The header of the message has a length and a status (0 = REQUEST; 0x8000xxxx = RESPONSE)
@@ -293,7 +281,7 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     // test that we received valid data
     if stat != 0x80000000 {
         write("error returned from getfb ");
-        write_8_chars(hex32(stat));
+        write(hex32(stat));
         write("\r\n");
         return;
     }
@@ -306,7 +294,7 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
 
     let pixorder = unsafe { read_volatile(volbuf.add(24)) };
     write("pixel order is ");
-    write_8_chars(hex32(pixorder));
+    write(hex32(pixorder));
     write("\r\n");
 
     let alignment = unsafe { read_volatile(volbuf.add(28)) };

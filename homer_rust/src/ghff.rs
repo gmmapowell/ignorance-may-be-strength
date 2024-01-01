@@ -1,6 +1,5 @@
 // Support the GIMP header file format
 
-static mut BUF8:[u8;8] = [0;8];
 static mut IMAGE:[u8;HOMER_BYTES] = [0;HOMER_BYTES];
 
 pub const HOMER_HEIGHT : u32 = 64;
@@ -26,17 +25,20 @@ pub fn read_homer(homer: &str) -> &'static[u8;HOMER_BYTES] {
     }
 }
 
-pub fn hex32(n : u32) -> &'static[u8;8] {
+pub fn hex32(n : u32) -> &'static str {
     unsafe {
-        BUF8[0] = digit((n >> 28) & 0xf);
-        BUF8[1] = digit((n >> 24) & 0xf);
-        BUF8[2] = digit((n >> 20) & 0xf);
-        BUF8[3] = digit((n >> 16) & 0xf);
-        BUF8[4] = digit((n >> 12) & 0xf);
-        BUF8[5] = digit((n >> 8) & 0xf);
-        BUF8[6] = digit((n >> 4) & 0xf);
-        BUF8[7] = digit(n & 0xf);
-        &BUF8
+        let buf = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align_unchecked(8, 4));
+        
+        let arr = alloc::slice::from_raw_parts_mut(buf, 8);
+        arr[0] = digit((n >> 28) & 0xf);
+        arr[1] = digit((n >> 24) & 0xf);
+        arr[2] = digit((n >> 20) & 0xf);
+        arr[3] = digit((n >> 16) & 0xf);
+        arr[4] = digit((n >> 12) & 0xf);
+        arr[5] = digit((n >> 8) & 0xf);
+        arr[6] = digit((n >> 4) & 0xf);
+        arr[7] = digit(n & 0xf);
+        core::str::from_utf8_unchecked(arr)
     }
 }
 
