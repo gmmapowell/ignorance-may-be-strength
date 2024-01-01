@@ -91,6 +91,38 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_allocate_two_pages_if_block_is_8192_bytes() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let addr1 = pa.alloc(alloc::alloc::Layout::from_size_align(4096, 16).unwrap()) as usize;
+            assert_eq!(addr1, start);
+            let addr2 = pa.alloc(alloc::alloc::Layout::from_size_align(4096, 16).unwrap()) as usize;
+            assert_eq!(addr2, start+4096);
+            let oom = pa.alloc(alloc::alloc::Layout::from_size_align(4096, 16).unwrap()) as usize;
+            assert_eq!(oom as *const u8, core::ptr::null());
+        }
+    }
+
+    #[test]
+    fn test_we_can_allocate_256_bytes_30_times_in_8192_bytes() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let mut i = 1;
+            while i < 32 {
+                let addr: usize = pa.alloc(alloc::alloc::Layout::from_size_align(256, 256).unwrap()) as usize;
+                assert_eq!(addr, start+256*i, "i={}", i);
+                i = i+1;
+                if i == 16 { // 16 is the start of the second block, which is again used for size, so move on to 17
+                    i = i+1;
+                }
+            }
+            // test that a further allocation will be OOM
+            let will_be_null: usize = pa.alloc(alloc::alloc::Layout::from_size_align(256, 256).unwrap()) as usize;
+            assert_eq!(will_be_null as *const u8, core::ptr::null());
+        }
+    }
+
     fn simple_allocator(npages: usize) -> (usize, PageAllocator<Box<dyn Fn() -> (usize,usize)>>) {
         unsafe {
             let blk = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align(4096 * npages, 16).unwrap());
