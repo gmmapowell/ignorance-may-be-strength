@@ -123,9 +123,61 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_allocate_deallocate_reallocate_first_page_reuses_block() {
+        let (start, pa) = simple_allocator(1);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(4096, 16).unwrap();
+            let addr = pa.alloc(l);
+            assert_eq!(addr as usize, start);
+            pa.dealloc(addr, l);
+            let readdr = pa.alloc(l);
+            assert_eq!(readdr as usize, start);
+        }
+    }
+
+    #[test]
+    fn test_allocate_deallocate_reallocate_two_pages_in_order_reuse_blocks() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(4096, 16).unwrap();
+            let addr1 = pa.alloc(l);
+            let addr2 = pa.alloc(l);
+            assert_eq!(addr1 as usize, start);
+            assert_eq!(addr2 as usize, start+4096);
+            pa.dealloc(addr2, l);
+            pa.dealloc(addr1, l);
+            let readdr1 = pa.alloc(l);
+            assert_eq!(readdr1 as usize, start);
+            let readdr2 = pa.alloc(l);
+            assert_eq!(readdr2 as usize, start+4096);
+        }
+    }
+
+
+    #[test]
+    fn test_allocate_deallocate_reallocate_two_pages_backwards_reuse_blocks_in_reverse_order() {
+        let (start, pa) = simple_allocator(2);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(4096, 16).unwrap();
+            let addr1 = pa.alloc(l);
+            let addr2 = pa.alloc(l);
+            assert_eq!(addr1 as usize, start);
+            assert_eq!(addr2 as usize, start+4096);
+            pa.dealloc(addr1, l);
+            pa.dealloc(addr2, l);
+            let readdr1 = pa.alloc(l);
+            assert_eq!(readdr1 as usize, start+4096);
+            let readdr2 = pa.alloc(l);
+            assert_eq!(readdr2 as usize, start);
+            let oom = pa.alloc(l);
+            assert_eq!(oom as *const u8, core::ptr::null());
+        }
+    }
+
     fn simple_allocator(npages: usize) -> (usize, PageAllocator<Box<dyn Fn() -> (usize,usize)>>) {
         unsafe {
-            let blk = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align(4096 * npages, 16).unwrap());
+            let blk = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align(4096 * npages, 4096).unwrap());
             let start = (blk as *const _) as usize;
             let f = move || { (start, start+4096 * npages) };
             (start, PageAllocator{

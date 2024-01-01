@@ -29,8 +29,14 @@ unsafe impl<F> GlobalAlloc for PageAllocator<F> where F: Fn() -> (usize,usize) {
         }
     }
 
-    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: core::alloc::Layout) {
-        // we don't support deallocation yet
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: core::alloc::Layout) {
+        if (ptr as usize) & 0xfff == 0 {
+            // 4096 byte block
+            *(ptr as *mut usize) = *self.free_4096.get();
+            *self.free_4096.get() = ptr as usize;
+        } else {
+            panic!("not 4096");
+        }
     }
 }
 
