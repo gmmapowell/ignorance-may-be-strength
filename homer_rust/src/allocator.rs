@@ -25,15 +25,25 @@ unsafe impl<F> GlobalAlloc for PageAllocator<F> where F: Fn() -> (usize,usize) {
         } else if layout.size() <= 4096 && layout.align() <= 4096 {
             self.next(&self.free_4096, 4096)
         } else {
-            core::ptr::null_mut() // this is allegedly what will cause OOM exceptions
+            self.multipage(layout.size())
         }
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, _layout: core::alloc::Layout) {
+    unsafe fn dealloc(&self, ptr: *mut u8, layout: core::alloc::Layout) {
         if (ptr as usize) & 0xfff == 0 {
-            // 4096 byte block
-            *(ptr as *mut usize) = *self.free_4096.get();
-            *self.free_4096.get() = ptr as usize;
+            // 4096 byte block or bigger
+            if layout.size() <= 4096 {
+                *(ptr as *mut usize) = *self.free_4096.get();
+                *self.free_4096.get() = ptr as usize;
+            } else {
+                let cnt: usize = (layout.size()+4095) & !4095;
+                let mut after = ptr.add(cnt);
+                while after > ptr {
+                    after = after.sub(4096);
+                    *(after as *mut usize) = *self.free_4096.get();
+                    *self.free_4096.get() = after as usize;
+                }
+            }
         } else {
             let page = ((ptr as usize) & !0xfff) as *mut usize;
             let size = *page;
@@ -46,7 +56,7 @@ unsafe impl<F> GlobalAlloc for PageAllocator<F> where F: Fn() -> (usize,usize) {
             }
         }
     }
-}
+} 
 
 impl<F> PageAllocator<F> where F: Fn() -> (usize,usize) {
     unsafe fn next(&self, list: &UnsafeCell<usize>, size: usize) -> *mut u8 {
@@ -69,6 +79,27 @@ impl<F> PageAllocator<F> where F: Fn() -> (usize,usize) {
         let curr = *lp;
         *lp = *(curr as *const usize);
         curr as *mut u8
+    }
+
+    fn multipage(&self, size: usize) -> *mut u8 {
+        // round size up to next 4096
+        let cnt: usize = (size+4095) & !4095;
+        unsafe {
+            let mut ret = *self.next_page.get() as *mut u8;
+            // we don't have any free memory, allocate next page
+            if ret == core::ptr::null_mut() {
+                let (start, end) = (self.init)();
+                *self.next_page.get() = start;
+                *self.end.get() = end;
+                ret = start as *mut u8;
+            }
+            let end = ret.add(cnt) as usize;
+            if end  > *self.end.get() {
+                return core::ptr::null_mut();
+            }
+            *self.next_page.get() = end;
+            ret
+        }
     }
 
     fn init_block(&self, blk: *mut u8, list: &UnsafeCell<usize>, size: usize) {

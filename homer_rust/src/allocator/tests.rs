@@ -230,7 +230,7 @@ mod tests {
 
     #[test]
     fn test_allocate_deallocate_reallocate_two_256_byte_blocks_in_reverse_order_reuse_blocks() {
-        let (start, pa) = simple_allocator(2);
+        let (start, pa) = simple_allocator(1);
         unsafe {
             let l = alloc::alloc::Layout::from_size_align(256, 256).unwrap();
             let addr1 = pa.alloc(l);
@@ -246,10 +246,75 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_allocate_a_big_block_as_multiple_pages() {
+        let (start, pa) = simple_allocator(10);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(12000, 4096).unwrap();
+            let addr = pa.alloc(l);
+            assert_eq!(addr as usize, start);
+        }
+    }
+
+    #[test]
+    fn test_when_we_deallocate_a_big_block_it_goes_back_as_multiple_pages() {
+        let (start, pa) = simple_allocator(4);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(12000, 4096).unwrap();
+            let addr = pa.alloc(l);
+            assert_eq!(addr as usize, start);
+            
+            // now allocate the next block and check it's where we think
+            let al = alloc::alloc::Layout::from_size_align(2000, 4096).unwrap();
+            let after = pa.alloc(al);
+            assert_eq!(after as usize, start + 4096*3);
+
+            // deallocate the big block; we should now get three pages back (in order)
+            pa.dealloc(addr, l);
+
+            let a1 = pa.alloc(al);
+            let a2 = pa.alloc(al);
+            let a3 = pa.alloc(al);
+            let zero = pa.alloc(al);
+
+            assert_eq!(a1 as usize, start);
+            assert_eq!(a2 as usize, start + 4096);
+            assert_eq!(a3 as usize, start + 8192);
+            assert_eq!(zero, core::ptr::null_mut());
+        }
+    }
+
+    #[test]
+    fn test_after_we_deallocate_a_big_block_the_next_big_block_comes_from_fresh_memory() {
+        let (start, pa) = simple_allocator(6);
+        unsafe {
+            let l = alloc::alloc::Layout::from_size_align(12000, 4096).unwrap();
+            let addr = pa.alloc(l);
+            assert_eq!(addr as usize, start);
+            
+            pa.dealloc(addr, l);
+
+            let addr = pa.alloc(l);
+            assert_eq!(addr as usize, start + 3 * 4096);
+
+            let al = alloc::alloc::Layout::from_size_align(2000, 4096).unwrap();
+            let a1 = pa.alloc(al);
+            let a2 = pa.alloc(al);
+            let a3 = pa.alloc(al);
+            let zero = pa.alloc(al);
+
+            assert_eq!(a1 as usize, start);
+            assert_eq!(a2 as usize, start + 4096);
+            assert_eq!(a3 as usize, start + 8192);
+            assert_eq!(zero, core::ptr::null_mut());
+        }
+    }
+
     fn simple_allocator(npages: usize) -> (usize, PageAllocator<Box<dyn Fn() -> (usize,usize)>>) {
         unsafe {
             let blk = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align(4096 * npages, 4096).unwrap());
             let start = (blk as *const _) as usize;
+            assert_ne!(start, 0);
             let f = move || { (start, start+4096 * npages) };
             (start, PageAllocator{
                 next_page: UnsafeCell::new(0),

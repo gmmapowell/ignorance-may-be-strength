@@ -8,7 +8,6 @@ use core::ptr::read_volatile;
 use core::ptr::write_volatile;
 
 use crate::homer::HOMER_DATA;
-use crate::ghff::HOMER_BYTES;
 use crate::ghff::HOMER_WIDTH;
 use crate::ghff::HOMER_HEIGHT;
 use crate::ghff::hex32;
@@ -111,7 +110,7 @@ pub extern fn kernel_main() {
     uart_init();
     let mut fb = FrameBufferInfo{width: 0, height: 0, pitch: 0, base_addr: 0, pixorder: PixelOrder::RGB};
     lfb_init(&mut fb);
-    let homer: &[u8; HOMER_BYTES] = read_homer(HOMER_DATA);
+    let homer: &[u8] = read_homer(HOMER_DATA);
     show_homer(&fb, &homer);
 
     loop {
@@ -210,9 +209,6 @@ fn wait_a_while(mut ncycles: u32) {
 fn lfb_init(fb : &mut FrameBufferInfo) {
     let mut buf: &mut [u32] = allocate_message_buffer(35);
 
-    write(hex32(buf.as_ptr() as u32));
-    write("\r\n");
-
     // The header of the message has a length and a status (0 = REQUEST; 0x8000xxxx = RESPONSE)
     buf[0] = 35 * 4; // the buffer has 35 4-byte words
     buf[1] = 0; // we indicate we are sending a MBOX_REQUEST as 0
@@ -273,7 +269,7 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     mbox_send(8, &mut buf);
 
     let volbuf: *mut u32 = buf.as_mut_ptr();
-    
+
     // The compiler optimizes away (or something) reads into buf and returns what we wrote
     // We need to be sure we read what was written
     let stat = unsafe { read_volatile(volbuf.add(1)) };
@@ -288,14 +284,13 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
 
     let pixdepth = unsafe { read_volatile(volbuf.add(20)) };
     if pixdepth != 32 {
-        write("pixel depth is not 32\r\n");
+        write("pixel depth is not 32 but ");
+        write(hex32(pixdepth));
+        write("\r\n");
         return;
     }
 
     let pixorder = unsafe { read_volatile(volbuf.add(24)) };
-    write("pixel order is ");
-    write(hex32(pixorder));
-    write("\r\n");
 
     let alignment = unsafe { read_volatile(volbuf.add(28)) };
     if alignment == 0 {
@@ -310,7 +305,7 @@ fn lfb_init(fb : &mut FrameBufferInfo) {
     fb.pixorder = if pixorder == 1 { PixelOrder::RGB } else { PixelOrder::BGR };
 }
 
-fn show_homer(fb : &FrameBufferInfo, homer : &[u8; HOMER_BYTES]) {
+fn show_homer(fb : &FrameBufferInfo, homer : &[u8]) {
     // Because we want to put Homer in the middle of the screen, we need to first figure out where
     // he should go.  We have a framebuffer width and height, and a homer width and height.
     // So we need to put half of the distance in each direction as an initial value for x and y

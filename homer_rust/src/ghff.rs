@@ -1,13 +1,14 @@
 // Support the GIMP header file format
 
-static mut IMAGE:[u8;HOMER_BYTES] = [0;HOMER_BYTES];
-
 pub const HOMER_HEIGHT : u32 = 64;
 pub const HOMER_WIDTH : u32 = 96;
 pub const HOMER_BYTES : usize = (HOMER_HEIGHT * HOMER_WIDTH * 4) as usize;
 
-pub fn read_homer(homer: &str) -> &'static[u8;HOMER_BYTES] {
+pub fn read_homer(homer: &str) -> &'static[u8] {
     unsafe {
+        let ptr = alloc::alloc::alloc(alloc::alloc::Layout::from_size_align_unchecked(HOMER_BYTES, 16));
+        let image = alloc::slice::from_raw_parts_mut(ptr, HOMER_BYTES);
+
         let mut pos : usize = 0;
         while pos < homer.len() {
             let c0 = homer.as_bytes()[pos];
@@ -15,13 +16,13 @@ pub fn read_homer(homer: &str) -> &'static[u8;HOMER_BYTES] {
             let c2 = homer.as_bytes()[pos+2];
             let c3 = homer.as_bytes()[pos+3];
 
-            IMAGE[pos] = ((c0-33) << 2) | ((c1-33) >> 4);
-            IMAGE[pos+1] = ((c1-33) << 4) | ((c2-33) >> 2);
-            IMAGE[pos+2] = ((c2-33) << 6) | ((c3-33));
-            IMAGE[pos+3] = 0;
-           pos+=4;
+            image[pos] = ((c0-33) << 2) | ((c1-33) >> 4);
+            image[pos+1] = ((c1-33) << 4) | ((c2-33) >> 2);
+            image[pos+2] = ((c2-33) << 6) | ((c3-33));
+            image[pos+3] = 0;
+            pos+=4;
         }
-        &IMAGE
+        image
     }
 }
 
