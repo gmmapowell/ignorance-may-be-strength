@@ -1,11 +1,14 @@
 package ignorance;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Page.WaitForCloseOptions;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.AriaRole;
 
@@ -13,9 +16,13 @@ class FBAR {
 	public static void main(String[] argv) {
 		PortfolioLoader loader = new PortfolioLoader();
 		Portfolio portfolio;
+		File downloadsTo = null;
 		try {
 			if (argv.length > 0) {
 				portfolio = loader.loadJson(new File(argv[0]));
+				if (argv.length > 1) {
+					downloadsTo = new File(argv[1]);
+				}
 			} else {
 				portfolio = loader.loadDummy();
 			}
@@ -29,7 +36,7 @@ class FBAR {
 			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50));
 
 			Page page = browser.newPage();
-
+			
 			page.navigate("https://bsaefiling1.fincen.treas.gov/lc/content/xfaforms/profiles/htmldefault.html");
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your email address.").setExact(true)).fill(portfolio.email());
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Re-enter your email address.")).fill(portfolio.email());
@@ -116,10 +123,24 @@ class FBAR {
 				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*24")).fill(Integer.toString(joint.getNumOthers()));
 				fillJoint(mypage3.locator("div.PrincipalJointOwner"), joint.getOther());
 			}
-			Thread.sleep(600000);
-		} catch (InterruptedException ex) {
-			ex.printStackTrace();
-			return;
+
+			if (downloadsTo != null) {
+				Download download = page.waitForDownload(() -> { });
+				File isAt = download.path().toFile();
+				File saveAs = new File(downloadsTo, isAt.getName());
+				System.out.println("Copying " + isAt + " to " + saveAs);
+				try {
+					Utils.copyFile(download.path().toFile(), saveAs);
+				} catch (IOException ex) {
+					System.out.println("Copying " + isAt + " failed");
+					ex.printStackTrace();
+					try { Thread.sleep(6000000); } catch (InterruptedException e) { }
+				}
+			}
+
+			WaitForCloseOptions options = new WaitForCloseOptions();
+			options.setTimeout(6000000);
+			page.waitForClose(options, () -> {});
 		}
 	}
 
