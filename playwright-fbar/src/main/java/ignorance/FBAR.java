@@ -9,6 +9,7 @@ import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.WaitForCloseOptions;
+import com.microsoft.playwright.Page.WaitForDownloadOptions;
 import com.microsoft.playwright.Playwright;
 import com.microsoft.playwright.options.AriaRole;
 
@@ -124,8 +125,16 @@ class FBAR {
 				fillJoint(mypage3.locator("div.PrincipalJointOwner"), joint.getOther());
 			}
 
+			page.onDialog(dialog -> {
+				System.out.println("Dialog message: " + dialog.message());
+				System.out.println("Dialog prompt: " + dialog.defaultValue());
+				dialog.accept();
+			});
+			
 			if (downloadsTo != null) {
-				Download download = page.waitForDownload(() -> { });
+				WaitForDownloadOptions options = new WaitForDownloadOptions();
+				options.setTimeout(6000000);
+				Download download = page.waitForDownload(options, () -> { });
 				File isAt = download.path().toFile();
 				File saveAs = new File(downloadsTo, isAt.getName());
 				System.out.println("Copying " + isAt + " to " + saveAs);
