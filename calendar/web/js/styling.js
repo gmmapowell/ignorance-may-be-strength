@@ -15,15 +15,15 @@ function initStyling(fbdiv, c, p, i, cv) {
 	document.adoptedStyleSheets = [screenSheet, printSheet];
 }
 
-function fitToPageSize(rowInfo) {
+function fitToPageSize(rowInfo, monthdivs) {
 	screenWatermarks = {};
-	pageLayout([screenSheet], rowInfo, calculateSizeOfFeedbackDiv());
+	pageLayout([screenSheet], rowInfo, monthdivs, calculateSizeOfFeedbackDiv());
 	document.adoptedStyleSheets = [printMeasureSheet];
-	pageLayout([printSheet, printMeasureSheet], rowInfo, calculatePaperSize());
+	pageLayout([printSheet, printMeasureSheet], rowInfo, monthdivs, calculatePaperSize());
 	document.adoptedStyleSheets = [screenSheet, printSheet];
 }
 
-function pageLayout(sheets, rowInfo, pageSize) {
+function pageLayout(sheets, rowInfo, monthdivs, pageSize) {
 	var rows = rowInfo.numRows;
 
 	// delete the old rules
@@ -67,7 +67,7 @@ function pageLayout(sheets, rowInfo, pageSize) {
 	insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	for (var i=0;i<rowInfo.months.length;i++) {
-		handleWatermarks(pageSize.media == "screen", i, rowInfo.months[i]);
+		handleWatermarks(pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
 	}
 }
 
@@ -77,18 +77,18 @@ function insertRuleIntoSheets(sheets, rule) {
 	}
 }
 
-function handleWatermarks(forScreen, idx, rowInfo) {
+function handleWatermarks(forScreen, idx, rowInfo, monthdiv) {
 	var availx, availy;
 	var usedx, usedy, scale, fontSize;
 	var sheet;
 
 	if (forScreen) {
 		sheet = screenSheet;
-		availx = rowInfo.div.clientWidth;
-		availy = rowInfo.div.clientHeight;
+		availx = monthdiv.clientWidth;
+		availy = monthdiv.clientHeight;
 
 		var ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + metricFontSize + "pt; }");
-		var adiv = rowInfo.div.querySelector(".watermark");
+		var adiv = monthdiv.querySelector(".watermark");
 		var width = adiv.clientWidth;
 		var height = adiv.clientHeight;
 		
@@ -99,7 +99,7 @@ function handleWatermarks(forScreen, idx, rowInfo) {
 		fontSize = metricFontSize*scale;
 		ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + fontSize + "pt; }");
 		
-		var adiv = rowInfo.div.querySelector(".watermark");
+		var adiv = monthdiv.querySelector(".watermark");
 		usedx = adiv.clientWidth;
 		usedy = adiv.clientHeight;
 
@@ -107,8 +107,8 @@ function handleWatermarks(forScreen, idx, rowInfo) {
 		sheet.deleteRule(ruleIdx);
 	} else {
 		sheet = printSheet;
-		availx = rowInfo.div.clientWidth;
-		availy = rowInfo.div.clientHeight;
+		availx = monthdiv.clientWidth;
+		availy = monthdiv.clientHeight;
 		var sw = screenWatermarks[idx];
 		var scalex = availx / sw.width;
 		var scaley = availy / sw.height;

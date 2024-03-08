@@ -1,110 +1,75 @@
 import { fitToPageSize } from "./styling.js";
 
-var redrawWhenResized = true;
-var start, end, first, weekendShadeOption, fbdiv, colors, calendars;
-
-function RedrawClz(m, s, e, f, w, b, c, c2) {
+function RedrawClz(m, fbdiv) {
     this.modelProvider = m;
-    start = s;
-    end = e;
-    first = f;
-    weekendShadeOption = w;
-    fbdiv = b;
-    colors = c;
-    calendars = c2;
+    this.fbdiv = fbdiv;
 }
 
-function redrawMode(b) {
-	redrawWhenResized = b;
+RedrawClz.prototype.mode = function(b) {
+	this.redrawWhenResized = b;
 }
 
-function redrawOnResize(ev) {
-	if (redrawWhenResized)
-		redraw();
-}
-
-function utc(d) {
-	return new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+RedrawClz.prototype.windowResized = function(ev) {
+	if (this.redrawWhenResized)
+		this.redraw();
 }
 
 RedrawClz.prototype.redraw = function() {
-	var from = utc(new Date(start.value));
-	var to = utc(new Date(end.value));
-	var leftColumn = parseInt(first.value);
-	var shadeWeekends = weekendShadeOption.checked;
+    var model = this.modelProvider.calculate();
+    // console.log(JSON.stringify(model));
+	this.fbdiv.innerHTML = '';
 
-	fbdiv.innerHTML = '';
-	var leftDate = new Date(from);
-	leftDate.setDate(leftDate.getDate() - leftDate.getDay() + leftColumn);
-	if (leftDate > from) {
-		leftDate.setDate(leftDate.getDate() - 7);
-	}
-	var rowInfo = { numRows: 0, months: [] };
-	var thisMonth = null;
-	var watermarkNo = 0;
-	do {
-		var rightDate = new Date(leftDate);
-		rightDate.setDate(rightDate.getDate() + 6);
+    var thisMonth = null;
+    var monthdivs = [];
+    for (var wk = 0; wk < model.weeks.length; wk++) {
+        var week = model.weeks[wk];
 
-		// figure out if this is worthy of making a month
-		if (leftDate.getMonth() != rightDate.getMonth()) {
-			// we are not interested
-			thisMonth = null;
-		} else if (thisMonth && thisMonth.month == leftDate.getMonth()) { // if we are already recording this month, increment it
-			thisMonth.numRows++;
-		} else { // this week is all in this month and is a different month to what has gone before
-			var namedMonth = document.createElement("div");
-			namedMonth.className = 'namedMonth';
-
-			var watermark = document.createElement("div");
-			watermark.classList = 'watermark watermark-' + watermarkNo;
-			var text = leftDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric'});
-			var wktext = document.createTextNode(text);
-			watermark.appendChild(wktext);
-			namedMonth.appendChild(watermark)
-			fbdiv.appendChild(namedMonth);
-			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1, text, div: namedMonth };
-			rowInfo.months.push(thisMonth);
-
-			watermarkNo++;
-		}
-
-		// create a div for the whole week
-		var week = document.createElement("div");
-		week.className = "body-week";
-		if (thisMonth) {
-			thisMonth.div.appendChild(week);
+        // create a div for the whole week
+		var weekdiv = document.createElement("div");
+		weekdiv.className = "body-week";
+		if (week.thisMonth) {
+            if (thisMonth == null || week.thisMonth.from == wk) {
+                thisMonth = document.createElement("div");
+                thisMonth.className = 'namedMonth';
+                monthdivs.push(thisMonth);
+    
+                var watermark = document.createElement("div");
+                watermark.classList = 'watermark watermark-' + week.thisMonth.watermarkNo;
+                var wktext = document.createTextNode(week.thisMonth.text);
+                watermark.appendChild(wktext);
+                thisMonth.appendChild(watermark)
+                this.fbdiv.appendChild(thisMonth);
+            }
+			thisMonth.appendChild(weekdiv);
 		} else {
-			fbdiv.appendChild(week);
+			this.fbdiv.appendChild(weekdiv);
 		}
-		for (var i=0;i<7;i++) {
-			var cellDate = new Date(leftDate);
-			cellDate.setDate(cellDate.getDate() + i);
+        
+		for (var i=0;i<7;i++) {		
+            var day = week.days[i];
 
 			// create a div for each day, to contain all the aspects we will have
-			var day = document.createElement("div");
-			day.className = "body-day";
-			if (shadeWeekends && (cellDate.getDay() ==0 || cellDate.getDay() == 6)) {
-				day.classList.add('weekend');
+			var daydiv = document.createElement("div");
+			daydiv.className = "body-day";
+			if (daydiv.shadeMe) {
+				daydiv.classList.add('weekend');
 			}
-			week.appendChild(day);
+			weekdiv.appendChild(daydiv);
 
 			// the first aspect is the date
 			var date = document.createElement("div");
 			date.className = "body-day-date";
-			day.appendChild(date);
+			daydiv.appendChild(date);
 
 			// and set the date text in here
-			var dateValue = document.createTextNode(cellDate.getDate());
+			var dateValue = document.createTextNode(day.cellDate);
 			date.appendChild(dateValue);
 
-			var calDate = cellDate.getFullYear() + "-" + (cellDate.getMonth()+1).toString().padStart(2, '0') + "-" + cellDate.getDate().toString().padStart(2, '0');
-
-			var cd = colors[calDate];
+            var cd = day.colors;
 			if (cd) {
 				var colorBars = document.createElement("div");
 				colorBars.className = "body-day-color-bars";
-				day.appendChild(colorBars);
+				daydiv.appendChild(colorBars);
 				for (var j=0;j<cd.length;j++) {
 					var bar = document.createElement("div");
 					var itemNo = "";
@@ -117,33 +82,12 @@ RedrawClz.prototype.redraw = function() {
 					colorBars.appendChild(bar);
 				}
 			}
-			
-			var toShow = [];
-			for (var url in calendars) {
-				var cal = calendars[url];
-				if (!cal.used)
-					continue;
-				var today = cal.info[calDate];
-				if (!today)
-					continue;
-				for (var j=0;j<today.length;j++) {
-					var next = today[j];
-					for (var k=0;k<toShow.length;k++) {
-						if (next.time < toShow[k].time) {
-							toShow.splice(k, 0, next);
-							next = null;
-							break;
-						}
-					}
-					if (next != null)
-						toShow.push(next);
-				}
-			}
 
+            var toShow = day.toShow;
 			if (toShow.length > 0) {
 				var events = document.createElement("div");
 				events.className = "body-day-events-container";
-				day.appendChild(events);
+				daydiv.appendChild(events);
 
 				for (var j=0;j<toShow.length;j++) {
 					var event = document.createElement("div");
@@ -162,13 +106,9 @@ RedrawClz.prototype.redraw = function() {
 				}
 			}
 		}
+    }
 
-		// advance to next week
-		leftDate.setDate(leftDate.getDate() + 7);
-		rowInfo.numRows++;
-	} while (leftDate <= to);
-
-	fitToPageSize(rowInfo);
+	fitToPageSize(model.rowInfo, monthdivs);
 }
 
-export { RedrawClz, redrawOnResize, redrawMode };
+export { RedrawClz };

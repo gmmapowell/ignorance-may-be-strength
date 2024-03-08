@@ -3,7 +3,7 @@ import { ModelProvider } from "./model.js";
 import { initCalendars } from "./controls.js";
 import { initStyling } from "./styling.js";
 import { initSharing, shareJson, loadJsonFromFile, loadSharedJson } from "./sharing.js";
-import { RedrawClz, redrawOnResize, redrawMode } from "./redraw.js";
+import { RedrawClz } from "./redraw.js";
 import { initICS, loadICS } from "./ics.js";
 
 function init() {
@@ -30,15 +30,15 @@ function init() {
 	var calendars = {};
 	var colors = {};
 
-    var modelProvider = new ModelProvider();
-    var redraw = new RedrawClz(modelProvider, start, end, first, weekendShadeOption, fbdiv, colors, calendars);
+    var modelProvider = new ModelProvider(start, end, first, weekendShadeOption, fbdiv, colors, calendars);
+    var redraw = new RedrawClz(modelProvider, fbdiv);
  
-    start.addEventListener("change", redraw.redraw);
-    end.addEventListener("change", redraw.redraw);
-    first.addEventListener("change", redraw.redraw);
-    weekendShadeOption.addEventListener("change", redraw.redraw);
-    pageSize.addEventListener("change", redraw.redraw);
-    landscape.addEventListener("change", redraw.redraw);
+    start.addEventListener("change", () => redraw.redraw());
+    end.addEventListener("change", () => redraw.redraw());
+    first.addEventListener("change", () => redraw.redraw());
+    weekendShadeOption.addEventListener("change", () => redraw.redraw());
+    pageSize.addEventListener("change", () => redraw.redraw());
+    landscape.addEventListener("change", () => redraw.redraw());
 
     loadICSElt.addEventListener('click', loadICS);
     shareJsonElt.addEventListener('click', shareJson);
@@ -51,11 +51,11 @@ function init() {
     initCalendars(calendars, scdiv, redraw);
 	initStyling(fbdiv, controlPane, pageSize, landscape, canvas);
 	initSharing(sharingFile, sharingUrl);
-    initICS(urlEntry);
+    initICS(urlEntry, redraw);
 
-	addEventListener("beforeprint", ev => redrawMode(false));
-	addEventListener("resize", redrawOnResize);
-	addEventListener("afterprint", ev => redrawMode(true));
+	addEventListener("beforeprint", ev => redraw.mode(false));
+	addEventListener("resize", () => redraw.windowResized());
+	addEventListener("afterprint", ev => redraw.mode(true));
 	redraw.redraw();
 }
 
