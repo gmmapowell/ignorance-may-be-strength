@@ -5,23 +5,25 @@
 		<link rel="stylesheet" href="css/feedback.css">
 		<link rel="stylesheet" href="css/printing.css" media="print">
 		<link rel="stylesheet" href="css/watermark.css">
-		<script src="js/controls.js"></script>
-		<script src="js/styling.js"></script>
-		<script src="js/ics.js"></script>
-		<script src="js/colorRange.js"></script>
-		<script src="js/sharing.js"></script>
-		<script src="js/ajax.js"></script>
-		<script src="js/download.js"></script>
+		<script src="js/ajax.js" type="module"></script>
+		<script src="js/csv.js" type="module"></script>
+		<script src="js/controls.js" type="module"></script>
+		<script src="js/styling.js" type="module"></script>
+		<script src="js/ics.js" type="module"></script>
+		<script src="js/colorRange.js" type="module"></script>
+		<script src="js/sharing.js" type="module"></script>
+		<script src="js/download.js" type="module"></script>
+		<script src="js/main.js" type="module"></script>
 	</head>
 	<body onload="init()">
 		<div id='controls' class="controls">
 			<canvas id='canvas' style="display: none;"></canvas>
 			<label for="start-date">Start date:</label>
-			<input type="date" id="start-date" onchange="redraw()">
+			<input type="date" id="start-date">
 			<label for="end-date">End date:</label>
-			<input type="date" id="end-date" onchange="redraw()">
+			<input type="date" id="end-date">
 			<label for="first-day">First Day:</label>
-			<select id="first-day" onchange="redraw()">
+			<select id="first-day">
 				<option value="1">Monday</option>
 				<option value="2">Tuesday</option>
 				<option value="3">Wednesday</option>
@@ -31,23 +33,23 @@
 				<option value="0">Sunday</option>
 			</select>
 			<label for="page-size">Page Size:</label>
-			<select id="page-size" onchange="redraw()">
+			<select id="page-size">
 				<option value="a4">A4</option>
 				<option value="letter">Letter</option>
 				<option value="a3">A3</option>
 				<option value="tabloid">Tabloid</option>
 			</select>
-			<input type="checkbox" id="landscape" onchange="redraw()">
+			<input type="checkbox" id="landscape">
 			<label for="landscape">Landscape</label>
 			<label for="loadURL">Load ICS URL:</label>
 			<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
-			<input type="button" value="Load ICS" onclick="loadICS()">
-			<input type="button" value="Share as Json" onclick="shareJson()">
+			<input type="button" id='load-ics' value="Load ICS">
+			<input type="button" id='share-as-json' value="Share as Json">
 			<label for="sharing-file">Load JSON from:</label>
-			<input type="file" id="sharing-file" onchange="loadJsonFromFile()">
+			<input type="file" id="sharing-file">
 			<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
-			<input type="button" value="Load shared" onclick="loadSharedJson()">
-			<input type="checkbox" id="shade-weekends" checked='true' onchange="redraw()">
+			<input type="button" id='load-shared' value="Load shared">
+			<input type="checkbox" id="shade-weekends" checked='true'>
 			<label for="landscape">Shade Weekends</label>
 			<div id="select-calendars"></div>
 		</div>

@@ -1,5 +1,14 @@
+import { ajax } from "./ajax.js";
+import { addCalendar } from "./controls.js";
+import { redraw } from "./redraw.js";
+
+var urlEntry;
+
+function initICS(u) {
+	urlEntry = u;
+
+}
 function loadICS() {
-	var urlEntry = document.getElementById("ics-url");
 	var url = urlEntry.value;
 	ajax(url, (status, response) => handleICS(url, status, response));
 }
@@ -94,3 +103,5 @@ function makeTabular(blocks) {
 function toStandard(date) {
 	return date.substring(0, 4) + "-" + date.substring(4,6) + "-" + date.substring(6,11) + ":" + date.substring(11,13) + ":" + date.substring(13);
 }
+
+export { initICS, loadICS };

@@ -1,15 +1,14 @@
-var styledDiv;
+var styledDiv, controlPane, pageSizer, isLandscape, canvas;
 var screenSheet, printSheet, printMeasureSheet;
-var controlPane;
 var metricFontSize = 10;
 var screenWatermarks;
 
-function initStyling(fbdiv) {
+function initStyling(fbdiv, c, p, i, cv) {
 	styledDiv = fbdiv;
-	controlPane = document.getElementById('controls');
-	pageSizer = document.getElementById('page-size');
-	isLandscape = document.getElementById('landscape');
-	canvas = document.getElementById("canvas");
+	controlPane = c;
+	pageSizer = p;
+	isLandscape = i;
+	canvas = cv;
 	screenSheet = new CSSStyleSheet({ media: "screen" });
 	printSheet = new CSSStyleSheet({ media: "print" });
 	printMeasureSheet = new CSSStyleSheet({ media: "screen" });
@@ -164,3 +163,5 @@ function calculatePaperSize() {
 	}
 	return ret;
 }
+
+export { initStyling, fitToPageSize };

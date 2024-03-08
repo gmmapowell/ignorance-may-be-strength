@@ -1,8 +1,10 @@
+import { ajax } from "./ajax.js";
+
 var sharingFile, sharingURL;
 
-function initSharing() {
-	sharingFile = document.getElementById('sharing-file');
-	sharingURL = document.getElementById('sharing-url');
+function initSharing(f, u) {
+	sharingFile = f;
+	sharingURL = u;
 	readConfigFromParameter();
 }
 
@@ -60,3 +62,5 @@ function readConfigFromParameter() {
 		ajax(params.get("config"), handleConfig);
 	}
 }
+
+export { initSharing, shareJson, loadJsonFromFile, loadSharedJson };
