@@ -30,14 +30,17 @@ function redrawMode(b) {
 }
 
 function redrawOnResize(ev) {
-	console.log(redrawWhenResized);
 	if (redrawWhenResized)
 		redraw();
 }
 
+function utc(d) {
+	return new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+}
+
 function redraw() {
-	var from = new Date(start.value);
-	var to = new Date(end.value);
+	var from = utc(new Date(start.value));
+	var to = utc(new Date(end.value));
 	var leftColumn = parseInt(first.value);
 	var shadeWeekends = weekendShadeOption.checked;
 
