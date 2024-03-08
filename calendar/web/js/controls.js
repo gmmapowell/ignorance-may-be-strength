@@ -1,9 +1,9 @@
-import { redraw } from "./redraw.js";
-
+var redraw;
 var calendars;
 var scdiv;
 
-function initCalendars(c, s) {
+function initCalendars(c, s, r) {
+	redraw = r;
 	calendars = c;
 	scdiv = s;
 }
@@ -28,7 +28,7 @@ function addCalendar(url, cal) {
 
 function toggleCalendar(event) {
 	calendars[event.target.myurl].used = event.target.checked;
-	redraw();
+	redraw.redraw();
 }
 
 export { initCalendars, addCalendar, toggleCalendar };

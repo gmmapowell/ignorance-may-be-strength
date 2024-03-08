@@ -1,11 +1,12 @@
 import { ajax } from "./ajax.js";
 import { addCalendar } from "./controls.js";
-import { redraw } from "./redraw.js";
 
 var urlEntry;
+var redraw;
 
-function initICS(u) {
+function initICS(u, r) {
 	urlEntry = u;
+	redraw = r;
 
 }
 function loadICS() {
@@ -20,7 +21,7 @@ function handleICS(url, status, response) {
 		if (blocked) {
 			var table = makeTabular(blocked);
 			addCalendar(url, table);
-			redraw();
+			redraw.redraw();
 		}
 	} else {
 		// TODO: handle status error cases somehow (e.g. 401, 404, 500)

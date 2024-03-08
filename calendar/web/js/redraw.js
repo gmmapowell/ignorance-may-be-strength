@@ -3,7 +3,8 @@ import { fitToPageSize } from "./styling.js";
 var redrawWhenResized = true;
 var start, end, first, weekendShadeOption, fbdiv, colors, calendars;
 
-function initRedraw(s, e, f, w, b, c, c2) {
+function RedrawClz(m, s, e, f, w, b, c, c2) {
+    this.modelProvider = m;
     start = s;
     end = e;
     first = f;
@@ -26,7 +27,7 @@ function utc(d) {
 	return new Date(d.getTime() + d.getTimezoneOffset() * 60000);
 }
 
-function redraw() {
+RedrawClz.prototype.redraw = function() {
 	var from = utc(new Date(start.value));
 	var to = utc(new Date(end.value));
 	var leftColumn = parseInt(first.value);
@@ -170,4 +171,4 @@ function redraw() {
 	fitToPageSize(rowInfo);
 }
 
-export { initRedraw, redrawOnResize, redraw, redrawMode };
+export { RedrawClz, redrawOnResize, redrawMode };
