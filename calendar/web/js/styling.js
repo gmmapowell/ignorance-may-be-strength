@@ -1,14 +1,13 @@
-var styledDiv, controlPane, pageSizer, isLandscape, canvas;
+var styledDiv, controlPane, pageSizer, isLandscape;
 var screenSheet, printSheet, printMeasureSheet;
 var metricFontSize = 10;
 var screenWatermarks;
 
-function Styling(fbdiv, c, p, i, cv) {
+function Styling(fbdiv, c, p, i) {
 	styledDiv = fbdiv;
 	controlPane = c;
 	pageSizer = p;
 	isLandscape = i;
-	canvas = cv;
 	screenSheet = new CSSStyleSheet({ media: "screen" });
 	printSheet = new CSSStyleSheet({ media: "print" });
 	printMeasureSheet = new CSSStyleSheet({ media: "screen" });

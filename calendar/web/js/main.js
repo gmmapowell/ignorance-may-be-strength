@@ -18,7 +18,6 @@ function init() {
 	var controlPane = document.getElementById('controls');
     var pageSize = document.getElementById('page-size');
     var landscape = document.getElementById('landscape');
-	var canvas = document.getElementById("canvas");
 
     var loadICSElt = document.getElementById("load-ics");
     var shareJsonElt = document.getElementById("share-as-json");
@@ -34,7 +33,7 @@ function init() {
 
     // then create all the actors
     var modelProvider = new ModelProvider(start, end, first, weekendShadeOption, fbdiv, colors, calendars);
-	var styler = new Styling(fbdiv, controlPane, pageSize, landscape, canvas);
+	var styler = new Styling(fbdiv, controlPane, pageSize, landscape);
     var redraw = new RedrawClz(modelProvider, fbdiv, styler);
     initCalendars(calendars, scdiv, redraw);
 	initSharing(sharingFile, sharingUrl);
