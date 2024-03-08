@@ -1,12 +1,13 @@
 import { ModelProvider } from "./model.js";
 
 import { initCalendars } from "./controls.js";
-import { initStyling } from "./styling.js";
+import { Styling } from "./styling.js";
 import { initSharing, shareJson, loadJsonFromFile, loadSharedJson } from "./sharing.js";
 import { RedrawClz } from "./redraw.js";
 import { initICS, loadICS } from "./ics.js";
 
 function init() {
+    // First get all the elements from the document
 	var start = document.getElementById('start-date');
 	var end = document.getElementById('end-date');
 	var first = document.getElementById('first-day');
@@ -27,12 +28,19 @@ function init() {
 
     var urlEntry = document.getElementById("ics-url");
 
+    // then create all the model objects
 	var calendars = {};
 	var colors = {};
 
+    // then create all the actors
     var modelProvider = new ModelProvider(start, end, first, weekendShadeOption, fbdiv, colors, calendars);
-    var redraw = new RedrawClz(modelProvider, fbdiv);
+	var styler = new Styling(fbdiv, controlPane, pageSize, landscape, canvas);
+    var redraw = new RedrawClz(modelProvider, fbdiv, styler);
+    initCalendars(calendars, scdiv, redraw);
+	initSharing(sharingFile, sharingUrl);
+    initICS(urlEntry, redraw);
  
+    // wire up events
     start.addEventListener("change", () => redraw.redraw());
     end.addEventListener("change", () => redraw.redraw());
     first.addEventListener("change", () => redraw.redraw());
@@ -45,17 +53,15 @@ function init() {
     sharingFile.addEventListener('change', loadJsonFromFile);
     loadShared.addEventListener('click', loadSharedJson);
 
-	start.valueAsDate = new Date();
-	end.valueAsDate = new Date();
-
-    initCalendars(calendars, scdiv, redraw);
-	initStyling(fbdiv, controlPane, pageSize, landscape, canvas);
-	initSharing(sharingFile, sharingUrl);
-    initICS(urlEntry, redraw);
-
 	addEventListener("beforeprint", ev => redraw.mode(false));
 	addEventListener("resize", () => redraw.windowResized());
 	addEventListener("afterprint", ev => redraw.mode(true));
+
+    // initialize state
+	start.valueAsDate = new Date();
+	end.valueAsDate = new Date();
+
+    // ok, show what we've got
 	redraw.redraw();
 }
 

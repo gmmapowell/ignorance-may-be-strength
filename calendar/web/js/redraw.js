@@ -1,8 +1,7 @@
-import { fitToPageSize } from "./styling.js";
-
-function RedrawClz(m, fbdiv) {
+function RedrawClz(m, fbdiv, styling) {
     this.modelProvider = m;
     this.fbdiv = fbdiv;
+    this.styling = styling;
 }
 
 RedrawClz.prototype.mode = function(b) {
@@ -108,7 +107,7 @@ RedrawClz.prototype.redraw = function() {
 		}
     }
 
-	fitToPageSize(model.rowInfo, monthdivs);
+	this.styling.fitToPageSize(model.rowInfo, monthdivs);
 }
 
 export { RedrawClz };

@@ -3,7 +3,7 @@ var screenSheet, printSheet, printMeasureSheet;
 var metricFontSize = 10;
 var screenWatermarks;
 
-function initStyling(fbdiv, c, p, i, cv) {
+function Styling(fbdiv, c, p, i, cv) {
 	styledDiv = fbdiv;
 	controlPane = c;
 	pageSizer = p;
@@ -15,7 +15,7 @@ function initStyling(fbdiv, c, p, i, cv) {
 	document.adoptedStyleSheets = [screenSheet, printSheet];
 }
 
-function fitToPageSize(rowInfo, monthdivs) {
+ Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 	screenWatermarks = {};
 	pageLayout([screenSheet], rowInfo, monthdivs, calculateSizeOfFeedbackDiv());
 	document.adoptedStyleSheets = [printMeasureSheet];
@@ -164,4 +164,4 @@ function calculatePaperSize() {
 	return ret;
 }
 
-export { initStyling, fitToPageSize };
+export { Styling };
