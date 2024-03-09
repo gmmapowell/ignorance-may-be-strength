@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Planning Calendar</title>
+		<link rel="stylesheet" href="css/overall.css">
 		<link rel="stylesheet" href="css/controls.css">
 		<link rel="stylesheet" href="css/feedback.css">
 		<link rel="stylesheet" href="css/printing.css" media="print">
@@ -18,40 +19,56 @@
 	</head>
 	<body onload="init()">
 		<div id='controls' class="controls">
-			<label for="start-date">Start date:</label>
-			<input type="date" id="start-date">
-			<label for="end-date">End date:</label>
-			<input type="date" id="end-date">
-			<label for="first-day">First Day:</label>
-			<select id="first-day">
-				<option value="1">Monday</option>
-				<option value="2">Tuesday</option>
-				<option value="3">Wednesday</option>
-				<option value="4">Thursday</option>
-				<option value="5">Friday</option>
-				<option value="6">Saturday</option>
-				<option value="0">Sunday</option>
-			</select>
-			<label for="page-size">Page Size:</label>
-			<select id="page-size">
-				<option value="a4">A4</option>
-				<option value="letter">Letter</option>
-				<option value="a3">A3</option>
-				<option value="tabloid">Tabloid</option>
-			</select>
-			<input type="checkbox" id="landscape">
-			<label for="landscape">Landscape</label>
-			<label for="ics-url">Load ICS URL:</label>
-			<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
-			<input type="button" id='load-ics' value="Load ICS">
-			<input type="button" id='share-as-json' value="Share as Json">
-			<label for="sharing-file">Load JSON from:</label>
-			<input type="file" id="sharing-file">
-			<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
-			<input type="button" id='load-shared' value="Load shared">
-			<input type="checkbox" id="shade-weekends" checked='true'>
-			<label for="landscape">Shade Weekends</label>
-			<div id="select-calendars"></div>
+			<div class="basic-controls">
+				<div class='start-date'>
+					<label for="start-date">Start Date:</label>
+					<input type="date" id="start-date">
+				</div>
+				<div class="end-date">
+					<label for="end-date">End Date:</label>
+					<input type="date" id="end-date">
+				</div>
+				<div class="first-day">
+					<label for="first-day">First Day:</label>
+					<select id="first-day">
+						<option value="1">Monday</option>
+						<option value="2">Tuesday</option>
+						<option value="3">Wednesday</option>
+						<option value="4">Thursday</option>
+						<option value="5">Friday</option>
+						<option value="6">Saturday</option>
+						<option value="0">Sunday</option>
+					</select>
+				</div>
+			</div>
+			<div class="print-controls">
+				<div class="page-size">
+					<label for="page-size">Page Size:</label>
+					<select id="page-size">
+						<option value="a4">A4</option>
+						<option value="letter">Letter</option>
+						<option value="a3">A3</option>
+						<option value="tabloid">Tabloid</option>
+					</select>
+				</div>
+				<div class="landscape">
+					<input type="checkbox" id="landscape">
+					<label for="landscape">Landscape</label>
+				</div>
+			</div>
+			<div class="profile-things-tbd">
+				<label for="ics-url">Load ICS URL:</label>
+				<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
+				<input type="button" id='load-ics' value="Load ICS">
+				<input type="button" id='share-as-json' value="Share as Json">
+				<label for="sharing-file">Load JSON from:</label>
+				<input type="file" id="sharing-file">
+				<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
+				<input type="button" id='load-shared' value="Load shared">
+				<input type="checkbox" id="shade-weekends" checked='true'>
+				<label for="landscape">Shade Weekends</label>
+				<div id="select-calendars"></div>
+			</div>
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">

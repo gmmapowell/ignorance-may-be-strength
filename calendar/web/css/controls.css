@@ -1,0 +1,17 @@
+.basic-controls {
+    display: block;
+}
+
+.print-controls {
+    display: block;
+}
+
+.profile-things-tbd {
+    display: none;
+}
+
+.start-date, .end-date, .first-day, .page-size, .landscape {
+    display: inline-block;
+    width: 30%;
+    padding: 0.3em 0 0.3em 0;
+}
