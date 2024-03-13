@@ -1,3 +1,8 @@
+// TODO: this has a mix of things.
+// adding a calendar is part of the profile model.
+// toggling a calendar is a control, but somewhat dependent on the calendar existing
+
+
 var redraw;
 var calendars;
 var scdiv;
@@ -7,6 +12,8 @@ function initCalendars(c, s, r) {
 	calendars = c;
 	scdiv = s;
 }
+
+
 
 function addCalendar(url, cal) {
 	calendars[url] = { info: cal, used: true };

@@ -1,11 +1,10 @@
 
-function ModelProvider(s, e, f, w, b, c, c2) {
-    this.start = s;
-    this.end = e;
-    this.first = f;
-    this.weekendShadeOption = w;
-    this.fbdiv = b;
-    this.colors = c;
+function ModelProvider(core, c, c2) {
+    this.start = core['start-date'];
+    this.end = core['end-date'];
+    this.first = core['first-day'];
+    this.weekendShadeOption = core['shade-weekends'];
+	this.colors = c;
     this.calendars = c2;
 }
 
@@ -41,16 +40,7 @@ ModelProvider.prototype.calculate = function() {
 		} else if (thisMonth && thisMonth.month == leftDate.getMonth()) { // if we are already recording this month, increment it
 			thisMonth.numRows++;
 		} else { // this week is all in this month and is a different month to what has gone before
-			// var namedMonth = document.createElement("div");
-			// namedMonth.className = 'namedMonth';
-
-			// var watermark = document.createElement("div");
-			// watermark.classList = 'watermark watermark-' + watermarkNo;
 			var text = leftDate.toLocaleDateString(undefined, { month: 'long', year: 'numeric'});
-			// var wktext = document.createTextNode(text);
-			// watermark.appendChild(wktext);
-			// namedMonth.appendChild(watermark)
-			// fbdiv.appendChild(namedMonth);
 			thisMonth = { month: leftDate.getMonth(), year: leftDate.getFullYear(), from: rowInfo.numRows, numRows: 1, text, watermarkNo };
 			rowInfo.months.push(thisMonth);
 

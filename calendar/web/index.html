@@ -6,8 +6,10 @@
 		<link rel="stylesheet" href="css/controls.css">
 		<link rel="stylesheet" href="css/feedback.css">
 		<link rel="stylesheet" href="css/printing.css" media="print">
+		<link rel="stylesheet" href="css/profiles.css">
 		<link rel="stylesheet" href="css/watermark.css">
 		<script src="js/ajax.js" type="module"></script>
+		<script src="js/utils.js" type="module"></script>
 		<script src="js/csv.js" type="module"></script>
 		<script src="js/controls.js" type="module"></script>
 		<script src="js/styling.js" type="module"></script>
@@ -15,48 +17,82 @@
 		<script src="js/colorRange.js" type="module"></script>
 		<script src="js/sharing.js" type="module"></script>
 		<script src="js/download.js" type="module"></script>
+		<script src="js/profilemodel.js" type="module"></script>
+		<script src="js/profiles.js" type="module"></script>
 		<script src="js/main.js" type="module"></script>
 	</head>
-	<body onload="init()">
+	<body>
 		<div id='controls' class="controls">
-			<div class="basic-controls">
-				<div class='start-date'>
-					<label for="start-date">Start Date:</label>
-					<input type="date" id="start-date">
+			<div id='profile-button' class='profile-button'>
+				<p class='sign-in'>Sign In</p>
+			</div>
+			<div class="control-panel">
+				<div class="basic-controls">
+					<div class='start-date'>
+						<label for="start-date">Start Date:</label>
+						<input type="date" id="start-date">
+					</div>
+					<div class="end-date">
+						<label for="end-date">End Date:</label>
+						<input type="date" id="end-date">
+					</div>
+					<div class="first-day">
+						<label for="first-day">First Day:</label>
+						<select id="first-day">
+							<option value="1">Monday</option>
+							<option value="2">Tuesday</option>
+							<option value="3">Wednesday</option>
+							<option value="4">Thursday</option>
+							<option value="5">Friday</option>
+							<option value="6">Saturday</option>
+							<option value="0">Sunday</option>
+						</select>
+					</div>
 				</div>
-				<div class="end-date">
-					<label for="end-date">End Date:</label>
-					<input type="date" id="end-date">
-				</div>
-				<div class="first-day">
-					<label for="first-day">First Day:</label>
-					<select id="first-day">
-						<option value="1">Monday</option>
-						<option value="2">Tuesday</option>
-						<option value="3">Wednesday</option>
-						<option value="4">Thursday</option>
-						<option value="5">Friday</option>
-						<option value="6">Saturday</option>
-						<option value="0">Sunday</option>
-					</select>
+				<div class="print-controls">
+					<div class="shade-weekends">
+						<input type="checkbox" id="shade-weekends" checked='true'>
+						<label for="landscape">Shade Weekends</label>
+					</div>
+					<div class="page-size">
+						<label for="page-size">Page Size:</label>
+						<select id="page-size">
+							<option value="a4">A4</option>
+							<option value="letter">Letter</option>
+							<option value="a3">A3</option>
+							<option value="tabloid">Tabloid</option>
+						</select>
+					</div>
+					<div class="landscape">
+						<input type="checkbox" id="landscape">
+						<label for="landscape">Landscape</label>
+					</div>
 				</div>
 			</div>
-			<div class="print-controls">
-				<div class="page-size">
-					<label for="page-size">Page Size:</label>
-					<select id="page-size">
-						<option value="a4">A4</option>
-						<option value="letter">Letter</option>
-						<option value="a3">A3</option>
-						<option value="tabloid">Tabloid</option>
-					</select>
+		</div>
+		<div id="options-drawer" class="options-drawer hidden">
+			<div id="sign-in-panel" class="sign-in-panel hidden">
+				<div id='email-panel' class="sign-in-line">
+					<label for='sign-in-email' class="sign-in-label">Email: </label>
+					<input type="email" id="sign-in-email" placeholder="user@domain.com" class="sign-in-input">
 				</div>
-				<div class="landscape">
-					<input type="checkbox" id="landscape">
-					<label for="landscape">Landscape</label>
+				<div id="invalid-password-panel" class="invalid-password-panel hidden">
+					<p>The password is invalid.  Use a password of at least 16 characters.</p>
+				</div>
+				<div class="sign-in-line">
+					<label for='sign-in-password' class="sign-in-label">Password: </label>
+					<input type="password" id="sign-in-password" placeholder="password" class="sign-in-input">
+				</div>
+				<div class="sign-in-line">
+					<input type="button" id="submit-sign-in" value="Sign In" class="sign-in-button">
 				</div>
 			</div>
-			<div class="profile-things-tbd">
+			<div id="create-user-panel" class="create-user-panel hidden">
+				<p>The user <span id='create-user-email'></span> does not exist.  Create?</p>
+				<input type="button" id="create-user-yes" value="Yes">
+				<input type="button" id="create-user-no" value="No">
+			</div>
+			<div class="profile-things-tbd hidden">
 				<label for="ics-url">Load ICS URL:</label>
 				<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
 				<input type="button" id='load-ics' value="Load ICS">
@@ -65,10 +101,8 @@
 				<input type="file" id="sharing-file">
 				<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
 				<input type="button" id='load-shared' value="Load shared">
-				<input type="checkbox" id="shade-weekends" checked='true'>
-				<label for="landscape">Shade Weekends</label>
 				<div id="select-calendars"></div>
-			</div>
+			</div>	
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">

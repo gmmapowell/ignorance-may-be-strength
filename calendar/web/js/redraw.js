@@ -1,7 +1,8 @@
-function RedrawClz(m, fbdiv, styling) {
+function RedrawClz(m, sections, styling) {
     this.modelProvider = m;
-    this.fbdiv = fbdiv;
+    this.fbdiv = sections['feedback'];
     this.styling = styling;
+    this.redrawWhenResized = true;
 }
 
 RedrawClz.prototype.mode = function(b) {
@@ -11,6 +12,10 @@ RedrawClz.prototype.mode = function(b) {
 RedrawClz.prototype.windowResized = function(ev) {
 	if (this.redrawWhenResized)
 		this.redraw();
+}
+
+RedrawClz.prototype.onChange = function(elt) {
+	elt.addEventListener('change', () => this.redraw());
 }
 
 RedrawClz.prototype.redraw = function() {
@@ -50,7 +55,7 @@ RedrawClz.prototype.redraw = function() {
 			// create a div for each day, to contain all the aspects we will have
 			var daydiv = document.createElement("div");
 			daydiv.className = "body-day";
-			if (daydiv.shadeMe) {
+			if (day.shadeMe) {
 				daydiv.classList.add('weekend');
 			}
 			weekdiv.appendChild(daydiv);

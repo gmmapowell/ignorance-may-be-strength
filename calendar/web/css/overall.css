@@ -1,3 +1,15 @@
 body {
     overflow: hidden;
+    margin: 0px;
+}
+
+.options-drawer {
+    width: calc(100% - 1.6em);
+    background-color: silver;
+    margin: 0.4em;
+    padding: 0.4em;
+}
+
+.hidden {
+    display: none;
 }

@@ -1,3 +1,38 @@
+.controls {
+    position: relative;
+    margin: 0.4em;
+}
+
+.profile-area {
+    display: inline-block;
+    width: 10%;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+}
+
+.profile-button {
+    display: inline-block;
+    width: 10%;
+    top: 0;
+    bottom: 0;
+    position: absolute;
+    border: 1px solid black;
+    background-color: silver;
+    cursor: pointer;
+}
+
+.sign-in {
+    text-align: center;
+}
+
+.control-panel {
+    position: relative;
+    left: 12%;
+    display: inline-block;
+    width: 85%;
+}
+
 .basic-controls {
     display: block;
 }
@@ -7,10 +42,14 @@
 }
 
 .profile-things-tbd {
+    display: block;
+}
+
+.profile-things-tbd.hidden {
     display: none;
 }
 
-.start-date, .end-date, .first-day, .page-size, .landscape {
+.start-date, .end-date, .first-day, .shade-weekends, .page-size, .landscape {
     display: inline-block;
     width: 30%;
     padding: 0.3em 0 0.3em 0;

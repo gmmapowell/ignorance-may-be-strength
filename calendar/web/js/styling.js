@@ -1,13 +1,14 @@
-var styledDiv, controlPane, pageSizer, isLandscape;
+var styledDiv, controlPane, optionsDrawer, pageSizer, isLandscape;
 var screenSheet, printSheet, printMeasureSheet;
 var metricFontSize = 10;
 var screenWatermarks;
 
-function Styling(fbdiv, c, p, i) {
-	styledDiv = fbdiv;
-	controlPane = c;
-	pageSizer = p;
-	isLandscape = i;
+function Styling(sections, print) {
+	styledDiv = sections['feedback'];
+	controlPane = sections['controls'];
+	optionsDrawer = sections['options-drawer'];
+	pageSizer = print['page-size'];
+	isLandscape = print['landscape'];
 	screenSheet = new CSSStyleSheet({ media: "screen" });
 	printSheet = new CSSStyleSheet({ media: "print" });
 	printMeasureSheet = new CSSStyleSheet({ media: "screen" });
@@ -129,7 +130,7 @@ function calculateSizeOfFeedbackDiv() {
 	var viewy = window.innerHeight;
 
 	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
-	var fby = viewy - controlPane.clientHeight - 16 - borderY * 2;
+	var fby = viewy - controlPane.clientHeight - optionsDrawer.clientHeight - 16 - borderY * 2;
 
 	return { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
 }
