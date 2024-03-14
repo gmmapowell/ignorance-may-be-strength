@@ -72,12 +72,18 @@
 		</div>
 		<div id="options-drawer" class="options-drawer hidden">
 			<div id="sign-in-panel" class="sign-in-panel hidden">
+				<div id="invalid-signin-panel" class="invalid-panel hidden">
+					<p class="invalid-text">Invalid credentials to sign in.  Please try again or enter new credentials to create an account.</p>
+				</div>
+				<div id="invalid-email-panel" class="invalid-panel hidden">
+					<p class="invalid-text">The value is not a valid email address.  Please use a clearly valid email address.</p>
+				</div>
 				<div id='email-panel' class="sign-in-line">
 					<label for='sign-in-email' class="sign-in-label">Email: </label>
 					<input type="email" id="sign-in-email" placeholder="user@domain.com" class="sign-in-input">
 				</div>
-				<div id="invalid-password-panel" class="invalid-password-panel hidden">
-					<p>The password is invalid.  Use a password of at least 16 characters.</p>
+				<div id="invalid-password-panel" class="invalid-panel hidden">
+					<p class="invalid-text">The password is invalid.  Use a password of at least 16 characters.</p>
 				</div>
 				<div class="sign-in-line">
 					<label for='sign-in-password' class="sign-in-label">Password: </label>

@@ -49,6 +49,11 @@ function init() {
     bindElement(signin.newUser, 'create-user-no');
     bindElement(signin.newUser, 'create-user-email');
 
+    bindElement(signin, 'email-panel');
+    bindElement(signin, 'invalid-signin-panel');
+    bindElement(signin, 'invalid-email-panel');
+    bindElement(signin, 'invalid-password-panel');
+
     var loadICSElt = document.getElementById("load-ics");
     var shareJsonElt = document.getElementById("share-as-json");
     var sharingFile = document.getElementById("sharing-file");
@@ -94,7 +99,7 @@ function init() {
 
     // initialize state
 	core['start-date'].valueAsDate = new Date();
-	core['start-date'].valueAsDate = new Date();
+	core['end-date'].valueAsDate = new Date();
 
     // ok, show what we've got
 	redraw.redraw();

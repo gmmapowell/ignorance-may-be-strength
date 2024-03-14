@@ -15,49 +15,106 @@ class Config {
 
 class ProfileHandler {
     function __construct(private Config $config) {
-
+        $this->make_token();
     }
 
     function sign_in(array $request) : array {
-        $pfl = urlencode($request['email']);
-        $pfldir = $this->config->root . "/" . $pfl;
-        error_log("profile dir ". $pfldir);
-        error_log(is_dir($pfldir));
+        $email = $request['email'];
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $resp['action'] = 'invalid-email';
+            return $resp;
+        }
+        $password = $request['password'];
+        $pfl = $this->read_profile($email);
         $resp = [];
-        if (is_dir($pfldir)) {
+        if ($pfl) {
             // we need to check the password
-            $resp['action'] = 'failure'; // if the password were not to match ...
+            if (password_verify($password, $pfl['password'])) {
+                $resp['action'] = 'signed-in';
+                $resp['token'] = $this->generate_token_for($pfl['_dir']);
+            } else {
+                $resp['action'] = 'signin-failed'; // if the password were not to match ...
+            }
         } else {
             // this user does not exist ... see if they want to create the user
-            $resp['action'] = 'nouser';
+            $resp['action'] = 'no-user';
         }
         return $resp;
+    }
+
+    function read_profile($email) {
+        $pfl = urlencode($email);
+        $pfldir = $this->config->root . "/" . $pfl;
+        if (!is_dir($pfldir)) {
+            return false;
+        }
+        $pflfile = $pfldir . "/.userpfl";
+        $ret = json_decode(file_get_contents($pflfile), true);
+        $ret['_dir'] = $pfldir;
+        return $ret;
     }
 
     function create_user(array $request) : array {
         $email = $request['email'];
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $resp['action'] = 'invalid-email';
+            return $resp;
+        }
         $password = $request['password'];
         $pfl = urlencode($email);
         $pfldir = $this->config->root . "/" . $pfl;
-        error_log("profile dir ". $pfldir);
-        error_log(is_dir($pfldir));
         $resp = [];
         if (is_dir($pfldir)) {
-            $resp['action'] = 'user_exists'; // if the directory already exists, the user already exists
+            $resp['action'] = 'user-exists'; // if the directory already exists, the user already exists
         } else if (strlen($password) < 16) {
             // (new) password is too short
-            $resp['action'] = 'invalid_password';
+            $resp['action'] = 'invalid-password';
         } else {
             // ok, create the user
-            mkdir($pfldir);
-            $userp = [];
-            $userp['email'] = $email;
-            $userp['password'] = password_hash($password);
-            $userp['email_validated'] = false;
-            file_put_contents($pfldir . "/.userpfl", json_encode($userp));
-            $resp['action'] = 'user_created';
+            if (!mkdir($pfldir)) {
+                $resp['action'] = 'user-exists'; // I'm not sure why this wasn't caught above, but throw an exception anyway
+            } else {
+                $userp = [];
+                $userp['email'] = $email;
+                $userp['password'] = password_hash($password, PASSWORD_DEFAULT);
+                $userp['email_validated'] = false;
+                file_put_contents($pfldir . "/.userpfl", json_encode($userp));
+                $resp['action'] = 'user-created';
+                $resp['token'] = $this->generate_token_for($pfldir);
+            }
         }
         return $resp;
+    }
+
+    function generate_token_for(string $userdir) : string {
+        for (;;) {
+            $token = $this->make_token();
+            $tdir = $this->config->root . "/.tokens/" . "$token";
+            if (mkdir($tdir)) {
+                $tokfile = [];
+                $tokfile['token'] = $token;
+                $tokfile['dir'] = $userdir;
+                file_put_contents($tdir . "/token", json_encode($tokfile));
+                return $token;
+            }
+            // else it already exists and we should try a different token
+        }
+    }
+
+    function make_token() : string {
+        $ret = "";
+        for ($i=0;$i<60;$i++) {
+            if ($i > 0 && $i % 5 == 0)
+                $ret .= '-';
+            $ch = random_int(48, 109);
+            if ($ch > 83)
+                $ch += 13;
+            else if ($ch > 57)
+                $ch += 7;
+            $ret .= chr($ch);
+        }
+        error_log('$ret = '. $ret);
+        return $ret;
     }
 }
 ?>

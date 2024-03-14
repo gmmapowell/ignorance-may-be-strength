@@ -28,3 +28,16 @@
 .create-user-panel {
     text-align: center;
 }
+
+.invalid-panel {
+    text-align: center;
+}
+
+.invalid-text {
+    display: inline-block;
+    color: red;
+    background-color: aliceblue;
+    width: 60%;
+    min-width: 50em;
+    text-align: center;
+}
