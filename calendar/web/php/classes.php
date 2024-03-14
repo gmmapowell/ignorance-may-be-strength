@@ -29,10 +29,14 @@ class ProfileHandler {
         $resp = [];
         if ($pfl) {
             // we need to check the password
+            // error_log("password: $password");
+            error_log("have: ".$pfl['password']);
             if (password_verify($password, $pfl['password'])) {
+                error_log("passed");
                 $resp['action'] = 'signed-in';
                 $resp['token'] = $this->generate_token_for($pfl['_dir']);
             } else {
+                error_log("failed");
                 $resp['action'] = 'signin-failed'; // if the password were not to match ...
             }
         } else {
@@ -77,6 +81,9 @@ class ProfileHandler {
                 $userp = [];
                 $userp['email'] = $email;
                 $userp['password'] = password_hash($password, PASSWORD_DEFAULT);
+                // error_log("password: $password");
+                error_log("have: ".$userp['password']);
+                error_log("verify = " . password_verify($password, $userp['password']));
                 $userp['email_validated'] = false;
                 file_put_contents($pfldir . "/.userpfl", json_encode($userp));
                 $resp['action'] = 'user-created';

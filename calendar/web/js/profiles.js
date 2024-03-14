@@ -1,8 +1,9 @@
 import { toggleHidden, hide, show } from "./utils.js";
 import { ajax } from './ajax.js';
 
-function Profiles(model, redraw, sections, elements) {
+function Profiles(storage, model, redraw, sections, elements) {
     var self = this;
+    this.storage = storage;
     this.model = model;
     this.redraw = redraw;
     this.optionsDrawer = sections['options-drawer'];
@@ -104,6 +105,7 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
         case "user-created":
         case "signed-in": {
             // the user successfully logged in, so store the (returned) token
+            this.storage.bindToken(resp.token);
             this.hidePanel();
             break;
         }

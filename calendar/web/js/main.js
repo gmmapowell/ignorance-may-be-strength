@@ -1,4 +1,5 @@
 import { ModelProvider } from "./model.js";
+import { CalendarStorage } from "./storage.js";
 
 import { initCalendars } from "./controls.js";
 import { Styling } from "./styling.js";
@@ -62,6 +63,9 @@ function init() {
 
     var urlEntry = document.getElementById("ics-url");
 
+    // create a wrapper around localStorage
+    var storage = new CalendarStorage();
+
     // then create all the model objects
 	var calendars = {};
 	var colors = {};
@@ -72,7 +76,7 @@ function init() {
 	var styler = new Styling(sections, print);
     var redraw = new RedrawClz(modelProvider, sections, styler);
 //    var profiles = new Profiles(profileModel, signInPanel, signInEmail, signInPassword, submitSignIn, createUserPanel, createUserEmail, createUserYes, createUserNo, optionsDrawer, redraw);
-    var profiles = new Profiles(profileModel, redraw, sections, signin);
+    var profiles = new Profiles(storage, profileModel, redraw, sections, signin);
     initCalendars(calendars, scdiv, redraw);
 	initSharing(sharingFile, sharingUrl);
     initICS(urlEntry, redraw);
