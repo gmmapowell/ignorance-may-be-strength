@@ -34,8 +34,16 @@ function init() {
     bindElement(print, 'page-size');
     bindElement(print, 'landscape');
 
+    var profile = {};
 	var scdiv = document.getElementById('select-calendars');
-    var profileButton = document.getElementById('profile-button');
+    bindElement(profile, 'profile-button');
+    bindElement(profile, 'sign-in-button');
+    bindElement(profile, 'open-profile-button');
+
+    var userProfile = {}
+    bindElement(userProfile, 'user-profile-panel');
+    bindElement(userProfile, 'user-profile-sign-out');
+
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
@@ -69,14 +77,13 @@ function init() {
     // then create all the model objects
 	var calendars = {};
 	var colors = {};
-    var profileModel = new ProfileModel();
+    var profileModel = new ProfileModel(storage);
 
     // then create all the actors
     var modelProvider = new ModelProvider(core, colors, calendars);
 	var styler = new Styling(sections, print);
     var redraw = new RedrawClz(modelProvider, sections, styler);
-//    var profiles = new Profiles(profileModel, signInPanel, signInEmail, signInPassword, submitSignIn, createUserPanel, createUserEmail, createUserYes, createUserNo, optionsDrawer, redraw);
-    var profiles = new Profiles(storage, profileModel, redraw, sections, signin);
+    var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
     initCalendars(calendars, scdiv, redraw);
 	initSharing(sharingFile, sharingUrl);
     initICS(urlEntry, redraw);
@@ -90,7 +97,7 @@ function init() {
     redraw.onChange(print['page-size']);
     redraw.onChange(print['landscape']);
 
-    profileButton.addEventListener('click', () => profiles.buttonClicked());
+    profile['profile-button'].addEventListener('click', () => profiles.buttonClicked());
 
     loadICSElt.addEventListener('click', loadICS);
     shareJsonElt.addEventListener('click', shareJson);

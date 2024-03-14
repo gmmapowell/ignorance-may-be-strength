@@ -1,10 +1,10 @@
 
-function ProfileModel() {
-
+function ProfileModel(storage) {
+    this.storage = storage;
 }
 
 ProfileModel.prototype.amSignedIn = function() {
-    return false;
+    return this.storage.hasToken();
 }
 
 export { ProfileModel };

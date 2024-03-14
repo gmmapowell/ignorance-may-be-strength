@@ -24,7 +24,8 @@
 	<body>
 		<div id='controls' class="controls">
 			<div id='profile-button' class='profile-button'>
-				<p class='sign-in'>Sign In</p>
+				<p id='sign-in-button' class='sign-in hidden'>Sign In</p>
+				<p id='open-profile-button' class='open-profile hidden'>Profile</p>
 			</div>
 			<div class="control-panel">
 				<div class="basic-controls">
@@ -98,7 +99,8 @@
 				<input type="button" id="create-user-yes" value="Yes">
 				<input type="button" id="create-user-no" value="No">
 			</div>
-			<div class="profile-things-tbd hidden">
+			<div id='user-profile-panel' class="user-profile hidden">
+				<input type='button' id="user-profile-sign-out" value="Sign Out">
 				<label for="ics-url">Load ICS URL:</label>
 				<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
 				<input type="button" id='load-ics' value="Load ICS">

@@ -22,7 +22,7 @@
     cursor: pointer;
 }
 
-.sign-in {
+.sign-in, .open-profile {
     text-align: center;
 }
 

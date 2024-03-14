@@ -1,12 +1,14 @@
 import { toggleHidden, hide, show } from "./utils.js";
 import { ajax } from './ajax.js';
 
-function Profiles(storage, model, redraw, sections, elements) {
+function Profiles(storage, model, redraw, sections, profileElts, elements, userProfile) {
     var self = this;
     this.storage = storage;
     this.model = model;
     this.redraw = redraw;
     this.optionsDrawer = sections['options-drawer'];
+
+    this.profileElts = profileElts;
 
     this.signInPanel = elements['sign-in-panel'];
     this.email  = elements.core['sign-in-email'];
@@ -26,6 +28,21 @@ function Profiles(storage, model, redraw, sections, elements) {
     this.signIn.addEventListener('click', () => self.doSignIn());
     this.createUserYes.addEventListener('click', () => self.createUser());
     this.createUserNo.addEventListener('click', () => self.hidePanel());
+
+    this.profileDisplay = userProfile['user-profile-panel'];
+    userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
+
+    this.updateSignedIn();
+}
+
+Profiles.prototype.updateSignedIn = function() {
+    if (this.model.amSignedIn()) {
+        show(this.profileElts['open-profile-button']);
+        hide(this.profileElts['sign-in-button']);
+    } else {
+        hide(this.profileElts['open-profile-button']);
+        show(this.profileElts['sign-in-button']);
+    }
 }
 
 Profiles.prototype.buttonClicked = function() {
@@ -106,6 +123,7 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
         case "signed-in": {
             // the user successfully logged in, so store the (returned) token
             this.storage.bindToken(resp.token);
+            this.updateSignedIn();
             this.hidePanel();
             break;
         }
@@ -126,6 +144,17 @@ Profiles.prototype.signinFailed = function() {
     show(this.emailPanel);
     hide(this.invalidPasswordPanel);
     hide(this.createUserPanel);
+}
+
+Profiles.prototype.signOutNow = function() {
+    if (this.storage.hasToken()) {
+        var payload = { token: this.storage.getToken() };
+        ajax("/ajax/create-user.php", (stat, msg) => this.logSignOutResponse(stat, msg), "application/json", JSON.stringify(payload));
+        this.storage.clearToken();
+    }
+    this.updateSignedIn();
+    hide(this.profileDisplay);
+    this.hidePanel();
 }
 
 export { Profiles };
