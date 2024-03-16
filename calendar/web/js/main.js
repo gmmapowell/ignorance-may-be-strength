@@ -43,7 +43,7 @@ function init() {
     var userProfile = {}
     bindElement(userProfile, 'user-profile-panel');
     bindElement(userProfile, 'user-profile-sign-out');
-
+    bindElement(userProfile, 'drop-for-upload');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');

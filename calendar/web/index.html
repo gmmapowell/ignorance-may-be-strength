@@ -100,16 +100,28 @@
 				<input type="button" id="create-user-no" value="No">
 			</div>
 			<div id='user-profile-panel' class="user-profile hidden">
+				<!-- what i really want here are:
+				   - link some URI (and keep a live link to it, but remember that's what you've got)
+				   - choose a file to upload with a chooser (may be ics, csv or json)
+				   - drop target to upload
+
+				   - and then I want a (probably 3-column) list of all the files I've uploaded/linked so that we can choose to include/exclude from the calendar
+				-->
 				<input type='button' id="user-profile-sign-out" value="Sign Out">
-				<label for="ics-url">Load ICS URL:</label>
-				<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
-				<input type="button" id='load-ics' value="Load ICS">
-				<input type="button" id='share-as-json' value="Share as Json">
-				<label for="sharing-file">Load JSON from:</label>
-				<input type="file" id="sharing-file">
-				<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
-				<input type="button" id='load-shared' value="Load shared">
-				<div id="select-calendars"></div>
+				<div id="drop-for-upload" class="drop-for-upload">
+					<p>Drop calendar files here</p>
+				</div>
+				<div class="hidden">
+					<label for="ics-url">Load ICS URL:</label>
+					<input type="url" id="ics-url" placeholder="https://calendar.com/calendar.ics">
+					<input type="button" id='load-ics' value="Load ICS">
+					<input type="button" id='share-as-json' value="Share as Json">
+					<label for="sharing-file">Load JSON from:</label>
+					<input type="file" id="sharing-file">
+					<input type="url" id="sharing-url" placeholder="https://calendar.com/sharing.json">
+					<input type="button" id='load-shared' value="Load shared">
+					<div id="select-calendars"></div>
+				</div>
 			</div>	
 		</div>
 		<div id='feedback' class="feedback">

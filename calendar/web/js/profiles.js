@@ -31,8 +31,42 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
 
     this.profileDisplay = userProfile['user-profile-panel'];
     userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
+    this.prepareDropUpload(userProfile['drop-for-upload']);
 
     this.updateSignedIn();
+}
+
+Profiles.prototype.prepareDropUpload = function(targetZone) {
+    targetZone.addEventListener('dragenter', ev => this.fileDraggedOver(ev));
+    targetZone.addEventListener('dragover', ev => this.fileDraggedOver(ev));
+    targetZone.addEventListener('drop', ev => this.droppedFile(ev));
+}
+
+Profiles.prototype.fileDraggedOver = function(ev) {
+    // console.log(ev.type, ev);
+    ev.preventDefault();
+}
+
+Profiles.prototype.droppedFile = function(ev) {
+    ev.preventDefault();
+    var dt = ev.dataTransfer;
+    var files = dt.files;
+    // console.log(files);
+    for (var i=0;i<files.length;i++) {
+        this.uploadFile(files[i]);
+    }
+}
+
+Profiles.prototype.uploadFile = function(f) {
+    if (!f.name.endsWith(".ics") && !f.name.endsWith(".json") && !f.name.endsWith(".csv")) {
+        console.log("ignoring", f);
+        return;
+    }
+    console.log("uploading", f);
+    var opts = {};
+    opts['x-identity-token'] = this.storage.getToken();
+    opts['x-file-name'] = encodeURIComponent(f.name);
+    ajax("/ajax/upload.php", (stat, msg) => console.log("ajax: " + stat + " " + msg), f.type, f, opts);
 }
 
 Profiles.prototype.updateSignedIn = function() {

@@ -1,5 +1,5 @@
 
-function ajax(url, handler, ct, payload) {
+function ajax(url, handler, ct, payload, headers) {
 	var verb = "GET";
 	if (ct != null || payload != null)
 		verb = "POST";  
@@ -8,6 +8,12 @@ function ajax(url, handler, ct, payload) {
 	xhr.open(verb, url, true);
 	if (ct)
 		xhr.setRequestHeader("Content-Type", ct);
+	if (headers) {
+		var hs = Object.keys(headers);
+		for (var i=0;i<hs.length;i++) {
+			xhr.setRequestHeader(hs[i], headers[hs[i]]);
+		}
+	}
 	xhr.send(payload);
 }
 	

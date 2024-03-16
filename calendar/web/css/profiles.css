@@ -41,3 +41,13 @@
     min-width: 50em;
     text-align: center;
 }
+
+.drop-for-upload {
+    display: inline-block;
+    background-color: lightblue;
+    border: 2px solid aquamarine;
+    padding: 3em;
+    width: 10em;
+    height: 5em;
+  }
+  

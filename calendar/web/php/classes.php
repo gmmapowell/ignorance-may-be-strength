@@ -15,7 +15,6 @@ class Config {
 
 class ProfileHandler {
     function __construct(private Config $config) {
-        $this->make_token();
     }
 
     function sign_in(array $request) : array {
@@ -46,7 +45,7 @@ class ProfileHandler {
         return $resp;
     }
 
-    function read_profile($email) {
+    function read_profile($email) : array{
         $pfl = urlencode($email);
         $pfldir = $this->config->root . "/" . $pfl;
         if (!is_dir($pfldir)) {
@@ -93,6 +92,16 @@ class ProfileHandler {
         return $resp;
     }
 
+    function current_user() : ?array {
+        $token = getallheaders()['x-identity-token'];
+        error_log("token =". $token);
+        $tokfile = $this->config->root . "/.tokens/$token/token";
+        error_log("tokfile =". $tokfile);
+        $tokinfo = file_get_contents($tokfile);
+        error_log("tokinfo = $tokinfo");
+        return json_decode($tokinfo, true);
+    }
+
     function generate_token_for(string $userdir) : string {
         for (;;) {
             $token = $this->make_token();
@@ -120,7 +129,6 @@ class ProfileHandler {
                 $ch += 7;
             $ret .= chr($ch);
         }
-        error_log('$ret = '. $ret);
         return $ret;
     }
 }
