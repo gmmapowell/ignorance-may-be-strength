@@ -102,6 +102,12 @@ class ProfileHandler {
         return json_decode($tokinfo, true);
     }
 
+    function list_calendars() : array {
+        $cuser = $this->current_user();
+        $files = array_values(array_filter(scandir($cuser['dir']), "notdot"));
+        return $files;
+    }
+
     function generate_token_for(string $userdir) : string {
         for (;;) {
             $token = $this->make_token();
@@ -131,5 +137,9 @@ class ProfileHandler {
         }
         return $ret;
     }
+}
+
+function notdot($s) {
+    return !str_starts_with($s, ".");
 }
 ?>

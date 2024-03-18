@@ -30,6 +30,7 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
     this.createUserNo.addEventListener('click', () => self.hidePanel());
 
     this.profileDisplay = userProfile['user-profile-panel'];
+    this.availableCalendars = userProfile['available-calendars'];
     userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
     this.prepareDropUpload(userProfile['drop-for-upload']);
 
@@ -189,6 +190,32 @@ Profiles.prototype.signOutNow = function() {
     this.updateSignedIn();
     hide(this.profileDisplay);
     this.hidePanel();
+}
+
+Profiles.prototype.updateCalendarList = function(cals) {
+    this.availableCalendars.innerHTML = '';
+    var ks = Object.keys(cals);
+    for (var i=0;i<ks.length;i++) {
+        var k = ks[i];
+        var elt = document.createElement("div");
+        elt.className = 'choose-calendar';
+        var cb = document.createElement("input");
+        cb.type = 'checkbox';
+        cb.checked = cals[k];
+        this.addListener(cb, k);
+        elt.appendChild(cb);
+        var label = document.createTextNode(k);
+        elt.appendChild(label);
+        this.availableCalendars.appendChild(elt);
+    }
+}
+
+Profiles.prototype.addListener = function(cb, label) {
+    cb.addEventListener('change', () => {
+        console.log("check", label);
+        this.model.selectCalendar(label, cb.checked);
+        this.redraw.redraw();
+    });
 }
 
 export { Profiles };

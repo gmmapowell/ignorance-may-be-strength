@@ -44,6 +44,7 @@ function init() {
     bindElement(userProfile, 'user-profile-panel');
     bindElement(userProfile, 'user-profile-sign-out');
     bindElement(userProfile, 'drop-for-upload');
+    bindElement(userProfile, 'available-calendars');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
@@ -84,6 +85,7 @@ function init() {
 	var styler = new Styling(sections, print);
     var redraw = new RedrawClz(modelProvider, sections, styler);
     var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
+    profileModel.addVisual(profiles);
     initCalendars(calendars, scdiv, redraw);
 	initSharing(sharingFile, sharingUrl);
     initICS(urlEntry, redraw);
