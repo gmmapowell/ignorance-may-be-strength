@@ -108,6 +108,11 @@ class ProfileHandler {
         return $files;
     }
 
+    function send_calendar($called) {
+        $cuser = $this->current_user();
+        readfile($cuser['dir'] . '/' . $called);
+    }
+
     function generate_token_for(string $userdir) : string {
         for (;;) {
             $token = $this->make_token();

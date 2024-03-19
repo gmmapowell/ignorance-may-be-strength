@@ -5,7 +5,6 @@ import { initCalendars } from "./controls.js";
 import { Styling } from "./styling.js";
 import { initSharing, shareJson, loadJsonFromFile, loadSharedJson } from "./sharing.js";
 import { RedrawClz } from "./redraw.js";
-import { initICS, loadICS } from "./ics.js";
 import { Profiles } from "./profiles.js";
 import { ProfileModel } from "./profilemodel.js";
 
@@ -64,13 +63,10 @@ function init() {
     bindElement(signin, 'invalid-email-panel');
     bindElement(signin, 'invalid-password-panel');
 
-    var loadICSElt = document.getElementById("load-ics");
     var shareJsonElt = document.getElementById("share-as-json");
     var sharingFile = document.getElementById("sharing-file");
 	var sharingUrl = document.getElementById('sharing-url');
     var loadShared = document.getElementById("load-shared");
-
-    var urlEntry = document.getElementById("ics-url");
 
     // create a wrapper around localStorage
     var storage = new CalendarStorage();
@@ -88,7 +84,6 @@ function init() {
     profileModel.addVisual(profiles);
     initCalendars(calendars, scdiv, redraw);
 	initSharing(sharingFile, sharingUrl);
-    initICS(urlEntry, redraw);
  
     // wire up events
     redraw.onChange(core['start-date']);
@@ -101,7 +96,6 @@ function init() {
 
     profile['profile-button'].addEventListener('click', () => profiles.buttonClicked());
 
-    loadICSElt.addEventListener('click', loadICS);
     shareJsonElt.addEventListener('click', shareJson);
     sharingFile.addEventListener('change', loadJsonFromFile);
     loadShared.addEventListener('click', loadSharedJson);

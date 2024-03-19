@@ -1,32 +1,16 @@
-import { ajax } from "./ajax.js";
-import { addCalendar } from "./controls.js";
+import { Event } from './events.js';
 
-var urlEntry;
-var redraw;
-
-function initICS(u, r) {
-	urlEntry = u;
-	redraw = r;
-
-}
-function loadICS() {
-	var url = urlEntry.value;
-	ajax(url, (status, response) => handleICS(url, status, response));
+function Ics() {
 }
 
-function handleICS(url, status, response) {
-	if (status / 100 == 2) { 
-		var lines = joinLongLines(response.split(/\r\n/));
-		var blocked = makeHierarchical(lines);
-		if (blocked) {
-			var table = makeTabular(blocked);
-			addCalendar(url, table);
-			redraw.redraw();
-		}
+Ics.parse = function(text) {
+	console.log("want to parse ICS");
+	var lines = joinLongLines(text.split(/\r\n/));
+	var blocked = makeHierarchical(lines);
+	if (blocked) {
+		return makeEvents(blocked);
 	} else {
-		// TODO: handle status error cases somehow (e.g. 401, 404, 500)
-		console.log("error status", status);
-		console.log(response);
+		return null;
 	}
 }
 
@@ -71,11 +55,11 @@ function makeHierarchical(lines) {
 	return ret;
 }
 
-function makeTabular(blocks) {
+function makeEvents(blocks) {
 	// This assumes that blocks is a VCALENDAR containing VEVENT objects
 	// It will ignore other events
 
-	var ret = {};
+	var ret = [];
 	for (var i=0;i<blocks.blocks.length;i++) {
 		var b = blocks.blocks[i];
 		if (b.type != "VEVENT")
@@ -83,20 +67,8 @@ function makeTabular(blocks) {
 		var starts = new Date(Date.parse(toStandard(b.fields["DTSTART"])));
 		var date = starts.getFullYear() + "-" + (starts.getMonth()+1).toString().padStart(2, '0') + "-" + starts.getDate().toString().padStart(2, '0');
 		var time = starts.getHours().toString().padStart(2, '0') + starts.getMinutes().toString().padStart(2, '0');
-		if (!ret[date]) {
-			ret[date] = [];
-		}
-		var entry = { time, summary: b.fields.SUMMARY, fields: b.fields };
-		for (var j=0;j<ret[date].length;j++) {
-			if (entry.time < ret[date][j].time) {
-				ret[date].splice(j, 0, entry);
-				entry = null;
-				break;
-			}
-		}
-		if (entry) { // was not spliced in, append
-			ret[date].push(entry);
-		}
+		var ev = new Event(date, time, b.fields.SUMMARY);
+		ret.push(ev);
 	}
 	return ret;
 }
@@ -105,4 +77,4 @@ function toStandard(date) {
 	return date.substring(0, 4) + "-" + date.substring(4,6) + "-" + date.substring(6,11) + ":" + date.substring(11,13) + ":" + date.substring(13);
 }
 
-export { initICS, loadICS };
+export { Ics };

@@ -214,8 +214,15 @@ Profiles.prototype.addListener = function(cb, label) {
     cb.addEventListener('change', () => {
         console.log("check", label);
         this.model.selectCalendar(label, cb.checked);
-        this.redraw.redraw();
+
+        // we will need to redraw after the calendar has been successfully loaded
+        // this is done in modelChanged()
+        // this.redraw.redraw();
     });
+}
+
+Profiles.prototype.modelChanged = function() {
+    this.redraw.redraw();
 }
 
 export { Profiles };

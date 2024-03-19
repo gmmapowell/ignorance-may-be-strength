@@ -1,8 +1,10 @@
 import { ajax } from './ajax.js';
+import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
     this.storage = storage;
     this.availableCalendars = {};
+    this.activeCalendars = {};
     this.storage.addProfileListener(this);
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
@@ -46,6 +48,49 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
 
 ProfileModel.prototype.selectCalendar = function(label, selected) {
     console.log("select", label, "as", selected);
+
+    this.availableCalendars[label] = selected;
+
+    if (selected) {
+        // so the next step is to retrieve and parse this
+        // I think we want to retrieve it every time we select it to allow for updates
+        var opts = {};
+        opts['x-identity-token'] = this.storage.getToken();
+        opts['x-calendar-name'] = label;
+        ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, opts);
+    
+    } else {
+        // clear out the parsed version of the calendar (if any)
+        delete this.activeCalendars[label]; // if it has been loaded and parsed
+    }
+
+    // and then somewhere else this model needs to be taken into account for redraw
+}
+
+ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
+    if (!this.availableCalendars[label]) {
+        // I am considering this a race condition where the checkbox has been toggled on and off again before we can retrieve the calendar by ajax
+        // so we want to ignore this "belated" response
+        return;
+    }
+
+    if (stat != 200) {
+        console.log("ajax calendar request for", label, "failed:", stat, msg);
+        return;
+    }
+
+    var events;
+    if (label.endsWith(".ics")) {
+        events = Ics.parse(msg);
+    } else {
+        console.log("do not know how to parse", label);
+        return;
+    }
+    if (events) {
+        this.activeCalendars[label] = events;
+    }
+
+    this.vis.modelChanged();
 }
 
 export { ProfileModel };
