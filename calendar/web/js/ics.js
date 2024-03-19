@@ -1,10 +1,9 @@
-import { Event } from './events.js';
+import { CalEvent } from './events.js';
 
 function Ics() {
 }
 
 Ics.parse = function(text) {
-	console.log("want to parse ICS");
 	var lines = joinLongLines(text.split(/\r\n/));
 	var blocked = makeHierarchical(lines);
 	if (blocked) {
@@ -67,7 +66,7 @@ function makeEvents(blocks) {
 		var starts = new Date(Date.parse(toStandard(b.fields["DTSTART"])));
 		var date = starts.getFullYear() + "-" + (starts.getMonth()+1).toString().padStart(2, '0') + "-" + starts.getDate().toString().padStart(2, '0');
 		var time = starts.getHours().toString().padStart(2, '0') + starts.getMinutes().toString().padStart(2, '0');
-		var ev = new Event(date, time, b.fields.SUMMARY);
+		var ev = new CalEvent(date, time, b.fields.SUMMARY);
 		ret.push(ev);
 	}
 	return ret;

@@ -1,7 +1,7 @@
-function Event(start, time, description) {
+function CalEvent(start, time, description) {
     this.startdate = start;
     this.starttime = time;
     this.description = description;
 }
 
-export { Event };
+export { CalEvent };

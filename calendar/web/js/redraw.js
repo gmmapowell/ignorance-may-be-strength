@@ -97,12 +97,12 @@ RedrawClz.prototype.redraw = function() {
 					var event = document.createElement("div");
 					event.className = "body-day-event";
 					events.appendChild(event);
-					var timeText = document.createTextNode(toShow[j].time);
+					var timeText = document.createTextNode(toShow[j].starttime);
 					var timeSpan = document.createElement("span");
 					timeSpan.className = "body-day-event-time";
 					timeSpan.appendChild(timeText);
 					event.appendChild(timeSpan);
-					var eventText = document.createTextNode(" " + toShow[j].summary);
+					var eventText = document.createTextNode(" " + toShow[j].description);
 					var eventSpan = document.createElement("span");
 					eventSpan.className = "body-day-event-text";
 					eventSpan.appendChild(eventText);

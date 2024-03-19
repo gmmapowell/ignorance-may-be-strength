@@ -67,7 +67,12 @@ Profiles.prototype.uploadFile = function(f) {
     var opts = {};
     opts['x-identity-token'] = this.storage.getToken();
     opts['x-file-name'] = encodeURIComponent(f.name);
-    ajax("/ajax/upload.php", (stat, msg) => console.log("ajax: " + stat + " " + msg), f.type, f, opts);
+    ajax("/ajax/upload.php", (stat, msg) => this.uploadComplete(stat, msg), f.type, f, "PUT", opts);
+}
+
+Profiles.prototype.uploadComplete = function(stat, msg) {
+    console.log("ajax: " + stat + " " + msg);
+    this.model.loadAvailableCalendars();
 }
 
 Profiles.prototype.updateSignedIn = function() {

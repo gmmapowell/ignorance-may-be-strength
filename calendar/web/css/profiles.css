@@ -49,5 +49,9 @@
     padding: 3em;
     width: 10em;
     height: 5em;
-  }
+}
   
+.available-calendars {
+    display: inline-block;
+    vertical-align: top;
+}

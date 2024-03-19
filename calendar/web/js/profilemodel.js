@@ -1,4 +1,5 @@
 import { ajax } from './ajax.js';
+import { CsvCalendar } from './csvcalendar.js';
 import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
@@ -20,17 +21,22 @@ ProfileModel.prototype.amSignedIn = function() {
 }
 
 ProfileModel.prototype.signedIn = function() {
+    this.availableCalendars = {};
     this.loadAvailableCalendars();
+    this.activeCalendars = {};
+    this.vis.modelChanged();
 }
 
 ProfileModel.prototype.signedOut = function() {
     this.availableCalendars = {};
+    this.activeCalendars = {};
+    this.vis.modelChanged();
 }
 
 ProfileModel.prototype.loadAvailableCalendars = function() {
     var opts = {};
     opts['x-identity-token'] = this.storage.getToken();
-    ajax("/ajax/load-calendars.php", (stat, msg) => this.calendarsLoaded(stat, msg), null, null, opts);
+    ajax("/ajax/load-calendars.php", (stat, msg) => this.calendarsLoaded(stat, msg), null, null, null, opts);
 }
 
 ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
@@ -57,7 +63,7 @@ ProfileModel.prototype.selectCalendar = function(label, selected) {
         var opts = {};
         opts['x-identity-token'] = this.storage.getToken();
         opts['x-calendar-name'] = label;
-        ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, opts);
+        ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, null, opts);
     
     } else {
         // clear out the parsed version of the calendar (if any)
@@ -82,6 +88,8 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     var events;
     if (label.endsWith(".ics")) {
         events = Ics.parse(msg);
+    } else if (label.endsWith(".csv")) {
+        events = CsvCalendar.parse(msg);
     } else {
         console.log("do not know how to parse", label);
         return;

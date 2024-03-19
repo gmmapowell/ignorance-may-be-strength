@@ -77,7 +77,7 @@ function init() {
     var profileModel = new ProfileModel(storage);
 
     // then create all the actors
-    var modelProvider = new ModelProvider(core, colors, calendars);
+    var modelProvider = new ModelProvider(core, profileModel);
 	var styler = new Styling(sections, print);
     var redraw = new RedrawClz(modelProvider, sections, styler);
     var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);

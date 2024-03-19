@@ -1,11 +1,10 @@
 
-function ModelProvider(core, c, c2) {
+function ModelProvider(core, prof) {
     this.start = core['start-date'];
     this.end = core['end-date'];
     this.first = core['first-day'];
     this.weekendShadeOption = core['shade-weekends'];
-	this.colors = c;
-    this.calendars = c2;
+	this.profile = prof;
 }
 
 function utc(d) {
@@ -58,16 +57,14 @@ ModelProvider.prototype.calculate = function() {
 
             var shadeMe = shadeWeekends && (cellDate.getDay() ==0 || cellDate.getDay() == 6);
 
+			var events = [];
+			for (var url in this.profile.activeCalendars) {
+				collectEvents(events, this.profile.activeCalendars[url], calDate);
+			}
 			var toShow = [];
-			for (var url in this.calendars) {
-				var cal = this.calendars[url];
-				if (!cal.used)
-					continue;
-				var today = cal.info[calDate];
-				if (!today)
-					continue;
-				for (var j=0;j<today.length;j++) {
-					var next = today[j];
+			if (events.length > 0) {
+				for (var j=0;j<events.length;j++) {
+					var next = events[j];
 					for (var k=0;k<toShow.length;k++) {
 						if (next.time < toShow[k].time) {
 							toShow.splice(k, 0, next);
@@ -79,7 +76,7 @@ ModelProvider.prototype.calculate = function() {
 						toShow.push(next);
 				}
 			}
-            days.push({ cellDate: cellDate.getDate(), calDate, colors: this.colors[calDate], toShow, shadeMe });
+            days.push({ cellDate: cellDate.getDate(), calDate, colors: null, toShow, shadeMe });
 		}
 
 		// advance to next week
@@ -88,6 +85,15 @@ ModelProvider.prototype.calculate = function() {
 	} while (leftDate <= to);
 
     return { weeks, rowInfo };
+}
+
+function collectEvents(into, cal, forDate) {
+	for (var i=0;i<cal.length;i++) {
+		var ev = cal[i];
+		if (ev.startdate == forDate) {
+			into.push(ev);
+		}
+	}
 }
 
 export { ModelProvider };
