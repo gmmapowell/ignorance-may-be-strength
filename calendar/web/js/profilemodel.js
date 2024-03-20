@@ -53,8 +53,6 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
 }
 
 ProfileModel.prototype.selectCalendar = function(label, selected) {
-    console.log("select", label, "as", selected);
-
     this.availableCalendars[label] = selected;
 
     if (selected) {
@@ -64,13 +62,13 @@ ProfileModel.prototype.selectCalendar = function(label, selected) {
         opts['x-identity-token'] = this.storage.getToken();
         opts['x-calendar-name'] = label;
         ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, null, opts);
-    
+        // and then somewhere else this model needs to be taken into account for redraw
     } else {
         // clear out the parsed version of the calendar (if any)
         delete this.activeCalendars[label]; // if it has been loaded and parsed
+        this.vis.modelChanged();
     }
 
-    // and then somewhere else this model needs to be taken into account for redraw
 }
 
 ProfileModel.prototype.parseCalendar = function(label, stat, msg) {

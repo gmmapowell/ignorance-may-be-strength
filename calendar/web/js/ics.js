@@ -58,6 +58,8 @@ function makeEvents(blocks) {
 	// This assumes that blocks is a VCALENDAR containing VEVENT objects
 	// It will ignore other events
 
+	// It chooses the "Summary" over the "Description" field; we should possibly read both and allow the user to choose
+
 	var ret = [];
 	for (var i=0;i<blocks.blocks.length;i++) {
 		var b = blocks.blocks[i];
@@ -66,7 +68,10 @@ function makeEvents(blocks) {
 		var starts = new Date(Date.parse(toStandard(b.fields["DTSTART"])));
 		var date = starts.getFullYear() + "-" + (starts.getMonth()+1).toString().padStart(2, '0') + "-" + starts.getDate().toString().padStart(2, '0');
 		var time = starts.getHours().toString().padStart(2, '0') + starts.getMinutes().toString().padStart(2, '0');
-		var ev = new CalEvent(date, time, b.fields.SUMMARY);
+		var ends = new Date(Date.parse(toStandard(b.fields["DTEND"])));
+		var enddate = ends.getFullYear() + "-" + (ends.getMonth()+1).toString().padStart(2, '0') + "-" + ends.getDate().toString().padStart(2, '0');
+		var endtime = ends.getHours().toString().padStart(2, '0') + ends.getMinutes().toString().padStart(2, '0');
+		var ev = new CalEvent(date, time, b.fields.SUMMARY, "UTC", enddate, endtime, null);
 		ret.push(ev);
 	}
 	return ret;

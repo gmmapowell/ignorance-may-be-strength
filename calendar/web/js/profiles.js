@@ -218,7 +218,6 @@ Profiles.prototype.updateCalendarList = function(cals) {
 
 Profiles.prototype.addListener = function(cb, label) {
     cb.addEventListener('change', () => {
-        console.log("check", label);
         this.model.selectCalendar(label, cb.checked);
 
         // we will need to redraw after the calendar has been successfully loaded

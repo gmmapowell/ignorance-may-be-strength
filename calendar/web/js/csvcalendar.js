@@ -15,7 +15,7 @@ CsvCalendar.parse = function(text) {
     var events = [];
     for (var i=1;i<input.length;i++) {
         var row = input[i];
-        var ev = new CalEvent(row[cols['Date']], row[cols['Time']], row[cols['Description']]);
+        var ev = new CalEvent(row[cols['Date']], row[cols['Time']], row[cols['Description']], row[cols['TZ']], row[cols['Until']], row[cols['Ends']], row[cols['Category']]);
         events.push(ev);
     }
 
