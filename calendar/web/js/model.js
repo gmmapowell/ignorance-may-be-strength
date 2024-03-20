@@ -1,5 +1,6 @@
 
-function ModelProvider(core, prof) {
+function ModelProvider(storage, core, prof) {
+	this.storage = storage;
     this.start = core['start-date'];
     this.end = core['end-date'];
     this.first = core['first-day'];
@@ -9,6 +10,24 @@ function ModelProvider(core, prof) {
 
 function utc(d) {
 	return new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+}
+
+ModelProvider.prototype.saveState = function() {
+	var core = { start: this.start.value, end: this.end.value, first: this.first.value, weekendShadeOption: this.weekendShadeOption.checked };
+	this.storage.storeState("core", core);
+}
+
+ModelProvider.prototype.restoreState = function() {
+	var core = this.storage.currentState("core");
+	if (core) {
+		this.start.valueAsDate = new Date(core.start);
+		this.end.valueAsDate = new Date(core.end);
+		this.first.value = core.first;
+		this.weekendShadeOption.checked = core.weekendShadeOption;
+	} else {
+		this.start.valueAsDate = new Date();
+		this.end.valueAsDate = new Date();
+	}
 }
 
 ModelProvider.prototype.calculate = function() {

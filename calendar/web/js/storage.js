@@ -37,12 +37,19 @@ CalendarStorage.prototype.clear = function() {
     localStorage.removeItem("state");
 }
 
-CalendarStorage.prototype.storeState = function(state) {
-    localStorage.setItem("state", JSON.stringify(state));
+CalendarStorage.prototype.storeState = function(category, state) {
+    var curr = localStorage.getItem("state");
+    if (curr) {
+        curr = JSON.parse(curr);
+    } else {
+        curr = {};
+    }
+    curr[category] = state;
+    localStorage.setItem("state", JSON.stringify(curr));
 }
 
-CalendarStorage.prototype.currentState = function() {
-    return JSON.parse(localStorage.getItem("state"));
+CalendarStorage.prototype.currentState = function(category) {
+    return JSON.parse(localStorage.getItem("state"))[category];
 }
 
 export { CalendarStorage };

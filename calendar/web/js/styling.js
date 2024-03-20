@@ -1,29 +1,38 @@
-var styledDiv, controlPane, optionsDrawer, pageSizer, isLandscape;
-var screenSheet, printSheet, printMeasureSheet;
-var metricFontSize = 10;
-var screenWatermarks;
-
-function Styling(sections, print) {
-	styledDiv = sections['feedback'];
-	controlPane = sections['controls'];
-	optionsDrawer = sections['options-drawer'];
-	pageSizer = print['page-size'];
-	isLandscape = print['landscape'];
-	screenSheet = new CSSStyleSheet({ media: "screen" });
-	printSheet = new CSSStyleSheet({ media: "print" });
-	printMeasureSheet = new CSSStyleSheet({ media: "screen" });
-	document.adoptedStyleSheets = [screenSheet, printSheet];
+function Styling(storage, sections, print) {
+	this.storage = storage;
+	this.styledDiv = sections['feedback'];
+	this.controlPane = sections['controls'];
+	this.optionsDrawer = sections['options-drawer'];
+	this.pageSizer = print['page-size'];
+	this.isLandscape = print['landscape'];
+	this.screenSheet = new CSSStyleSheet({ media: "screen" });
+	this.printSheet = new CSSStyleSheet({ media: "print" });
+	this.printMeasureSheet = new CSSStyleSheet({ media: "screen" });
+	this.metricFontSize = 10;
+	this.screenWatermarks = {};
+	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
 
- Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
-	screenWatermarks = {};
-	pageLayout([screenSheet], rowInfo, monthdivs, calculateSizeOfFeedbackDiv());
-	document.adoptedStyleSheets = [printMeasureSheet];
-	pageLayout([printSheet, printMeasureSheet], rowInfo, monthdivs, calculatePaperSize());
-	document.adoptedStyleSheets = [screenSheet, printSheet];
+Styling.prototype.saveState = function() {
+	var print = { size: this.pageSizer.value, landscape: this.isLandscape.checked };
+	this.storage.storeState("print", print);
 }
 
-function pageLayout(sheets, rowInfo, monthdivs, pageSize) {
+Styling.prototype.restoreState = function() {
+	var print = this.storage.currentState("print");
+	this.pageSizer.value = print.size;
+	this.isLandscape.checked = print.landscape;
+}
+
+Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
+	this.screenWatermarks = {};
+	this.pageLayout([this.screenSheet], rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
+	document.adoptedStyleSheets = [this.printMeasureSheet];
+	this.pageLayout([this.printSheet, this.printMeasureSheet], rowInfo, monthdivs, this.calculatePaperSize());
+	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+}
+
+Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	var rows = rowInfo.numRows;
 
 	// delete the old rules
@@ -36,7 +45,7 @@ function pageLayout(sheets, rowInfo, monthdivs, pageSize) {
 	var innerX = pageSize.x, innerY = pageSize.y;
 	var hackX = 1;
 	if (pageSize.media == "print") {
-		insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
+		this.insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 3 * pageSize.margin;
 		innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
 		hackX = 0.95;
@@ -61,33 +70,33 @@ function pageLayout(sheets, rowInfo, monthdivs, pageSize) {
 	var eventsContainerY = 2 * ypos;
 
 	// generate new rules
-	insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
-	insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
-	insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
-	insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+	this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
+	this.insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
+	this.insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+	this.insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	for (var i=0;i<rowInfo.months.length;i++) {
-		handleWatermarks(pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
+		this.handleWatermarks(pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
 	}
 }
 
-function insertRuleIntoSheets(sheets, rule) {
+Styling.prototype.insertRuleIntoSheets = function(sheets, rule) {
 	for (var i=0;i<sheets.length;i++) {
 		sheets[i].insertRule(rule);
 	}
 }
 
-function handleWatermarks(forScreen, idx, rowInfo, monthdiv) {
+Styling.prototype.handleWatermarks = function(forScreen, idx, rowInfo, monthdiv) {
 	var availx, availy;
 	var usedx, usedy, scale, fontSize;
 	var sheet;
 
 	if (forScreen) {
-		sheet = screenSheet;
+		sheet = this.screenSheet;
 		availx = monthdiv.clientWidth;
 		availy = monthdiv.clientHeight;
 
-		var ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + metricFontSize + "pt; }");
+		var ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + this.metricFontSize + "pt; }");
 		var adiv = monthdiv.querySelector(".watermark");
 		var width = adiv.clientWidth;
 		var height = adiv.clientHeight;
@@ -96,48 +105,48 @@ function handleWatermarks(forScreen, idx, rowInfo, monthdiv) {
 		var scaley = availy/height;
 		scale = Math.min(scalex, scaley) * .75; // .75 to leave some space around the edges
 		sheet.deleteRule(ruleIdx);
-		fontSize = metricFontSize*scale;
+		fontSize = this.metricFontSize*scale;
 		ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + fontSize + "pt; }");
 		
 		var adiv = monthdiv.querySelector(".watermark");
 		usedx = adiv.clientWidth;
 		usedy = adiv.clientHeight;
 
-		screenWatermarks[idx] = { scale, width, height };
+		this.screenWatermarks[idx] = { scale, width, height };
 		sheet.deleteRule(ruleIdx);
 	} else {
-		sheet = printSheet;
+		sheet = this.printSheet;
 		availx = monthdiv.clientWidth;
 		availy = monthdiv.clientHeight;
-		var sw = screenWatermarks[idx];
+		var sw = this.screenWatermarks[idx];
 		var scalex = availx / sw.width;
 		var scaley = availy / sw.height;
 		scale = Math.min(scalex, scaley) * .75;
 		usedx = sw.width * scale;
 		usedy = sw.height * scale;
-		fontSize = metricFontSize*scale*sw.scale;
+		fontSize = this.metricFontSize*scale*sw.scale;
 	}
 
 	var left = (availx - usedx) / 2;
 	var top = (availy - usedy) / 2;
 
-	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*metricFontSize + "pt; left: " + left + "px; top: " + top + "px; }");
+	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*this.metricFontSize + "pt; left: " + left + "px; top: " + top + "px; }");
 }
 
-function calculateSizeOfFeedbackDiv() {
+Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 	var borderX = 1, borderY = 1;
 	var viewx = window.innerWidth;
 	var viewy = window.innerHeight;
 
 	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
-	var fby = viewy - controlPane.clientHeight - optionsDrawer.clientHeight - 16 - borderY * 2;
+	var fby = viewy - this.controlPane.clientHeight - this.optionsDrawer.clientHeight - 16 - borderY * 2;
 
 	return { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
 }
 
-function calculatePaperSize() {
-	var currentSize = pageSizer.value;
-	var andLandscape = isLandscape.checked;
+Styling.prototype.calculatePaperSize = function() {
+	var currentSize = this.pageSizer.value;
+	var andLandscape = this.isLandscape.checked;
 	var ret;
 	switch (currentSize) {
 		case "letter":

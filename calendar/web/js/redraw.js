@@ -15,7 +15,11 @@ RedrawClz.prototype.windowResized = function(ev) {
 }
 
 RedrawClz.prototype.onChange = function(elt) {
-	elt.addEventListener('change', () => this.redraw());
+	elt.addEventListener('change', () => {
+		this.modelProvider.saveState();
+		this.styling.saveState();
+		this.redraw();
+	});
 }
 
 RedrawClz.prototype.redraw = function() {

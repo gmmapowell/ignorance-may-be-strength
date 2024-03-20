@@ -74,12 +74,11 @@ function init() {
 
     // then create all the model objects
 	var calendars = {};
-	var colors = {};
     var profileModel = new ProfileModel(storage);
 
     // then create all the actors
-    var modelProvider = new ModelProvider(core, profileModel);
-	var styler = new Styling(sections, print);
+    var modelProvider = new ModelProvider(storage, core, profileModel);
+	var styler = new Styling(storage, sections, print);
     var redraw = new RedrawClz(modelProvider, sections, styler);
     var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
     profileModel.addVisual(profiles);
@@ -105,9 +104,8 @@ function init() {
 	addEventListener("resize", () => redraw.windowResized());
 	addEventListener("afterprint", ev => redraw.mode(true));
 
-    // initialize state
-	core['start-date'].valueAsDate = new Date();
-	core['end-date'].valueAsDate = new Date();
+    modelProvider.restoreState();
+    styler.restoreState();
 
     // ok, show what we've got
 	redraw.redraw();

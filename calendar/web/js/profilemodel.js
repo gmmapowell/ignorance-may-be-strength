@@ -17,7 +17,7 @@ function ProfileModel(storage) {
 
 ProfileModel.prototype.addVisual = function(vis) {
     this.vis = vis;
-    var state = this.storage.currentState();
+    var state = this.storage.currentState("profile");
     if (state) {
         if (state.drawerState) {
             this.drawerState = true;
@@ -171,7 +171,7 @@ ProfileModel.prototype.storeCurrentState = function() {
 
     var state = { drawerState: this.drawerState, selectedCalendars: statecals, configs: this.categoryConfigs };
 
-    this.storage.storeState(state);
+    this.storage.storeState("profile", state);
 }
 
 export { ProfileModel };
