@@ -44,6 +44,7 @@ function init() {
     bindElement(userProfile, 'user-profile-sign-out');
     bindElement(userProfile, 'drop-for-upload');
     bindElement(userProfile, 'available-calendars');
+    bindElement(userProfile, 'calendar-categories');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');

@@ -4,8 +4,11 @@ import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
     this.storage = storage;
+    this.drawerState = false;
     this.availableCalendars = {};
     this.activeCalendars = {};
+    this.calendarCategories = {};
+    this.categoryConfigs = {};
     this.storage.addProfileListener(this);
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
@@ -14,6 +17,22 @@ function ProfileModel(storage) {
 
 ProfileModel.prototype.addVisual = function(vis) {
     this.vis = vis;
+    var state = this.storage.currentState();
+    if (state) {
+        if (state.drawerState) {
+            this.drawerState = true;
+            vis.openDrawer();
+        }
+        if (state.configs) {
+            this.categoryConfigs = state.configs;
+        }
+        if (state.selectedCalendars) {
+            for (var c of state.selectedCalendars) {
+                this.selectCalendar(c, true);
+            }
+        }
+        vis.modelChanged();
+    }
 }
 
 ProfileModel.prototype.amSignedIn = function() {
@@ -24,13 +43,23 @@ ProfileModel.prototype.signedIn = function() {
     this.availableCalendars = {};
     this.loadAvailableCalendars();
     this.activeCalendars = {};
+    this.calendarCategories = {};
+    this.categoryConfigs = {};
     this.vis.modelChanged();
 }
 
 ProfileModel.prototype.signedOut = function() {
     this.availableCalendars = {};
     this.activeCalendars = {};
+    this.calendarCategories = {};
+    this.categoryConfigs = {};
+    this.storage.clear();
     this.vis.modelChanged();
+}
+
+ProfileModel.prototype.drawerOpen = function(isOpen) {
+    this.drawerState = isOpen;
+    this.storeCurrentState();
 }
 
 ProfileModel.prototype.loadAvailableCalendars = function() {
@@ -40,7 +69,6 @@ ProfileModel.prototype.loadAvailableCalendars = function() {
 }
 
 ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
-    console.log(stat, msg, this.vis);
     if (stat == 200) {
         var info = JSON.parse(msg);
         for (var i=0;i<info.calendars.length;i++) {
@@ -49,11 +77,13 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
             }
         }
         this.vis.updateCalendarList(this.availableCalendars);
+        this.vis.modelChanged();
     }
 }
 
 ProfileModel.prototype.selectCalendar = function(label, selected) {
     this.availableCalendars[label] = selected;
+    this.storeCurrentState();
 
     if (selected) {
         // so the next step is to retrieve and parse this
@@ -66,9 +96,9 @@ ProfileModel.prototype.selectCalendar = function(label, selected) {
     } else {
         // clear out the parsed version of the calendar (if any)
         delete this.activeCalendars[label]; // if it has been loaded and parsed
+        delete this.calendarCategories[label];
         this.vis.modelChanged();
     }
-
 }
 
 ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
@@ -94,9 +124,54 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     }
     if (events) {
         this.activeCalendars[label] = events;
+        var cats = new Set();
+        for (var i=0;i<events.length;i++) {
+            var ev = events[i];
+            if (ev.category) {
+                cats.add(ev.category);
+            }
+        }
+        this.calendarCategories[label] = cats;
     }
 
     this.vis.modelChanged();
+}
+
+ProfileModel.prototype.categories = function() {
+    var ret = new Set();
+    for (var k in this.calendarCategories) {
+        var s = this.calendarCategories[k];
+        for (var e of s) {
+            ret.add(e);
+        }
+    }
+    return Array.from(ret).sort();
+}
+
+ProfileModel.prototype.category = function(cat) {
+    var ret = this.categoryConfigs[cat];
+    if (ret)
+        return ret;
+    return { color: "--" };
+}
+
+ProfileModel.prototype.chooseCategoryColor = function(cat, color) {
+    this.categoryConfigs[cat] = { color };
+    this.storeCurrentState();
+    this.vis.modelChanged();
+}
+
+ProfileModel.prototype.storeCurrentState = function() {
+    var statecals = [];
+    for (var c of Object.keys(this.availableCalendars)) {
+        if (this.availableCalendars[c]) {
+            statecals.push(c);
+        }
+    }
+
+    var state = { drawerState: this.drawerState, selectedCalendars: statecals, configs: this.categoryConfigs };
+
+    this.storage.storeState(state);
 }
 
 export { ProfileModel };

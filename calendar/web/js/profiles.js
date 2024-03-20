@@ -1,4 +1,4 @@
-import { toggleHidden, hide, show } from "./utils.js";
+import { toggleHidden, hide, show, isShown } from "./utils.js";
 import { ajax } from './ajax.js';
 
 function Profiles(storage, model, redraw, sections, profileElts, elements, userProfile) {
@@ -31,6 +31,7 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
 
     this.profileDisplay = userProfile['user-profile-panel'];
     this.availableCalendars = userProfile['available-calendars'];
+    this.calendarCategories = userProfile['calendar-categories'];
     userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
     this.prepareDropUpload(userProfile['drop-for-upload']);
 
@@ -88,6 +89,7 @@ Profiles.prototype.updateSignedIn = function() {
 Profiles.prototype.buttonClicked = function() {
     if (this.model.amSignedIn()) {
         toggleHidden(this.profileDisplay, this.optionsDrawer);
+        this.model.drawerOpen(isShown(this.optionsDrawer));
     } else {
         toggleHidden(this.signInPanel, this.optionsDrawer);
         show(this.emailPanel);
@@ -96,6 +98,10 @@ Profiles.prototype.buttonClicked = function() {
         hide(this.invalidPasswordPanel);
     }
     this.redraw.redraw();
+}
+
+Profiles.prototype.openDrawer = function() {
+    show(this.profileDisplay, this.optionsDrawer);
 }
 
 Profiles.prototype.hidePanel = function() {
@@ -199,7 +205,8 @@ Profiles.prototype.signOutNow = function() {
 
 Profiles.prototype.updateCalendarList = function(cals) {
     this.availableCalendars.innerHTML = '';
-    var ks = Object.keys(cals);
+    this.availableCalendars.appendChild(document.createTextNode("Choose Calendars"));
+    var ks = Object.keys(cals).sort();
     for (var i=0;i<ks.length;i++) {
         var k = ks[i];
         var elt = document.createElement("div");
@@ -208,7 +215,7 @@ Profiles.prototype.updateCalendarList = function(cals) {
         cb.name = 'cal-cb-' + i;
         cb.type = 'checkbox';
         cb.checked = cals[k];
-        this.addListener(cb, k);
+        this.addCalendarListener(cb, k);
         elt.appendChild(cb);
         var label = document.createTextNode(k);
         elt.appendChild(label);
@@ -216,7 +223,43 @@ Profiles.prototype.updateCalendarList = function(cals) {
     }
 }
 
-Profiles.prototype.addListener = function(cb, label) {
+Profiles.prototype.updateCategories = function() {
+    var cats = this.model.categories();
+    this.calendarCategories.innerHTML = '';
+    this.calendarCategories.appendChild(document.createTextNode("Configure Categories"));
+    var catn = 0;
+    for (const c of cats) {
+        var config = this.model.category(c);
+        var elt = document.createElement("div");
+        var label = document.createTextNode(c);
+        elt.appendChild(label);
+        var picker = makeColorPicker(catn, config.color);
+        elt.appendChild(picker);
+        this.addCategoryListener(picker, c);
+        this.calendarCategories.appendChild(elt);
+
+        catn++;
+    }
+}
+
+var colors = [ '--', 'pink', 'red', 'green' ];
+
+function makeColorPicker(catn, chosen) {
+    var ret = document.createElement("select");
+    ret.name = "select-cat-" + catn;
+    for (var c of colors) {
+        var opt = document.createElement("option");
+        opt.value = c;
+        if (c == chosen) {
+            opt.selected = true;
+        }
+        opt.appendChild(document.createTextNode(c));
+        ret.appendChild(opt);
+    }
+    return ret;
+}
+
+Profiles.prototype.addCalendarListener = function(cb, label) {
     cb.addEventListener('change', () => {
         this.model.selectCalendar(label, cb.checked);
 
@@ -226,7 +269,18 @@ Profiles.prototype.addListener = function(cb, label) {
     });
 }
 
+Profiles.prototype.addCategoryListener = function(picker, label) {
+    picker.addEventListener('change', () => {
+        this.model.chooseCategoryColor(label, picker.selectedOptions[0].value);
+
+        // we will need to redraw after the calendar has been successfully loaded
+        // this is done in modelChanged()
+        // this.redraw.redraw();
+    });
+}
+
 Profiles.prototype.modelChanged = function() {
+    this.updateCategories();
     this.redraw.redraw();
 }
 

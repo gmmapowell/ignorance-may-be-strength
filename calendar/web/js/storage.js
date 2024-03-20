@@ -32,4 +32,17 @@ CalendarStorage.prototype.clearToken = function() {
     }
 }
 
+CalendarStorage.prototype.clear = function() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("state");
+}
+
+CalendarStorage.prototype.storeState = function(state) {
+    localStorage.setItem("state", JSON.stringify(state));
+}
+
+CalendarStorage.prototype.currentState = function() {
+    return JSON.parse(localStorage.getItem("state"));
+}
+
 export { CalendarStorage };

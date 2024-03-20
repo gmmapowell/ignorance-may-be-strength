@@ -1,4 +1,8 @@
 
+function isShown(elt) {
+    return !elt.classList.contains("hidden");
+}
+
 function toggleHidden(elt, container) {
     if (elt.classList.contains("hidden")) {
         elt.classList.remove("hidden");
@@ -11,16 +15,20 @@ function toggleHidden(elt, container) {
     }
 }
 
-function show(elt) {
-    if (elt.classList.contains("hidden")) {
-        elt.classList.remove("hidden");
+function show(...elts) {
+    for (var elt of elts) {
+        if (elt.classList.contains("hidden")) {
+            elt.classList.remove("hidden");
+        }
     }
 }
 
-function hide(elt) {
-    if (!elt.classList.contains("hidden")) {
-        elt.classList.add("hidden");
+function hide(...elts) {
+    for (var elt of elts) {
+        if (!elt.classList.contains("hidden")) {
+            elt.classList.add("hidden");
+        }
     }
 }
 
-export { toggleHidden, show, hide };
+export { toggleHidden, show, hide, isShown };
