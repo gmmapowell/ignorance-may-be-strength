@@ -69,8 +69,8 @@ RedrawClz.prototype.redraw = function() {
 			var dateValue = document.createTextNode(day.cellDate);
 			date.appendChild(dateValue);
 
-            var cd = day.colors;
-			if (cd) {
+            var cd = day.highlights;
+			if (cd && cd.length) {
 				var colorBars = document.createElement("div");
 				colorBars.className = "body-day-color-bars";
 				daydiv.appendChild(colorBars);
@@ -81,8 +81,10 @@ RedrawClz.prototype.redraw = function() {
 						itemNo = " body-day-color-bar-" + (j+1) + "-of-" + cd.length;
 					}
 					bar.className = "body-day-color-bar body-day-color-bar-" + cd.length + itemNo + " body-day-color-" + cd[j].color;
-					var tx = document.createTextNode(cd[j].label);
-					bar.appendChild(tx);
+					if (cd[j].label) {
+						var tx = document.createTextNode(cd[j].label);
+						bar.appendChild(tx);
+					}
 					colorBars.appendChild(bar);
 				}
 			}

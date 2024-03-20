@@ -242,7 +242,7 @@ Profiles.prototype.updateCategories = function() {
     }
 }
 
-var colors = [ '--', 'pink', 'red', 'green' ];
+var colors = [ '--', 'blue', 'green', 'pink', 'red', 'yellow' ];
 
 function makeColorPicker(catn, chosen) {
     var ret = document.createElement("select");

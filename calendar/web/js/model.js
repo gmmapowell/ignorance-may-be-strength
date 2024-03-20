@@ -58,8 +58,19 @@ ModelProvider.prototype.calculate = function() {
             var shadeMe = shadeWeekends && (cellDate.getDay() ==0 || cellDate.getDay() == 6);
 
 			var events = [];
+			var cats = new Set();
 			for (var url in this.profile.activeCalendars) {
-				collectEvents(events, this.profile.activeCalendars[url], calDate);
+				collectEvents(events, cats, this.profile.activeCalendars[url], calDate);
+			}
+
+			var highlights = new Set();
+			if (cats.size > 0) {
+				for (var c of cats) {
+					var cat = this.profile.category(c);
+					if (cat && cat.color) {
+						highlights.add({ color: cat.color });
+					}
+				}
 			}
 			var toShow = [];
 			if (events.length > 0) {
@@ -76,7 +87,7 @@ ModelProvider.prototype.calculate = function() {
 						toShow.push(next);
 				}
 			}
-            days.push({ cellDate: cellDate.getDate(), calDate, colors: null, toShow, shadeMe });
+            days.push({ cellDate: cellDate.getDate(), calDate, colors: null, toShow, shadeMe , highlights: Array.from(highlights).sort() });
 		}
 
 		// advance to next week
@@ -87,11 +98,14 @@ ModelProvider.prototype.calculate = function() {
     return { weeks, rowInfo };
 }
 
-function collectEvents(into, cal, forDate) {
+function collectEvents(into, cats, cal, forDate) {
 	for (var i=0;i<cal.length;i++) {
 		var ev = cal[i];
 		if (ev.startdate == forDate) {
 			into.push(ev);
+		}
+		if (ev.category && ev.startdate <= forDate && ev.until >= forDate) {
+			cats.add(ev.category);
 		}
 	}
 }
