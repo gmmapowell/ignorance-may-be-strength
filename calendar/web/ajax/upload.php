@@ -7,7 +7,7 @@ if (!$user) {
     return;
 }
 
-$file = getallheaders()['x-file-name'];
+$file = $config->get_header('x-file-name');
 $file_name = preg_replace('/[^a-zA-Z0-9._-]+/', '-', $file);
 $file_name = preg_replace('/^\./', '-', $file_name);
 error_log($file_name);

@@ -205,6 +205,7 @@ Profiles.prototype.updateCalendarList = function(cals) {
         var elt = document.createElement("div");
         elt.className = 'choose-calendar';
         var cb = document.createElement("input");
+        cb.name = 'cal-cb-' + i;
         cb.type = 'checkbox';
         cb.checked = cals[k];
         this.addListener(cb, k);

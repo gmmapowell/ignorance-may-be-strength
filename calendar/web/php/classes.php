@@ -3,11 +3,25 @@
 class Config {
     function __construct() {
         $home = getenv("HOME");
+        if (!$home) {
+            $home = $_SERVER['DOCUMENT_ROOT'] . "/..";
+        }
+        error_log("home =" . $home);
         $opts = json_decode(file_get_contents($home . "/.calendar.json"), true);
         // TODO: unpack the options into the relevant fields here
         $this->root = $opts["root"];
     }
 
+    function get_header(string $name) : string {
+        $name = strtolower($name);
+        foreach (getallheaders() as $key => $value) {
+            if (strtolower($key) == $name) {
+                error_log("found header " . $key . " => " . $value);
+                return $value;
+            }
+        }
+    }
+    
     function read_json_body() {
         return json_decode(file_get_contents("php://input"), true);
     }
@@ -28,8 +42,8 @@ class ProfileHandler {
         $resp = [];
         if ($pfl) {
             // we need to check the password
-            // error_log("password: $password");
-            error_log("have: ".$pfl['password']);
+            error_log("password hashes to:" . password_hash($password, PASSWORD_DEFAULT));
+            error_log("have current password: ".$pfl['password']);
             if (password_verify($password, $pfl['password'])) {
                 error_log("passed");
                 $resp['action'] = 'signed-in';
@@ -45,11 +59,11 @@ class ProfileHandler {
         return $resp;
     }
 
-    function read_profile($email) : array{
+    function read_profile($email) : ?array {
         $pfl = urlencode($email);
         $pfldir = $this->config->root . "/" . $pfl;
         if (!is_dir($pfldir)) {
-            return false;
+            return null;
         }
         $pflfile = $pfldir . "/.userpfl";
         $ret = json_decode(file_get_contents($pflfile), true);
@@ -93,8 +107,11 @@ class ProfileHandler {
     }
 
     function current_user() : ?array {
-        $token = getallheaders()['x-identity-token'];
+        $token = $this->config->get_header("x-identity-token");
         error_log("token =". $token);
+        if (!$token) {
+            return null;
+        }
         $tokfile = $this->config->root . "/.tokens/$token/token";
         error_log("tokfile =". $tokfile);
         $tokinfo = file_get_contents($tokfile);
@@ -104,6 +121,7 @@ class ProfileHandler {
 
     function list_calendars() : array {
         $cuser = $this->current_user();
+        error_log("list_cals: " . $cuser['dir']);
         $files = array_values(array_filter(scandir($cuser['dir']), "notdot"));
         return $files;
     }
@@ -145,6 +163,7 @@ class ProfileHandler {
 }
 
 function notdot($s) {
+    error_log("scanning $s");
     return !str_starts_with($s, ".");
 }
 ?>

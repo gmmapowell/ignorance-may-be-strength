@@ -1,8 +1,11 @@
 
-function ajax(url, handler, ct, payload, headers) {
-	var verb = "GET";
-	if (ct != null || payload != null)
-		verb = "POST";  
+function ajax(url, handler, ct, payload, verb, headers) {
+	if (!verb) {
+		if (ct != null || payload != null)
+			verb = "POST";
+		else
+			verb = "GET";
+	}
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = feedback(handler);
 	xhr.open(verb, url, true);
