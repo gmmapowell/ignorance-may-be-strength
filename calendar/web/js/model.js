@@ -96,7 +96,7 @@ ModelProvider.prototype.calculate = function() {
 				for (var j=0;j<events.length;j++) {
 					var next = events[j];
 					for (var k=0;k<toShow.length;k++) {
-						if (next.time < toShow[k].time) {
+						if (next.starttime < toShow[k].starttime) {
 							toShow.splice(k, 0, next);
 							next = null;
 							break;

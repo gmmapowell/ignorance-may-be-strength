@@ -31,4 +31,8 @@ function hide(...elts) {
     }
 }
 
-export { toggleHidden, show, hide, isShown };
+function equalsIgnoringCase(text, other) {
+    return text.localeCompare(other, undefined, { sensitivity: 'base' }) === 0;
+}
+
+export { toggleHidden, show, hide, isShown, equalsIgnoringCase };
