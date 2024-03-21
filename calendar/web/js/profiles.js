@@ -102,6 +102,12 @@ Profiles.prototype.buttonClicked = function() {
 
 Profiles.prototype.openDrawer = function() {
     show(this.profileDisplay, this.optionsDrawer);
+    this.redraw.redraw();
+}
+
+Profiles.prototype.closeDrawer = function() {
+    hide(this.optionsDrawer);
+    this.redraw.redraw();
 }
 
 Profiles.prototype.hidePanel = function() {
@@ -280,6 +286,7 @@ Profiles.prototype.addCategoryListener = function(picker, label) {
 }
 
 Profiles.prototype.modelChanged = function() {
+    this.updateCalendarList(this.model.availableCalendars);
     this.updateCategories();
     this.redraw.redraw();
 }

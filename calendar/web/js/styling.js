@@ -24,6 +24,12 @@ Styling.prototype.restoreState = function() {
 	this.isLandscape.checked = print.landscape;
 }
 
+Styling.prototype.reset = function() {
+	this.pageSizer.value = "A4";
+	this.isLandscape.checked = false;
+	this.saveState();
+}
+
 Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 	this.screenWatermarks = {};
 	this.pageLayout([this.screenSheet], rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());

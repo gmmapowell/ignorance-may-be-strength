@@ -25,9 +25,16 @@ ModelProvider.prototype.restoreState = function() {
 		this.first.value = core.first;
 		this.weekendShadeOption.checked = core.weekendShadeOption;
 	} else {
-		this.start.valueAsDate = new Date();
-		this.end.valueAsDate = new Date();
+		this.reset();
 	}
+}
+
+ModelProvider.prototype.reset = function() {
+	this.start.valueAsDate = new Date();
+	this.end.valueAsDate = new Date();
+	this.weekendShadeOption = true;
+	this.first.value = 1;
+	this.saveState();
 }
 
 ModelProvider.prototype.calculate = function() {

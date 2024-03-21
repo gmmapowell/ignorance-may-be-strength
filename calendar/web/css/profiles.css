@@ -42,6 +42,14 @@
     text-align: center;
 }
 
+.user-profile-buttons {
+    display: inline-block;
+}
+
+.user-profile-buttons input {
+    display: block;
+}
+
 .drop-for-upload {
     display: inline-block;
     background-color: lightblue;

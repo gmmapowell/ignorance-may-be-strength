@@ -39,6 +39,7 @@ function init() {
 
     var userProfile = {}
     bindElement(userProfile, 'user-profile-panel');
+    bindElement(userProfile, 'user-profile-reset');
     bindElement(userProfile, 'user-profile-sign-out');
     bindElement(userProfile, 'drop-for-upload');
     bindElement(userProfile, 'available-calendars');
@@ -85,6 +86,13 @@ function init() {
     redraw.onChange(print['landscape']);
 
     profile['profile-button'].addEventListener('click', () => profiles.buttonClicked());
+    userProfile['user-profile-reset'].addEventListener('click', () => {
+        modelProvider.reset();
+        profileModel.reset();
+        styler.reset();
+        profiles.modelChanged();
+        profiles.closeDrawer();
+    });
 
 	addEventListener("beforeprint", ev => redraw.mode(false));
 	addEventListener("resize", () => redraw.windowResized());

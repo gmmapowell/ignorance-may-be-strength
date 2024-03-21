@@ -35,6 +35,16 @@ ProfileModel.prototype.addVisual = function(vis) {
     }
 }
 
+ProfileModel.prototype.reset = function() {
+    this.drawerState = false;
+    for (var c of Object.keys(this.availableCalendars)) {
+        this.availableCalendars[c] = false;
+    }
+    this.activeCalendars = {};
+    this.categoryConfigs = {};
+    this.storeCurrentState();
+}
+
 ProfileModel.prototype.amSignedIn = function() {
     return this.storage.hasToken();
 }
@@ -76,7 +86,6 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
                 this.availableCalendars[info.calendars[i]] = false;
             }
         }
-        this.vis.updateCalendarList(this.availableCalendars);
         this.vis.modelChanged();
     }
 }
