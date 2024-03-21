@@ -6,6 +6,7 @@ function ModelProvider(storage, core, prof) {
     this.first = core['first-day'];
     this.weekendShadeOption = core['shade-weekends'];
 	this.profile = prof;
+	this.recoveredPlan = null;
 }
 
 function utc(d) {
@@ -24,6 +25,7 @@ ModelProvider.prototype.restoreState = function() {
 		this.end.valueAsDate = new Date(core.end);
 		this.first.value = core.first;
 		this.weekendShadeOption.checked = core.weekendShadeOption;
+		this.recoveredPlan = null;
 	} else {
 		this.reset();
 	}
@@ -34,10 +36,19 @@ ModelProvider.prototype.reset = function() {
 	this.end.valueAsDate = new Date();
 	this.weekendShadeOption = true;
 	this.first.value = 1;
+	this.recoveredPlan = null;
 	this.saveState();
 }
 
+ModelProvider.prototype.overridePlan = function(loadedPlan) {
+	this.recoveredPlan = loadedPlan;
+}
+
 ModelProvider.prototype.calculate = function() {
+	if (this.recoveredPlan) {
+		return this.recoveredPlan;
+	}
+
     var from = utc(new Date(this.start.value));
 	var to = utc(new Date(this.end.value));
 	var leftColumn = parseInt(this.first.value);

@@ -113,6 +113,7 @@ Profiles.prototype.openDrawer = function() {
 
 Profiles.prototype.closeDrawer = function() {
     hide(this.optionsDrawer);
+    hide(this.profileDisplay);
     this.redraw.redraw();
 }
 

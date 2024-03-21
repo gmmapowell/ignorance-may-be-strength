@@ -16,6 +16,10 @@ function ProfileModel(storage) {
     }
 }
 
+ProfileModel.prototype.addPlan = function(planner) {
+    this.modelProvider = planner;
+}
+
 ProfileModel.prototype.addVisual = function(vis) {
     this.vis = vis;
     var state = this.storage.currentState("profile");
@@ -168,7 +172,10 @@ ProfileModel.prototype.updateFromPlan = function(stat, msg) {
         return;
     }
 
-    console.log("have", msg);
+    var plan = JSON.parse(msg);
+    console.log("have", plan);
+    this.modelProvider.overridePlan(plan);
+    this.vis.modelChanged();
 }
 
 ProfileModel.prototype.categories = function() {

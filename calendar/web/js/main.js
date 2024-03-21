@@ -77,6 +77,7 @@ function init() {
 	var styler = new Styling(storage, sections, print);
     var redraw = new RedrawClz(storage, modelProvider, sections, styler);
     var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
+    profileModel.addPlan(modelProvider);
     profileModel.addVisual(profiles);
  
     // wire up events
