@@ -1,9 +1,7 @@
 import { ModelProvider } from "./model.js";
 import { CalendarStorage } from "./storage.js";
 
-import { initCalendars } from "./controls.js";
 import { Styling } from "./styling.js";
-import { initSharing, shareJson, loadJsonFromFile, loadSharedJson } from "./sharing.js";
 import { RedrawClz } from "./redraw.js";
 import { Profiles } from "./profiles.js";
 import { ProfileModel } from "./profilemodel.js";
@@ -64,16 +62,10 @@ function init() {
     bindElement(signin, 'invalid-email-panel');
     bindElement(signin, 'invalid-password-panel');
 
-    var shareJsonElt = document.getElementById("share-as-json");
-    var sharingFile = document.getElementById("sharing-file");
-	var sharingUrl = document.getElementById('sharing-url');
-    var loadShared = document.getElementById("load-shared");
-
     // create a wrapper around localStorage
     var storage = new CalendarStorage();
 
     // then create all the model objects
-	var calendars = {};
     var profileModel = new ProfileModel(storage);
 
     // then create all the actors
@@ -82,8 +74,6 @@ function init() {
     var redraw = new RedrawClz(modelProvider, sections, styler);
     var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
     profileModel.addVisual(profiles);
-    initCalendars(calendars, scdiv, redraw);
-	initSharing(sharingFile, sharingUrl);
  
     // wire up events
     redraw.onChange(core['start-date']);
@@ -95,10 +85,6 @@ function init() {
     redraw.onChange(print['landscape']);
 
     profile['profile-button'].addEventListener('click', () => profiles.buttonClicked());
-
-    shareJsonElt.addEventListener('click', shareJson);
-    sharingFile.addEventListener('change', loadJsonFromFile);
-    loadShared.addEventListener('click', loadSharedJson);
 
 	addEventListener("beforeprint", ev => redraw.mode(false));
 	addEventListener("resize", () => redraw.windowResized());
