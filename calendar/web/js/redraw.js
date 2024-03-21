@@ -5,8 +5,35 @@ function RedrawClz(storage, m, sections, styling) {
 	this.storage = storage;
     this.modelProvider = m;
     this.fbdiv = sections['feedback'];
+	this.handleDroppedPlans(this.fbdiv);
     this.styling = styling;
     this.redrawWhenResized = true;
+}
+
+RedrawClz.prototype.handleDroppedPlans = function(targetZone) {
+    targetZone.addEventListener('dragenter', ev => this.fileDraggedOver(ev));
+    targetZone.addEventListener('dragover', ev => this.fileDraggedOver(ev));
+    targetZone.addEventListener('drop', ev => this.droppedFile(ev));
+}
+
+RedrawClz.prototype.fileDraggedOver = function(ev) {
+    ev.preventDefault();
+}
+
+RedrawClz.prototype.droppedFile = function(ev) {
+    ev.preventDefault();
+	var self = this;
+    var dt = ev.dataTransfer;
+    var files = dt.files;
+    console.log(files);
+	if (files.length > 0) {
+		var blob = files[0];
+		blob.text().then(data => {
+			console.log(data);
+			self.modelProvider.overridePlan(JSON.parse(data));
+			self.redraw();
+		});
+	}
 }
 
 RedrawClz.prototype.mode = function(b) {
