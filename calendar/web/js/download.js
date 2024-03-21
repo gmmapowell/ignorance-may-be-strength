@@ -14,3 +14,5 @@ function download(filename, text) {
 
     document.body.removeChild(element);
 }
+
+export { download };

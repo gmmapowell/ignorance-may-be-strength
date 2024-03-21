@@ -1,4 +1,8 @@
-function RedrawClz(m, sections, styling) {
+import { ajax } from './ajax.js';
+import { download } from "./download.js";
+
+function RedrawClz(storage, m, sections, styling) {
+	this.storage = storage;
     this.modelProvider = m;
     this.fbdiv = sections['feedback'];
     this.styling = styling;
@@ -119,6 +123,28 @@ RedrawClz.prototype.redraw = function() {
     }
 
 	this.styling.fitToPageSize(model.rowInfo, monthdivs);
+}
+
+RedrawClz.prototype.saveCurrentCalendar = function(reloadList) {
+	var curr = this.modelProvider.calculate();
+	var name = this.modelProvider.start.value + "+" + curr.weeks.length + ".caljs";
+	var text = JSON.stringify(curr);
+    var opts = {};
+    opts['x-identity-token'] = this.storage.getToken();
+    opts['x-file-name'] = name;
+    ajax("/ajax/upload.php", (stat, msg) => this.uploadComplete(stat, msg, reloadList), "application/json", text, "PUT", opts);
+}
+
+RedrawClz.prototype.uploadComplete = function(stat, msg, reloadList) {
+	console.log("stat =", stat);
+	reloadList();
+}
+
+RedrawClz.prototype.downloadCurrentCalendar = function() {
+	var curr = this.modelProvider.calculate();
+	var name = this.modelProvider.start.value + "+" + curr.weeks.length + ".caljs";
+	var text = JSON.stringify(curr);
+	download(name, text);
 }
 
 export { RedrawClz };

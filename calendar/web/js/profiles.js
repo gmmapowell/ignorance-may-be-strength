@@ -36,6 +36,12 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
     userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
     this.prepareDropUpload(userProfile['drop-for-upload']);
 
+    this.saveCalendarButton = userProfile['save-current-calendar'];
+    this.saveCalendarButton.addEventListener('click', () => this.redraw.saveCurrentCalendar(() => this.model.loadAvailableCalendars()));
+
+    this.downloadCalendarButton = userProfile['download-current-calendar'];
+    this.downloadCalendarButton.addEventListener('click', () => this.redraw.downloadCurrentCalendar());
+
     this.updateSignedIn();
 }
 
@@ -65,7 +71,6 @@ Profiles.prototype.uploadFile = function(f) {
         console.log("ignoring", f);
         return;
     }
-    console.log("uploading", f);
     var opts = {};
     opts['x-identity-token'] = this.storage.getToken();
     opts['x-file-name'] = encodeURIComponent(f.name);

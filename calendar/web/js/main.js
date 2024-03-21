@@ -39,6 +39,8 @@ function init() {
 
     var userProfile = {}
     bindElement(userProfile, 'user-profile-panel');
+    bindElement(userProfile, 'save-current-calendar');
+    bindElement(userProfile, 'download-current-calendar');
     bindElement(userProfile, 'user-profile-reset');
     bindElement(userProfile, 'user-profile-sign-out');
     bindElement(userProfile, 'drop-for-upload');
@@ -73,7 +75,7 @@ function init() {
     // then create all the actors
     var modelProvider = new ModelProvider(storage, core, profileModel);
 	var styler = new Styling(storage, sections, print);
-    var redraw = new RedrawClz(modelProvider, sections, styler);
+    var redraw = new RedrawClz(storage, modelProvider, sections, styler);
     var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
     profileModel.addVisual(profiles);
  
