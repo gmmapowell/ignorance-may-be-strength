@@ -9,6 +9,7 @@ function ProfileModel(storage) {
     this.activeCalendars = {};
     this.calendarCategories = {};
     this.categoryConfigs = {};
+    this.savedPlans = [];
     this.storage.addProfileListener(this);
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
@@ -81,11 +82,18 @@ ProfileModel.prototype.loadAvailableCalendars = function() {
 ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
     if (stat == 200) {
         var info = JSON.parse(msg);
-        for (var i=0;i<info.calendars.length;i++) {
-            if (!Object.keys(this.availableCalendars).includes(info.calendars[i])) {
-                this.availableCalendars[info.calendars[i]] = false;
+        this.savedPlans = [];
+        for (var c of info.calendars) {
+            if (c.endsWith(".caljs")) {
+                console.log('have a saved plan', c);
+                this.savedPlans.push(c);
+            } else {
+                if (!Object.keys(this.availableCalendars).includes(c)) {
+                    this.availableCalendars[c] = false;
+                }
             }
         }
+        this.savedPlans.sort();
         this.vis.modelChanged();
     }
 }
@@ -128,6 +136,7 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     } else if (label.endsWith(".csv")) {
         events = CsvCalendar.parse(msg);
     } else {
+        // TODO: support JSON
         console.log("do not know how to parse", label);
         return;
     }
@@ -144,6 +153,22 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     }
 
     this.vis.modelChanged();
+}
+
+ProfileModel.prototype.loadPlan = function(plan) {
+    var opts = {};
+    opts['x-identity-token'] = this.storage.getToken();
+    opts['x-calendar-name'] = plan;
+    ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.updateFromPlan(stat, msg), null, null, null, opts);
+}
+
+ProfileModel.prototype.updateFromPlan = function(stat, msg) {
+    if (stat != 200) {
+        console.log("ajax calendar request to load plan failed:", stat, msg);
+        return;
+    }
+
+    console.log("have", msg);
 }
 
 ProfileModel.prototype.categories = function() {

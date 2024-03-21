@@ -32,6 +32,7 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
     this.profileDisplay = userProfile['user-profile-panel'];
     this.availableCalendars = userProfile['available-calendars'];
     this.calendarCategories = userProfile['calendar-categories'];
+    this.savedPlans = userProfile['saved-plans'];
     userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
     this.prepareDropUpload(userProfile['drop-for-upload']);
 
@@ -248,6 +249,21 @@ Profiles.prototype.updateCategories = function() {
     }
 }
 
+Profiles.prototype.updatePlansList = function(plans) {
+    this.savedPlans.innerHTML = '';
+    this.savedPlans.appendChild(document.createTextNode("Saved Plans"));
+    for (var plan of plans) {
+        var elt = document.createElement("div");
+        elt.className = 'choose-saved-plan';
+        var button = document.createElement("input");
+        button.type = 'button';
+        button.value = plan;
+        this.addPlanListener(button, plan);
+        elt.appendChild(button);
+        this.savedPlans.appendChild(elt);
+    }
+}
+
 var colors = [ '--', 'blue', 'green', 'pink', 'red', 'yellow' ];
 
 function makeColorPicker(catn, chosen) {
@@ -285,8 +301,15 @@ Profiles.prototype.addCategoryListener = function(picker, label) {
     });
 }
 
+Profiles.prototype.addPlanListener = function(button, plan) {
+    button.addEventListener('click', () => {
+        this.model.loadPlan(plan);
+    });
+}
+
 Profiles.prototype.modelChanged = function() {
     this.updateCalendarList(this.model.availableCalendars);
+    this.updatePlansList(this.model.savedPlans);
     this.updateCategories();
     this.redraw.redraw();
 }

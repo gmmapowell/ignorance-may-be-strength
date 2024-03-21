@@ -59,7 +59,7 @@
     height: 5em;
 }
   
-.available-calendars, .calendar-categories {
+.available-calendars, .calendar-categories, .saved-plans {
     display: inline-block;
     vertical-align: top;
     border: 1px solid black;

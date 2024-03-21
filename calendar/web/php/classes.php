@@ -128,6 +128,9 @@ class ProfileHandler {
 
     function send_calendar($called) {
         $cuser = $this->current_user();
+        if (str_ends_with($called, ".caljs")) {
+            header("Content-Type: application/json");
+        }
         readfile($cuser['dir'] . '/' . $called);
     }
 

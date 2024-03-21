@@ -44,6 +44,7 @@ function init() {
     bindElement(userProfile, 'drop-for-upload');
     bindElement(userProfile, 'available-calendars');
     bindElement(userProfile, 'calendar-categories');
+    bindElement(userProfile, 'saved-plans');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
