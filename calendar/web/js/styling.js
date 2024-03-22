@@ -10,7 +10,8 @@ function Styling(storage, sections, print) {
 	this.printMeasureSheet = new CSSStyleSheet({ media: "screen" });
 	this.metricFontSize = 10;
 	this.screenWatermarks = {};
-	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+	// document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+	document.adoptedStyleSheets = [this.screenSheet];
 }
 
 Styling.prototype.saveState = function() {
@@ -20,8 +21,10 @@ Styling.prototype.saveState = function() {
 
 Styling.prototype.restoreState = function() {
 	var print = this.storage.currentState("print");
-	this.pageSizer.value = print.size;
-	this.isLandscape.checked = print.landscape;
+	if (print) {
+		this.pageSizer.value = print.size;
+		this.isLandscape.checked = print.landscape;
+	}
 }
 
 Styling.prototype.reset = function() {
@@ -33,9 +36,11 @@ Styling.prototype.reset = function() {
 Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 	this.screenWatermarks = {};
 	this.pageLayout([this.screenSheet], rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
-	document.adoptedStyleSheets = [this.printMeasureSheet];
+	// document.adoptedStyleSheets = [this.printMeasureSheet];
 	this.pageLayout([this.printSheet, this.printMeasureSheet], rowInfo, monthdivs, this.calculatePaperSize());
-	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+	// document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+	document.adoptedStyleSheets = [this.screenSheet];
+
 }
 
 Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
@@ -50,6 +55,7 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 
 	var innerX = pageSize.x, innerY = pageSize.y;
 	var hackX = 1;
+
 	if (pageSize.media == "print") {
 		this.insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 3 * pageSize.margin;
@@ -76,7 +82,12 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	var eventsContainerY = 2 * ypos;
 
 	// generate new rules
+	if (sheets[0] == this.screenSheet) {
+		var sb2 = document.getElementById("sizeblock2");
+		sb2.innerHTML="; width: " + innerX + pageSize.unitIn;
+	}
 	this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
+	// this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn /*+"; width: " + innerX + pageSize.unitIn */+ "; height: " + innerY + pageSize.unitIn + "; }");
 	this.insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 	this.insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 	this.insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
@@ -147,7 +158,10 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
 	var fby = viewy - this.controlPane.clientHeight - this.optionsDrawer.clientHeight - 16 - borderY * 2;
 
-	return { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
+	console.log("viewport =", visualViewport);
+	var sz = { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
+	console.log("sz = ", sz);
+	return sz;
 }
 
 Styling.prototype.calculatePaperSize = function() {

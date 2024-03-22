@@ -49,7 +49,12 @@ CalendarStorage.prototype.storeState = function(category, state) {
 }
 
 CalendarStorage.prototype.currentState = function(category) {
-    return JSON.parse(localStorage.getItem("state"))[category];
+    var state = localStorage.getItem("state");
+    if (!state) {
+        return null;
+    }
+    state = JSON.parse(state);
+    return state[category];
 }
 
 export { CalendarStorage };

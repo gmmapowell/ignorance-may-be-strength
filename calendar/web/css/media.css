@@ -1,0 +1,36 @@
+/* Pixel8 Pro hardware is 1344x2992 (20:9) at 489ppi  */
+/* Reports 448x844x2.25 in portrait */
+/*  and    900x364x2.25 in landscape */
+/* Both of these are losing some space (in different places) to notifications, address bar, buttons */
+/* Laptop breaks around 800px wide, so call it 900px */
+
+/* So, we want break at 900px with 96dpi, or 1530 at 170dpi or 2000 at 210dpi */
+@media 
+    ((min-resolution: 70dpi) and (max-resolution: 140dpi) and (max-width: 900px)) or
+    ((min-resolution: 141dpi) and (max-resolution: 199dpi) and (max-width: 1530px)) or
+    ((min-resolution: 200dpi) and (max-resolution: 220dpi) and (max-width: 2000px)) {
+        body {
+            background-color: yellow;
+        }
+    }
+
+/* test that I've understood this correctly - this applies to portrait on the phone but not landscape */
+/*
+@media 
+    ((min-resolution: 70dpi) and (max-resolution: 140dpi) and (max-width: 900px)) or
+    ((min-resolution: 141dpi) and (max-resolution: 199dpi) and (max-width: 1530px)) or
+    ((min-resolution: 200dpi) and (max-resolution: 220dpi) and (max-width: 800px)) {
+        div.control-panel {
+            background-color: green;
+        }
+    }
+    */
+
+
+/* Make the font-size bigger on 2.25 resolution */
+@media 
+    (min-resolution: 200dpi) and (max-resolution: 220dpi) {
+        body {
+            font-size: calc(16px * 2.25);
+        }
+    }

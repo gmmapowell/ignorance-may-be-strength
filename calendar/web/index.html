@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, minimum-scale=1">
 		<title>Planning Calendar</title>
+		<link rel="stylesheet" href="css/media.css">
 		<link rel="stylesheet" href="css/overall.css">
 		<link rel="stylesheet" href="css/controls.css">
 		<link rel="stylesheet" href="css/feedback.css">
@@ -68,6 +70,8 @@
 				</div>
 			</div>
 		</div>
+		<div id='sizeblock'>HELLO</div>
+		<div id='sizeblock2'>HELLO</div>
 		<div id="options-drawer" class="options-drawer hidden">
 			<div id="sign-in-panel" class="sign-in-panel hidden">
 				<div id="invalid-signin-panel" class="invalid-panel hidden">
@@ -144,5 +148,13 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			function showSize() {
+				var elt = document.getElementById('sizeblock');
+				elt.innerHTML = window.innerWidth + "x" + window.innerHeight + ":" + window.devicePixelRatio;
+			}
+			addEventListener("resize", showSize);
+			showSize();
+		</script>			
 	</body>
 </html>

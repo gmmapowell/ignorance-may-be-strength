@@ -15,6 +15,7 @@ function bindElement(into, name) {
 }
 
 function init() {
+    console.log("init viewport = ", visualViewport);
     // First get all the elements from the document
     var sections = {};
     bindElement(sections, 'controls');
@@ -98,9 +99,9 @@ function init() {
         profiles.closeDrawer();
     });
 
-	addEventListener("beforeprint", ev => redraw.mode(false));
+	// addEventListener("beforeprint", ev => redraw.mode(false));
 	addEventListener("resize", () => redraw.windowResized());
-	addEventListener("afterprint", ev => redraw.mode(true));
+	// addEventListener("afterprint", ev => redraw.mode(true));
 
     modelProvider.restoreState();
     styler.restoreState();
