@@ -10,8 +10,7 @@ function Styling(storage, sections, print) {
 	this.printMeasureSheet = new CSSStyleSheet({ media: "screen" });
 	this.metricFontSize = 10;
 	this.screenWatermarks = {};
-	// document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
-	document.adoptedStyleSheets = [this.screenSheet];
+	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
 
 Styling.prototype.saveState = function() {
@@ -36,11 +35,9 @@ Styling.prototype.reset = function() {
 Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 	this.screenWatermarks = {};
 	this.pageLayout([this.screenSheet], rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
-	// document.adoptedStyleSheets = [this.printMeasureSheet];
+	document.adoptedStyleSheets = [this.printMeasureSheet];
 	this.pageLayout([this.printSheet, this.printMeasureSheet], rowInfo, monthdivs, this.calculatePaperSize());
-	// document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
-	document.adoptedStyleSheets = [this.screenSheet];
-
+	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
 
 Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
@@ -82,12 +79,7 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	var eventsContainerY = 2 * ypos;
 
 	// generate new rules
-	if (sheets[0] == this.screenSheet) {
-		var sb2 = document.getElementById("sizeblock2");
-		sb2.innerHTML="; width: " + innerX + pageSize.unitIn;
-	}
 	this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
-	// this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn /*+"; width: " + innerX + pageSize.unitIn */+ "; height: " + innerY + pageSize.unitIn + "; }");
 	this.insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 	this.insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 	this.insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
@@ -158,9 +150,7 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
 	var fby = viewy - this.controlPane.clientHeight - this.optionsDrawer.clientHeight - 16 - borderY * 2;
 
-	console.log("viewport =", visualViewport);
 	var sz = { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
-	console.log("sz = ", sz);
 	return sz;
 }
 
