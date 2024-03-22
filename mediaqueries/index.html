@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Media Query Test</title>
+    <style>
+        .box { border: 1px solid black; }
+        body { font-size: 24px; }
+
+        .media { visibility: hidden; }
+        @media (min-width: 1300px) {
+            .media1 { visibility: visible; }
+        }
+        @media (max-width: 1300px) {
+            .media2 { visibility: visible; }
+        }
+        @media (max-width: 61.5rem) {
+            .media3 { visibility: visible; }
+        }
+        @media (min-resolution: 96dpi) and (max-resolution: 150dpi) {
+            .media4 { visibility: visible; }
+        }
+        @media (min-resolution: 200dpi) and (max-resolution: 220dpi) {
+            .media5 { visibility: visible; }
+            body {
+                font-size: calc(24px * 2.25);
+            }
+        }
+    </style>
+  </head>
+  <body>
+    <div id='sizeblock'></div>
+    <div class='box'><div class='media media1'>media1 applies</div></div>
+    <div class='box'><div class='media media2'>media2 applies</div></div>
+    <div class='box'><div class='media media3'>media3 applies</div></div>
+    <div class='box'><div class='media media4'>media4 applies</div></div>
+    <div class='box'><div class='media media5'>media5 applies</div></div>
+<script>
+			function showSize() {
+				var elt = document.getElementById('sizeblock');
+				elt.innerHTML = window.innerWidth + "x" + window.innerHeight + ":" + window.devicePixelRatio;
+			}
+			addEventListener("resize", showSize);
+			showSize();
+</script>
+  </body>
+</html>
