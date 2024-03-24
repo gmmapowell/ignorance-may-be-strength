@@ -9,8 +9,36 @@
     ((min-resolution: 70dpi) and (max-resolution: 140dpi) and (max-width: 900px)) or
     ((min-resolution: 141dpi) and (max-resolution: 199dpi) and (max-width: 1530px)) or
     ((min-resolution: 200dpi) and (max-resolution: 220dpi) and (max-width: 2000px)) {
-        body {
-            background-color: yellow;
+        body .control-panel {
+            display: none;
+        }
+        .controls .profile-button {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .options-drawer .sign-in-panel {
+            font-size: 50%;
+        }
+        label.sign-in-label {
+            min-width: 5em;
+        }
+
+        .user-profile .drop-for-upload, .user-profile .available-calendars, .user-profile .calendar-categories {
+            display: none;
+        }
+
+        .user-profile .saved-plans {
+            display: block;
+            border: none;
+        }
+
+        .user-profile .saved-plans div.saved-plans-title {
+            display: none;
+        }
+
+        .user-profile .user-profile-buttons {
+            display: block;
         }
     }
 
@@ -32,5 +60,10 @@
     (min-resolution: 200dpi) and (max-resolution: 220dpi) {
         body {
             font-size: calc(16px * 2.25);
+        }
+        .user-profile-buttons input[type='button'], .saved-plans input[type='button'] {
+            font-size: calc(16px * 2.25);
+            padding: 12px;
+            width: 100%;
         }
     }

@@ -257,7 +257,10 @@ Profiles.prototype.updateCategories = function() {
 
 Profiles.prototype.updatePlansList = function(plans) {
     this.savedPlans.innerHTML = '';
-    this.savedPlans.appendChild(document.createTextNode("Saved Plans"));
+    var titleElt = document.createElement("div");
+    titleElt.className = "saved-plans-title";
+    titleElt.appendChild(document.createTextNode("Saved Plans"));
+    this.savedPlans.appendChild(titleElt);
     for (var plan of plans) {
         var elt = document.createElement("div");
         elt.className = 'choose-saved-plan';
@@ -309,6 +312,7 @@ Profiles.prototype.addCategoryListener = function(picker, label) {
 
 Profiles.prototype.addPlanListener = function(button, plan) {
     button.addEventListener('click', () => {
+        this.closeDrawer();
         this.model.loadPlan(plan);
     });
 }
