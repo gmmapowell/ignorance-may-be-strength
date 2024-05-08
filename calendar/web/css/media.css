@@ -1,69 +1,41 @@
 /* Pixel8 Pro hardware is 1344x2992 (20:9) at 489ppi  */
 /* Reports 448x844x2.25 in portrait */
 /*  and    900x364x2.25 in landscape */
-/* Both of these are losing some space (in different places) to notifications, address bar, buttons */
-/* Laptop breaks around 800px wide, so call it 900px */
+
+/* Nokia N20 reports 432x816 and 872x352 */
+/* These are all losing some space (in different places) to notifications, address bar, buttons */
 
 /* So, we want break at 900px with 96dpi, or 1530 at 170dpi or 2000 at 210dpi */
-@media 
-    ((min-resolution: 70dpi) and (max-resolution: 140dpi) and (max-width: 900px)) or
-    ((min-resolution: 141dpi) and (max-resolution: 199dpi) and (max-width: 1530px)) or
-    ((min-resolution: 200dpi) and (max-resolution: 220dpi) and (max-width: 2000px)) {
-        body .control-panel {
-            display: none;
-        }
-        .controls .profile-button {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-        .options-drawer .sign-in-panel {
-            font-size: 50%;
-        }
-        label.sign-in-label {
-            min-width: 5em;
-        }
-
-        .user-profile .drop-for-upload, .user-profile .available-calendars, .user-profile .calendar-categories {
-            display: none;
-        }
-
-        .user-profile .saved-plans {
-            display: block;
-            border: none;
-        }
-
-        .user-profile .saved-plans div.saved-plans-title {
-            display: none;
-        }
-
-        .user-profile .user-profile-buttons {
-            display: block;
-        }
+@media (max-width: 900px) {
+    body .control-panel {
+        display: none;
+    }
+    .controls .profile-button {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    .options-drawer .sign-in-panel {
+        font-size: 50%;
+    }
+    label.sign-in-label {
+        min-width: 5em;
     }
 
-/* test that I've understood this correctly - this applies to portrait on the phone but not landscape */
-/*
-@media 
-    ((min-resolution: 70dpi) and (max-resolution: 140dpi) and (max-width: 900px)) or
-    ((min-resolution: 141dpi) and (max-resolution: 199dpi) and (max-width: 1530px)) or
-    ((min-resolution: 200dpi) and (max-resolution: 220dpi) and (max-width: 800px)) {
-        div.control-panel {
-            background-color: green;
-        }
+    .user-profile .drop-for-upload, .user-profile .available-calendars, .user-profile .calendar-categories {
+        display: none;
     }
-    */
 
-
-/* Make the font-size bigger on 2.25 resolution */
-@media 
-    (min-resolution: 200dpi) and (max-resolution: 220dpi) {
-        body {
-            font-size: calc(16px * 2.25);
-        }
-        .user-profile-buttons input[type='button'], .saved-plans input[type='button'] {
-            font-size: calc(16px * 2.25);
-            padding: 12px;
-            width: 100%;
-        }
+    .user-profile .saved-plans {
+        display: block;
+        border: none;
     }
+
+    .user-profile .saved-plans div.saved-plans-title {
+        display: none;
+    }
+
+    .user-profile .user-profile-buttons {
+        display: block;
+    }
+}

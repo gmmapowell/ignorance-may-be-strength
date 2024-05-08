@@ -155,6 +155,7 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 }
 
 Styling.prototype.calculatePaperSize = function() {
+	// this.resetVirtualScaleOnMobile();
 	var currentSize = this.pageSizer.value;
 	var andLandscape = this.isLandscape.checked;
 	var ret;
@@ -181,6 +182,11 @@ Styling.prototype.calculatePaperSize = function() {
 		ret.borderY = tmp;
 	}
 	return ret;
+}
+
+Styling.prototype.resetVirtualScaleOnMobile = function() {
+	let viewportmeta = document.querySelector('meta[name="viewport"]');
+	viewportmeta.setAttribute("content", "width=device-width, height=device-height, initial-scale=1, minimum-scale=1");
 }
 
 export { Styling };
