@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "diagrammer"
+		},
+		{
+			"path": "mediaqueries"
 		}
 	],
 	"settings": {}
