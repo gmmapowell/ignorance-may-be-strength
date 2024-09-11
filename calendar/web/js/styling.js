@@ -7,9 +7,14 @@ function Styling(storage, sections, print) {
 	this.optionsDrawer = sections['options-drawer'];
 	this.pageSizer = print['page-size'];
 	this.isLandscape = print['landscape'];
+
 	this.screenSheet = new CSSStyleSheet({ media: "screen" });
+	this.screenLayout = new SheetRules(this.screenSheet);
+
 	this.printSheet = new CSSStyleSheet({ media: "print" });
 	this.printMeasureSheet = new CSSStyleSheet({ media: "screen" });
+	this.printLayout = new SheetRules(this.printSheet, this.printMeasureSheet);
+
 	this.metricFontSize = 10;
 	this.screenWatermarks = {};
 	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
@@ -39,39 +44,32 @@ Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 
 	// We need to go through and calculate the layout of everything based on its apparent size on the screen
 	// For the screen itself, this is easy ... we just say "what is the size of the screen" and go to it
-	this.pageLayout([this.screenSheet], rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
+	this.pageLayout(this.screenLayout, rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
 
 	// The problem is that for the printer, we don't get any immediate feedback from the "@media 'print'" sheet,
 	// because it doesn't apply.  So I created a "printMeasureSheet" which has *the same dimensions* as the piece of
 	// paper we want to print to, but is tagged "@media 'screen'".  We use this to *do* our calculations, but then
 	// what we really care about is updating "printSheet".
 	document.adoptedStyleSheets = [this.printMeasureSheet]; // for "just now", use a sheet on the screen with the paper dimensions
-	this.pageLayout([this.printSheet, this.printMeasureSheet], rowInfo, monthdivs, this.calculatePaperSize());
+	this.pageLayout(this.printLayout, rowInfo, monthdivs, this.calculatePaperSize());
 
 	// Now that we've done all the measuring, we will "adopt" the screenSheet for the screen and the printSheet for the printer
 	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
 
-Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
+Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	var rows = rowInfo.numRows;
-
-	// delete the old rules
-	for (var i=0;i<sheets.length;i++) {
-		var sheet = sheets[i];
-		while (sheet.cssRules.length > 0)
-			sheet.deleteRule(0);
-	}
 
 	var innerX = pageSize.x, innerY = pageSize.y;
 	var hackX = 1;
 
-	var sr = new SheetRules();
+	sr.clear();
 
 	if (pageSize.media == "print") {
 		var pr = sr.rule("@page");
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		pr.property("margin", pageSize.margin + pageSize.unitIn);
-		this.insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
+		// this.insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 3 * pageSize.margin;
 		innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
 		hackX = 0.95;
@@ -100,41 +98,33 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	fr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
 	fr.property("width", innerX + pageSize.unitIn);
 	fr.property("height", innerY + pageSize.unitIn);
-	this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
 	
 	var bdr = sr.rule(".body-day");
 	bdr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
 	bdr.property("width", xday + pageSize.unitIn);
 	bdr.property("height", yweek + pageSize.unitIn);
 	bdr.property("margin", ymargin + pageSize.unitIn, xmargin + pageSize.unitIn);
-	this.insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 
 	var bddr = sr.rule(".body-day-date");
 	bddr.property("top", ypos + pageSize.unitIn);
 	bddr.property("left", xpos + pageSize.unitIn);
 	bddr.property("font-size", dateSize + pageSize.unitIn);
-	this.insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	var bde = sr.rule(".body-day-event");
 	bde.property("width", xday + pageSize.unitIn);
-	this.insertRuleIntoSheets(sheets, ".body-day-event { width: " + xday + pageSize.unitIn + "; }");
 
 	var bdec = sr.rule(".body-day-events-container");
 	bdec.property("top", eventsContainerY + pageSize.unitIn);
 	bdec.property("font-size", dateSize + pageSize.unitIn);
-	this.insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+
+	sr.apply();
 
 	for (var i=0;i<rowInfo.months.length;i++) {
 		this.handleWatermarks(sr, pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
 	}
 
-	console.log(sr);
-}
-
-Styling.prototype.insertRuleIntoSheets = function(sheets, rule) {
-	for (var i=0;i<sheets.length;i++) {
-		sheets[i].insertRule(rule);
-	}
+	// console.log(sr);
+	return sr;
 }
 
 Styling.prototype.handleWatermarks = function(sr, forScreen, idx, rowInfo, monthdiv) {
@@ -190,7 +180,8 @@ Styling.prototype.handleWatermarks = function(sr, forScreen, idx, rowInfo, month
 	wm.property("font-size", scale*this.metricFontSize + "pt");
 	wm.property("left", left + "px");
 	wm.property("top", top + "px");
-	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*this.metricFontSize + "pt; left: " + left + "px; top: " + top + "px; }");
+
+	sr.apply();
 }
 
 Styling.prototype.calculateSizeOfFeedbackDiv = function() {

@@ -2,7 +2,12 @@
  *  So this layers an abstraction on top of that
  */
 
-function SheetRules() {
+function SheetRules(...sheets) {
+    if (sheets.length == 1 && Array.isArray(sheets[0])) {
+        this.sheets = sheets[0];
+    } else {
+        this.sheets = sheets;
+    }
     this.rules = [];
 };
 
@@ -12,12 +17,27 @@ SheetRules.prototype.rule = function(name) {
     return ret;
 }
 
-SheetRules.prototype.remove = function(rule) {
-    for (var i=0;i<this.rules.length;i++) {
-        if (this.rules[i] == rule) {
-            this.rules.splice(i, 1);
-            return;
+SheetRules.prototype.apply = function() {
+    for (var sheet of this.sheets) {
+        this.clearOut(sheet);
+        for (var i=0;i<this.rules.length;i++) {
+            this.rules[i].applyTo(sheet);
         }
+    }
+}
+
+SheetRules.prototype.clearOut = function(sheet) {
+    while (sheet.cssRules.length > 0) {
+        sheet.deleteRule(0);
+    }
+}
+
+SheetRules.prototype.clear = function() {
+    while (this.rules.length > 0) {
+        for (var i=0;i<this.sheets.length;i++) {
+            this.rules[0].removeFrom(this.sheets[i]);
+        }
+        this.rules.splice(0, 1);
     }
 }
 
@@ -55,7 +75,6 @@ SheetRule.prototype.assembleRule = function() {
 
 SheetRule.prototype.applyTo = function(sheet) {
     var tx = this.assembleRule();
-    console.log(tx);
     this.ruleIdx = sheet.insertRule(tx);
 }
 
