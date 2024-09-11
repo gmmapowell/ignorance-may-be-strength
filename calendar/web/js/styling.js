@@ -34,9 +34,19 @@ Styling.prototype.reset = function() {
 
 Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 	this.screenWatermarks = {};
+
+	// We need to go through and calculate the layout of everything based on its apparent size on the screen
+	// For the screen itself, this is easy ... we just say "what is the size of the screen" and go to it
 	this.pageLayout([this.screenSheet], rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
-	document.adoptedStyleSheets = [this.printMeasureSheet];
+
+	// The problem is that for the printer, we don't get any immediate feedback from the "@media 'print'" sheet,
+	// because it doesn't apply.  So I created a "printMeasureSheet" which has *the same dimensions* as the piece of
+	// paper we want to print to, but is tagged "@media 'screen'".  We use this to *do* our calculations, but then
+	// what we really care about is updating "printSheet".
+	document.adoptedStyleSheets = [this.printMeasureSheet]; // for "just now", use a sheet on the screen with the paper dimensions
 	this.pageLayout([this.printSheet, this.printMeasureSheet], rowInfo, monthdivs, this.calculatePaperSize());
+
+	// Now that we've done all the measuring, we will "adopt" the screenSheet for the screen and the printSheet for the printer
 	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
 
