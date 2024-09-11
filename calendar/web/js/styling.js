@@ -1,3 +1,5 @@
+import { SheetRules, SheetRule } from "./stylesheet.js";
+
 function Styling(storage, sections, print) {
 	this.storage = storage;
 	this.styledDiv = sections['feedback'];
@@ -63,7 +65,12 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	var innerX = pageSize.x, innerY = pageSize.y;
 	var hackX = 1;
 
+	var sr = new SheetRules();
+
 	if (pageSize.media == "print") {
+		var pr = sr.rule("@page");
+		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
+		pr.property("margin", pageSize.margin + pageSize.unitIn);
 		this.insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 3 * pageSize.margin;
 		innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
@@ -89,15 +96,39 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	var eventsContainerY = 2 * ypos;
 
 	// generate new rules
+	var fr = sr.rule(".feedback");
+	fr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
+	fr.property("width", innerX + pageSize.unitIn);
+	fr.property("height", innerY + pageSize.unitIn);
 	this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
+	
+	var bdr = sr.rule(".body-day");
+	bdr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
+	bdr.property("width", xday + pageSize.unitIn);
+	bdr.property("height", yweek + pageSize.unitIn);
+	bdr.property("margin", ymargin + pageSize.unitIn, xmargin + pageSize.unitIn);
 	this.insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
+
+	var bddr = sr.rule(".body-day-date");
+	bddr.property("top", ypos + pageSize.unitIn);
+	bddr.property("left", xpos + pageSize.unitIn);
+	bddr.property("font-size", dateSize + pageSize.unitIn);
 	this.insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+
+	var bde = sr.rule(".body-day-event");
+	bde.property("width", xday + pageSize.unitIn);
 	this.insertRuleIntoSheets(sheets, ".body-day-event { width: " + xday + pageSize.unitIn + "; }");
+
+	var bdec = sr.rule(".body-day-events-container");
+	bdec.property("top", eventsContainerY + pageSize.unitIn);
+	bdec.property("font-size", dateSize + pageSize.unitIn);
 	this.insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	for (var i=0;i<rowInfo.months.length;i++) {
-		this.handleWatermarks(pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
+		this.handleWatermarks(sr, pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
 	}
+
+	console.log(sr);
 }
 
 Styling.prototype.insertRuleIntoSheets = function(sheets, rule) {
@@ -106,7 +137,7 @@ Styling.prototype.insertRuleIntoSheets = function(sheets, rule) {
 	}
 }
 
-Styling.prototype.handleWatermarks = function(forScreen, idx, rowInfo, monthdiv) {
+Styling.prototype.handleWatermarks = function(sr, forScreen, idx, rowInfo, monthdiv) {
 	var availx, availy;
 	var usedx, usedy, scale, fontSize;
 	var sheet;
@@ -116,7 +147,9 @@ Styling.prototype.handleWatermarks = function(forScreen, idx, rowInfo, monthdiv)
 		availx = monthdiv.clientWidth;
 		availy = monthdiv.clientHeight;
 
-		var ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + this.metricFontSize + "pt; }");
+		var wm1 = new SheetRule(".watermark-" + idx);
+		wm1.property("font-size", this.metricFontSize + "pt");
+		wm1.applyTo(this.screenSheet);
 		var adiv = monthdiv.querySelector(".watermark");
 		var width = adiv.clientWidth;
 		var height = adiv.clientHeight;
@@ -124,16 +157,19 @@ Styling.prototype.handleWatermarks = function(forScreen, idx, rowInfo, monthdiv)
 		var scalex = availx/width;
 		var scaley = availy/height;
 		scale = Math.min(scalex, scaley) * .75; // .75 to leave some space around the edges
-		sheet.deleteRule(ruleIdx);
+		wm1.removeFrom(this.screenSheet);
+		
 		fontSize = this.metricFontSize*scale;
-		ruleIdx = sheet.insertRule(".watermark-" +  idx + "{ font-size: " + fontSize + "pt; }");
+		var wm2 = new SheetRule(".watermark-" + idx);
+		wm2.property("font-size", fontSize + "pt");
+		wm2.applyTo(this.screenSheet);
 		
 		var adiv = monthdiv.querySelector(".watermark");
 		usedx = adiv.clientWidth;
 		usedy = adiv.clientHeight;
 
 		this.screenWatermarks[idx] = { scale, width, height };
-		sheet.deleteRule(ruleIdx);
+		wm2.removeFrom(this.screenSheet);
 	} else {
 		sheet = this.printSheet;
 		availx = monthdiv.clientWidth;
@@ -150,6 +186,10 @@ Styling.prototype.handleWatermarks = function(forScreen, idx, rowInfo, monthdiv)
 	var left = (availx - usedx) / 2;
 	var top = (availy - usedy) / 2;
 
+	var wm = sr.rule(".watermark-" + idx);
+	wm.property("font-size", scale*this.metricFontSize + "pt");
+	wm.property("left", left + "px");
+	wm.property("top", top + "px");
 	sheet.insertRule(".watermark-" +  idx + "{ font-size: " + scale*this.metricFontSize + "pt; left: " + left + "px; top: " + top + "px; }");
 }
 
