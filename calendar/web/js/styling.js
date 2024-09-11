@@ -61,6 +61,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	var rows = rowInfo.numRows;
 
 	var innerX = pageSize.x, innerY = pageSize.y;
+	console.log("pagesize = ", pageSize);
 	var hackX = 1;
 
 	sr.clear();
@@ -69,45 +70,81 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		var pr = sr.rule("@page");
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		pr.property("margin", pageSize.margin + pageSize.unitIn);
-		// this.insertRuleIntoSheets(sheets, "@page { size: " + pageSize.x + pageSize.unitIn + " " + pageSize.y + pageSize.unitIn + " " + pageSize.orientation + "; margin: " + pageSize.margin + pageSize.unitIn + "; }")
 		innerX -= 3 * pageSize.margin;
 		innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
-		hackX = 0.95;
+		// hackX = 0.95; // removing this while I rework to try and avoid hacks
 	}
 
 	// calculate desired box sizes
-	var xunit = (innerX - 14 * pageSize.borderX) / 91;
-	xunit *= hackX; // a hack because I don't understand what causes the printer version to wrap
-	var xday = xunit*12;
-	var xmargin = xunit/2;
-	var xpos = xday / 5;
-	var xsize = xday / 8;
+	// horizontally, we divide the space up into 7 days, each of which has:
+	//   a left and right border
+	//   a left margin (except the leftmost - so only six margins)
+	//   and then is divided up into 12 segments
+	var xnoborder = innerX - 2 * 7 * pageSize.borderX;
+	var xunit = xnoborder / (7 * 13 - 1);
 
-	var yunit = (innerY - pageSize.borderY * 2 * rows)/ (rows * 13);
+	// var xday7x13 = innerX / 7;
+	// var xunit = (xday7x13 - 2 * pageSize.borderX) / 13;
+	xunit *= hackX; // a hack because I don't understand what causes the printer version to wrap
+
+	// the internal space is 12 unit segments
+	var xday = xunit*12;
+
+	// each of the left and right margins is the same size as .5 the unit, so they combine to make one
+	var xmargin = xunit;
+
+	// vertically, we have #rows rows and (#rows-1) gaps
+	// the height of each week is 13 units, 12 internally and 1 making up the margins.
+	// thus there are a total of 13*#rows-1 units
+
+	// this seems like a complete hack ...
+	innerY -= 14 * pageSize.borderY;
+	console.log("showing in", innerY);
+
+	// first take off 2*#rows borders (as well as the outer border)
+	var ynoborder = innerY - pageSize.borderY * 2 * rows;
+	console.log("ynob =", ynoborder);
+
+	// then divide up into units
+	var divby = rows*13-1;
+	console.log("divby = ", divby);
+	var yunit = ynoborder / divby;
+	console.log("yunit = ", yunit);
+
+	// the week itself consists of 12 units
 	var yweek = yunit*12;
-	var ymargin = yunit/2;
+	console.log("yweek =", yweek);
+
+	// and the margin is half a unit, so two of them together is again a unit
+	var ymargin = yunit;
 	var ypos = yweek / 5;
-	var ysize = Math.min(Math.max(yweek / 8, 8), yweek * 3/4);
 	
-	var dateSize = Math.min(xsize, ysize);
+	var dateSize = Math.min(xunit, yunit);
 
 	var eventsContainerY = 2 * ypos;
 
 	// generate new rules
 	var fr = sr.rule(".feedback");
 	fr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
+	fr.property("border-color", "black");
+	fr.property("border-style", "solid");
+	fr.property("padding", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
 	fr.property("width", innerX + pageSize.unitIn);
 	fr.property("height", innerY + pageSize.unitIn);
-	
+
+	var bwr = sr.rule(".body-week");
+	bwr.property("height", (yweek + 2*pageSize.borderY) + pageSize.unitIn);
+	bwr.property("margin-top", ymargin + pageSize.unitIn);
+
 	var bdr = sr.rule(".body-day");
 	bdr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
 	bdr.property("width", xday + pageSize.unitIn);
 	bdr.property("height", yweek + pageSize.unitIn);
-	bdr.property("margin", ymargin + pageSize.unitIn, xmargin + pageSize.unitIn);
+	bdr.property("margin-left", xmargin + pageSize.unitIn);
 
 	var bddr = sr.rule(".body-day-date");
-	bddr.property("top", ypos + pageSize.unitIn);
-	bddr.property("left", xpos + pageSize.unitIn);
+	bddr.property("top", (yunit/5) + pageSize.unitIn);
+	bddr.property("left", (xunit/2) + pageSize.unitIn);
 	bddr.property("font-size", dateSize + pageSize.unitIn);
 
 	var bde = sr.rule(".body-day-event");
@@ -189,8 +226,10 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 	var viewx = window.innerWidth;
 	var viewy = window.innerHeight;
 
-	var fbx = viewx - 16 - borderX * 2; // 16 for double body margin
-	var fby = viewy - this.controlPane.clientHeight - this.optionsDrawer.clientHeight - 16 - borderY * 2;
+	console.log("view", viewx, viewy);
+
+	var fbx = viewx - borderX * 2; // 16 for double body margin
+	var fby = viewy - this.controlPane.clientHeight - this.optionsDrawer.clientHeight - borderY * 2;
 
 	var sz = { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
 	return sz;

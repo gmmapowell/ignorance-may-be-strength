@@ -13,6 +13,14 @@
 	position: relative;
 }
 
+.body-day.first-body-day {
+	margin-left: 0px;
+}
+
+.body-week.first-body-week {
+	margin-top: 0px;
+}
+
 .body-day.weekend {
 	/* background-color: rgba(120, 120, 120, 0.1); */
 	outline: 3px solid grey;

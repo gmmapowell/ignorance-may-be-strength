@@ -66,6 +66,9 @@ RedrawClz.prototype.redraw = function() {
         // create a div for the whole week
 		var weekdiv = document.createElement("div");
 		weekdiv.className = "body-week";
+		if (wk == 0) {
+			weekdiv.classList.add("first-body-week");
+		}
 		if (week.thisMonth) {
             if (thisMonth == null || week.thisMonth.from == wk) {
                 thisMonth = document.createElement("div");
@@ -90,6 +93,9 @@ RedrawClz.prototype.redraw = function() {
 			// create a div for each day, to contain all the aspects we will have
 			var daydiv = document.createElement("div");
 			daydiv.className = "body-day";
+			if (i == 0) {
+				daydiv.classList.add("first-body-day");
+			}
 			if (day.shadeMe) {
 				daydiv.classList.add('weekend');
 			}
