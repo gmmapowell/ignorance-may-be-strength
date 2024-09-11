@@ -82,6 +82,7 @@ Styling.prototype.pageLayout = function(sheets, rowInfo, monthdivs, pageSize) {
 	this.insertRuleIntoSheets(sheets, ".feedback { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + innerX + pageSize.unitIn + "; height: " + innerY + pageSize.unitIn + "; }");
 	this.insertRuleIntoSheets(sheets, ".body-day { border-width: " + pageSize.borderY + pageSize.unitIn + " " + pageSize.borderX + pageSize.unitIn +"; width: " + xday + pageSize.unitIn + "; height: " + yweek + pageSize.unitIn + "; margin: " + ymargin + pageSize.unitIn + " " + xmargin + pageSize.unitIn + " }");
 	this.insertRuleIntoSheets(sheets, ".body-day-date { top: " + ypos + pageSize.unitIn + "; left: " + xpos + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
+	this.insertRuleIntoSheets(sheets, ".body-day-event { width: " + xday + pageSize.unitIn + "; }");
 	this.insertRuleIntoSheets(sheets, ".body-day-events-container { top: " + eventsContainerY + pageSize.unitIn + "; font-size: " + dateSize + pageSize.unitIn + " }");
 
 	for (var i=0;i<rowInfo.months.length;i++) {

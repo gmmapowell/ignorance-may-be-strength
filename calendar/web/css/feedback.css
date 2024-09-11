@@ -30,6 +30,9 @@
 
 .body-day-event {
 	border: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: clip;
 }
 
 .body-day-event-time {

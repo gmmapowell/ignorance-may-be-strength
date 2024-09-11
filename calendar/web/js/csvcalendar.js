@@ -104,6 +104,10 @@ function parseTime(fmt, input) {
             }
             return h + m;
         default: // leave it as it is
+            input = input.toString();
+            while (input.length < 4) {
+                input = '0' + input;
+            }
             return input;
         }
 }
