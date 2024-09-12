@@ -4,6 +4,7 @@ function ModelProvider(storage, core, prof) {
     this.start = core['start-date'];
     this.end = core['end-date'];
     this.first = core['first-day'];
+	this.showTz = core['calendar-time-zone'];
     this.weekendShadeOption = core['shade-weekends'];
 	this.profile = prof;
 	this.recoveredPlan = null;
@@ -14,7 +15,7 @@ function utc(d) {
 }
 
 ModelProvider.prototype.saveState = function() {
-	var core = { start: this.start.value, end: this.end.value, first: this.first.value, weekendShadeOption: this.weekendShadeOption.checked };
+	var core = { start: this.start.value, end: this.end.value, first: this.first.value, showTz: this.showTz.value, weekendShadeOption: this.weekendShadeOption.checked };
 	this.storage.storeState("core", core);
 }
 
@@ -24,6 +25,7 @@ ModelProvider.prototype.restoreState = function() {
 		this.start.valueAsDate = new Date(core.start);
 		this.end.valueAsDate = new Date(core.end);
 		this.first.value = core.first;
+		this.showTz.value = core.showTz;
 		this.weekendShadeOption.checked = core.weekendShadeOption;
 		this.recoveredPlan = null;
 	} else {
@@ -34,7 +36,8 @@ ModelProvider.prototype.restoreState = function() {
 ModelProvider.prototype.reset = function() {
 	this.start.valueAsDate = new Date();
 	this.end.valueAsDate = new Date();
-	this.weekendShadeOption = true;
+	this.showTz.value = "SYSTEM";
+	this.weekendShadeOption.value = true;
 	this.first.value = 1;
 	this.recoveredPlan = null;
 	this.saveState();

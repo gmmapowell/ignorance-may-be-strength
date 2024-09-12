@@ -3,11 +3,11 @@ import { CalEvent } from './events.js';
 function Ics() {
 }
 
-Ics.parse = function(text) {
+Ics.parse = function(text, mytz, showtz) {
 	var lines = joinLongLines(text.split(/\r\n/));
 	var blocked = makeHierarchical(lines);
 	if (blocked) {
-		return makeEvents(blocked);
+		return makeEvents(blocked, mytz, showtz);
 	} else {
 		return null;
 	}
@@ -54,7 +54,9 @@ function makeHierarchical(lines) {
 	return ret;
 }
 
-function makeEvents(blocks) {
+function makeEvents(blocks, mytz, showtz) {
+	if (!mytz)
+		mytz = "UTC";
 	// This assumes that blocks is a VCALENDAR containing VEVENT objects
 	// It will ignore other events
 
@@ -71,7 +73,8 @@ function makeEvents(blocks) {
 		var ends = new Date(Date.parse(toStandard(b.fields["DTEND"])));
 		var enddate = ends.getFullYear() + "-" + (ends.getMonth()+1).toString().padStart(2, '0') + "-" + ends.getDate().toString().padStart(2, '0');
 		var endtime = ends.getHours().toString().padStart(2, '0') + ends.getMinutes().toString().padStart(2, '0');
-		var ev = new CalEvent(date, time, b.fields.SUMMARY, "UTC", enddate, endtime, null);
+		var ev = new CalEvent(date, time, b.fields.SUMMARY, mytz, enddate, endtime, null);
+		ev.redoTZ(showtz);
 		ret.push(ev);
 	}
 	return ret;

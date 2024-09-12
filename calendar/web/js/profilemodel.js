@@ -1,5 +1,6 @@
 import { ajax } from './ajax.js';
 import { CsvCalendar } from './csvcalendar.js';
+import { CalEvent } from './events.js';
 import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
@@ -34,6 +35,9 @@ ProfileModel.prototype.addVisual = function(vis) {
         if (state.calendarProps) {
             this.calprops = state.calendarProps;
         }
+        if (state.showtz) {
+            this.showtz = state.showtz;
+        }
 
         // selectCalendar is a bit heavyweight for this since it writes state back
         // NB: Any other state must be read BEFORE we do this
@@ -41,7 +45,7 @@ ProfileModel.prototype.addVisual = function(vis) {
         if (state.selectedCalendars) {
             for (var c of state.selectedCalendars) {
                 this.selectCalendar(c, true);
-            }
+            };
         }
         if (this.drawerState) {
             vis.openDrawer();
@@ -132,6 +136,16 @@ ProfileModel.prototype.selectCalendar = function(label, selected) {
     }
 }
 
+ProfileModel.prototype.changeTimeZone = function(tz) {
+    var cals = Object.keys(this.activeCalendars);
+    for (var i=0;i<cals.length;i++) {
+        var cal = this.activeCalendars[cals[i]];
+        CalEvent.retz(cal, tz);
+    }
+    this.modelProvider.saveState();
+    this.vis.modelChanged();
+}
+
 ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     if (!this.availableCalendars[label]) {
         // I am considering this a race condition where the checkbox has been toggled on and off again before we can retrieve the calendar by ajax
@@ -145,10 +159,12 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     }
 
     var events;
+    var props = this.calprops[label];
+    var ptz = props && props.tz;
     if (label.endsWith(".ics")) {
-        events = Ics.parse(msg);
+        events = Ics.parse(msg, ptz, this.modelProvider.showTz.value);
     } else if (label.endsWith(".csv")) {
-        events = CsvCalendar.parse(msg);
+        events = CsvCalendar.parse(msg, ptz, this.modelProvider.showTz.value);
     } else {
         // TODO: support JSON
         console.log("do not know how to parse", label);

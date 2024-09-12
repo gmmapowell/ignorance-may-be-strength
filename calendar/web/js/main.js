@@ -26,6 +26,7 @@ function init() {
     bindElement(core, 'start-date');
     bindElement(core, 'end-date');
     bindElement(core, 'first-day');
+    bindElement(core, 'calendar-time-zone');
     bindElement(core, 'shade-weekends');
 
     var print = {};
@@ -96,6 +97,7 @@ function init() {
     redraw.onChange(core['start-date']);
     redraw.onChange(core['end-date']);
     redraw.onChange(core['first-day']);
+    core['calendar-time-zone'].addEventListener('change', ev => profileModel.changeTimeZone(core['calendar-time-zone'].selectedOptions[0].value));
     redraw.onChange(core['shade-weekends']);
 
     redraw.onChange(print['page-size']);

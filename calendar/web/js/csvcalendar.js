@@ -5,7 +5,7 @@ import { equalsIgnoringCase } from './utils.js';
 function CsvCalendar() {
 }
 
-CsvCalendar.parse = function(text) {
+CsvCalendar.parse = function(text, deftz, showtz) {
     var input = CSV.parse(text);
     var cols = {};
     var hdrs = input[0];
@@ -45,7 +45,11 @@ CsvCalendar.parse = function(text) {
         var time = parseTime(timeFormat, row[tmcol]);
         var until = parseDate(dateFormat, row[untilcol]);
         var ends = parseTime(timeFormat, row[endcol]);
-        var ev = new CalEvent(date, time, row[desccol], row[tzcol], until, ends, row[catcol]);
+        var etz = row[tzcol];
+        if (!etz)
+            etz = deftz;
+        var ev = new CalEvent(date, time, row[desccol], etz, until, ends, row[catcol]);
+        ev.redoTZ(showtz);
         events.push(ev);
     }
 
