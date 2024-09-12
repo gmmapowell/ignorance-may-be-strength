@@ -350,7 +350,7 @@ Profiles.prototype.addPlanListener = function(button, plan) {
 
 Profiles.prototype.modelChanged = function() {
     this.updateCalendarList(this.model.availableCalendars);
-    this.manageCalendarsActor.updateCalendarList(this.model.availableCalendars);
+    this.manageCalendarsActor.redraw();
     this.updatePlansList(this.model.savedPlans);
     this.updateCategories();
     this.redraw.redraw();

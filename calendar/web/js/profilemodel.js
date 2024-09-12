@@ -7,6 +7,7 @@ function ProfileModel(storage) {
     this.drawerState = false;
     this.availableCalendars = {};
     this.activeCalendars = {};
+    this.calprops = {};
     this.calendarCategories = {};
     this.categoryConfigs = {};
     this.savedPlans = [];
@@ -26,15 +27,24 @@ ProfileModel.prototype.addVisual = function(vis) {
     if (state) {
         if (state.drawerState) {
             this.drawerState = true;
-            vis.openDrawer();
         }
         if (state.configs) {
             this.categoryConfigs = state.configs;
         }
+        if (state.calendarProps) {
+            this.calprops = state.calendarProps;
+        }
+
+        // selectCalendar is a bit heavyweight for this since it writes state back
+        // NB: Any other state must be read BEFORE we do this
+        // TODO: split this into two steps: read the active calendars, then select them
         if (state.selectedCalendars) {
             for (var c of state.selectedCalendars) {
                 this.selectCalendar(c, true);
             }
+        }
+        if (this.drawerState) {
+            vis.openDrawer();
         }
         vis.modelChanged();
     }
@@ -210,7 +220,12 @@ ProfileModel.prototype.storeCurrentState = function() {
         }
     }
 
-    var state = { drawerState: this.drawerState, selectedCalendars: statecals, configs: this.categoryConfigs };
+    var state = {
+        drawerState: this.drawerState,
+        selectedCalendars: statecals,
+        calendarProps: this.calprops,
+        configs: this.categoryConfigs
+    };
 
     this.storage.storeState("profile", state);
 }

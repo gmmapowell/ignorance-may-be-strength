@@ -49,6 +49,14 @@
 							<option value="0">Sunday</option>
 						</select>
 					</div>
+					<div class="show-in-time-zone">
+						<label for="calendar-time-zone">Time Zone:</label>
+						<select id="calendar-time-zone">
+							<option>SYSTEM</option>
+							<option>BST</option>
+							<option>EDT</option>
+						</select>
+					</div>
 				</div>
 				<div class="print-controls">
 					<div class="shade-weekends">
@@ -114,19 +122,29 @@
 					<input type='button' id="user-profile-reset" value="Reset">
 					<input type='button' id="user-profile-sign-out" value="Sign Out">
 				</div>
-				<div id="drop-for-upload" class="drop-for-upload">
-					<p>Drop calendar files here</p>
-				</div>
 				<div id="available-calendars" class="available-calendars"></div>
 				<div id="calendar-categories" class="calendar-categories"></div>
 				<div id="saved-plans" class="saved-plans"></div>
 
 			</div>
 			<div id='manage-calendars-panel' class="manage-calendars hidden">
+				<div id="drop-for-upload" class="drop-for-upload">
+					<p>Drop calendar files here</p>
+				</div>
 				<div id='manage-calendars-list' class="manage-calendars-list"></div>
 				<div id="manage-calendars-detail" class="manage-calendars-detail hidden">
-					<div>Calendar: <span id='manage-calendar-called'></span></div>
-					<div>Time Zone: <select><option>BST</option><option>EDT</option></select></div>
+					<div>
+						<label for="manage-calendar-called">Calendar:</label>
+						<span id='manage-calendar-called'></span>
+					</div>
+					<div>
+						<label for="manage-calendar-detail-timezone">Time Zone:</label>
+						<select id="manage-calendar-detail-timezone">
+							<option>NONE</option>
+							<option>BST</option>
+							<option>EDT</option>
+						</select>
+					</div>
 					<div><input id='manage-calendar-apply' type='button' value='Apply'></div>
 				</div>
 			</div>

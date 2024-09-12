@@ -56,6 +56,7 @@ function init() {
     bindElement(manageCalendars, 'manage-calendars-detail');
     bindElement(manageCalendars, 'manage-calendar-called');
     bindElement(manageCalendars, 'manage-calendar-apply');
+    bindElement(manageCalendars, 'manage-calendar-detail-timezone');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
@@ -85,7 +86,7 @@ function init() {
     var modelProvider = new ModelProvider(storage, core, profileModel);
 	var styler = new Styling(storage, sections, print);
     var redraw = new RedrawClz(storage, modelProvider, sections, styler);
-    var manageCalendarsActor = new ManageCalendars(manageCalendars);
+    var manageCalendarsActor = new ManageCalendars(manageCalendars, profileModel);
     var profiles = new Profiles(storage, profileModel, redraw, manageCalendarsActor, sections, profile, signin, userProfile, manageCalendars);
     manageCalendarsActor.provideProfiles(profiles);
     profileModel.addPlan(modelProvider);
