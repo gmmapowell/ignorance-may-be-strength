@@ -103,14 +103,14 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		bx = 14;
 	var xnoborder = innerX - bx;
 	var xunit = xnoborder / (7 * 13 - 1);
-	console.log(pageSize.media, "xs", innerX, xnoborder, xunit);
+	// console.log(pageSize.media, "xs", innerX, xnoborder, xunit);
 
 	// the internal space is 12 unit segments
 	var xday = floor(pageSize.unitIn, xunit*12);
 
 	// each of the left and right margins is the same size as .5 the unit, so they combine to make one
 	var xmargin = floor(pageSize.unitIn, xunit);
-	console.log("x =", 7*xday+6*xmargin + bx);
+	// console.log("x =", 7*xday+6*xmargin + bx);
 
 	// vertically, we have #rows rows and (#rows-1) gaps
 	// the height of each week is 13 units, 12 internally and 1 making up the margins.
@@ -165,12 +165,19 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	bddr.property("left", (xunit/2) + pageSize.unitIn);
 	bddr.property("font-size", dateSize + pageSize.unitIn);
 
+	for (var i=0;i<11;i++) {
+		var ir = sr.rule(".diary-row-" + i);
+		ir.property("top", (yunit*(i+1)) + pageSize.unitIn);
+		ir.property("height", yunit + pageSize.unitIn);
+		ir.property("font-size", dateSize + pageSize.unitIn);
+	}
+
 	var bde = sr.rule(".body-day-event");
 	bde.property("width", xday + pageSize.unitIn);
 
-	var bdec = sr.rule(".body-day-events-container");
-	bdec.property("top", eventsContainerY + pageSize.unitIn);
-	bdec.property("font-size", dateSize + pageSize.unitIn);
+	// var bdec = sr.rule(".body-day-events-container");
+	// bdec.property("top", eventsContainerY + pageSize.unitIn);
+	// bdec.property("font-size", dateSize + pageSize.unitIn);
 
 	sr.apply();
 

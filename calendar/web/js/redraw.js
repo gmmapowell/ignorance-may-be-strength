@@ -132,30 +132,83 @@ RedrawClz.prototype.redraw = function() {
 
             var toShow = day.toShow;
 			if (toShow.length > 0) {
-				var events = document.createElement("div");
-				events.className = "body-day-events-container";
-				daydiv.appendChild(events);
+				// var events = document.createElement("div");
+				// events.className = "body-day-events-container";
+				// daydiv.appendChild(events);
 
-				for (var j=0;j<toShow.length;j++) {
-					var event = document.createElement("div");
-					event.className = "body-day-event";
-					events.appendChild(event);
-					var timeText = document.createTextNode(toShow[j].starttime);
+				var placedItems = this.placeItems(toShow);
+	
+				for (var j=0;j<placedItems.length;j++) {
+					var pi = placedItems[j];
+					if (!pi)
+						continue;
+
+					var idiv = document.createElement("div");
+					idiv.className = "diary-row";
+					idiv.classList.add("diary-row-" + j);
+					daydiv.appendChild(idiv);
+
+					// var event = document.createElement("div");
+					// event.className = "body-day-event";
+					// events.appendChild(event);
+					var timeText = document.createTextNode(pi.starttime);
 					var timeSpan = document.createElement("span");
 					timeSpan.className = "body-day-event-time";
 					timeSpan.appendChild(timeText);
-					event.appendChild(timeSpan);
-					var eventText = document.createTextNode(" " + toShow[j].description);
+					idiv.appendChild(timeSpan);
+					var eventText = document.createTextNode(" " + pi.description);
 					var eventSpan = document.createElement("span");
 					eventSpan.className = "body-day-event-text";
 					eventSpan.appendChild(eventText);
-					event.appendChild(eventSpan);
+					idiv.appendChild(eventSpan);
 				}
 			}
 		}
     }
 
 	this.styling.fitToPageSize(model.rowInfo, monthdivs);
+}
+
+RedrawClz.prototype.placeItems = function(todo) {
+	console.log(todo);
+	if (todo.length >= 11) { // if there are 11 or more events, show the first 12 in the available slots ...
+		return todo.slice(0, 11);
+	}
+	var ret = new Array(11);
+	for (var ti=0;ti<todo.length;ti++) {
+		var td = todo[ti];
+		var choice = this.chooseSlot(td.starttime);
+		while (ret[choice])
+			choice++;
+		console.log(choice);
+		if (choice > 10) {
+			this.moveBottomsUp(ret);
+			choice = 10;
+		}
+		ret[choice] = td;
+	}
+	return ret;
+}
+
+RedrawClz.prototype.moveBottomsUp = function(ret) {
+	for (var i=10;i>=0;i--) {
+		if (!ret[i]) {
+			break;
+		}
+	}
+	while (i<11) {
+		ret[i] = ret[i+1];
+		i++;
+	}
+}
+
+RedrawClz.prototype.chooseSlot = function(when) {
+	var w = parseInt(when);
+	// if (w < 800) return 0;
+	if (w < 1300) return 0;
+	if (w < 1800) return 4;
+	if (w < 2030) return 7;
+	return 10;
 }
 
 RedrawClz.prototype.saveCurrentCalendar = function(reloadList) {
