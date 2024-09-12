@@ -125,6 +125,18 @@ Profiles.prototype.showManage = function() {
     this.redraw.redraw();
 }
 
+Profiles.prototype.hideManage = function() {
+    // toggleHidden(this.signInPanel, this.optionsDrawer);
+    show(this.profileDisplay);
+    hide(this.emailPanel);
+    hide(this.invalidSigninPanel)
+    hide(this.invalidEmailPanel);
+    hide(this.invalidPasswordPanel);
+    hide(this.manageCalendarsPanel);
+    this.manageCalendarsActor.redraw();
+    this.redraw.redraw();
+}
+
 Profiles.prototype.openDrawer = function() {
     show(this.profileDisplay, this.optionsDrawer);
     this.redraw.redraw();

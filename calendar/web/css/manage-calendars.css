@@ -1,3 +1,17 @@
 .manage-calendars input {
     display: block;
 }
+
+.manage-calendars-list {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.manage-calendars-detail {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.manage-calendars-detail.hidden {
+    display: none;
+}

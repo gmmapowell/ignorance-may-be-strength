@@ -52,6 +52,10 @@ function init() {
 
     var manageCalendars = {};
     bindElement(manageCalendars, 'manage-calendars-panel');
+    bindElement(manageCalendars, 'manage-calendars-list');
+    bindElement(manageCalendars, 'manage-calendars-detail');
+    bindElement(manageCalendars, 'manage-calendar-called');
+    bindElement(manageCalendars, 'manage-calendar-apply');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
@@ -83,6 +87,7 @@ function init() {
     var redraw = new RedrawClz(storage, modelProvider, sections, styler);
     var manageCalendarsActor = new ManageCalendars(manageCalendars);
     var profiles = new Profiles(storage, profileModel, redraw, manageCalendarsActor, sections, profile, signin, userProfile, manageCalendars);
+    manageCalendarsActor.provideProfiles(profiles);
     profileModel.addPlan(modelProvider);
     profileModel.addVisual(profiles);
  

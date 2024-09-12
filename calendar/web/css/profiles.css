@@ -44,6 +44,7 @@
 
 .user-profile-buttons {
     display: inline-block;
+    vertical-align: top;
 }
 
 .user-profile-buttons input {
@@ -52,6 +53,7 @@
 
 .drop-for-upload {
     display: inline-block;
+    vertical-align: top;
     background-color: lightblue;
     border: 2px solid aquamarine;
     padding: 3em;
