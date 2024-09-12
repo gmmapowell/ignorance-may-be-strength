@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="css/overall.css">
 		<link rel="stylesheet" href="css/controls.css">
 		<link rel="stylesheet" href="css/feedback.css">
+		<link rel="stylesheet" href="css/manage-calendars.css">
 		<link rel="stylesheet" href="css/printing.css" media="print">
 		<link rel="stylesheet" href="css/profiles.css">
 		<link rel="stylesheet" href="css/watermark.css">
@@ -107,6 +108,7 @@
 				   - and then I want a (probably 3-column) list of all the files I've uploaded/linked so that we can choose to include/exclude from the calendar
 				-->
 				<div class="user-profile-buttons">
+					<input type='button' id="manage-calendars-button" value="Manage Calendars">
 					<input type='button' id="save-current-calendar" value="Save Calendar">
 					<input type='button' id="download-current-calendar" value="Download">
 					<input type='button' id="user-profile-reset" value="Reset">
@@ -119,7 +121,10 @@
 				<div id="calendar-categories" class="calendar-categories"></div>
 				<div id="saved-plans" class="saved-plans"></div>
 
-			</div>	
+			</div>
+			<div id='manage-calendars-panel' class="manage-calendars hidden">
+
+			</div>
 		</div>
 		<div id='feedback' class="feedback">
 			<div class="body-week">

@@ -1,5 +1,6 @@
 import { ModelProvider } from "./model.js";
 import { CalendarStorage } from "./storage.js";
+import { ManageCalendars } from "./manage.js";
 
 import { Styling } from "./styling.js";
 import { RedrawClz } from "./redraw.js";
@@ -37,8 +38,9 @@ function init() {
     bindElement(profile, 'sign-in-button');
     bindElement(profile, 'open-profile-button');
 
-    var userProfile = {}
+    var userProfile = {};
     bindElement(userProfile, 'user-profile-panel');
+    bindElement(userProfile, 'manage-calendars-button');
     bindElement(userProfile, 'save-current-calendar');
     bindElement(userProfile, 'download-current-calendar');
     bindElement(userProfile, 'user-profile-reset');
@@ -47,6 +49,9 @@ function init() {
     bindElement(userProfile, 'available-calendars');
     bindElement(userProfile, 'calendar-categories');
     bindElement(userProfile, 'saved-plans');
+
+    var manageCalendars = {};
+    bindElement(manageCalendars, 'manage-calendars-panel');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
@@ -76,7 +81,8 @@ function init() {
     var modelProvider = new ModelProvider(storage, core, profileModel);
 	var styler = new Styling(storage, sections, print);
     var redraw = new RedrawClz(storage, modelProvider, sections, styler);
-    var profiles = new Profiles(storage, profileModel, redraw, sections, profile, signin, userProfile);
+    var manageCalendarsActor = new ManageCalendars(manageCalendars);
+    var profiles = new Profiles(storage, profileModel, redraw, manageCalendarsActor, sections, profile, signin, userProfile, manageCalendars);
     profileModel.addPlan(modelProvider);
     profileModel.addVisual(profiles);
  

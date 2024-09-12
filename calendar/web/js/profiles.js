@@ -1,12 +1,13 @@
 import { toggleHidden, hide, show, isShown } from "./utils.js";
 import { ajax } from './ajax.js';
 
-function Profiles(storage, model, redraw, sections, profileElts, elements, userProfile) {
+function Profiles(storage, model, redraw, manageCalendarsActor, sections, profileElts, elements, userProfile, manageCalendars) {
     var self = this;
     this.storage = storage;
     this.model = model;
     this.redraw = redraw;
     this.optionsDrawer = sections['options-drawer'];
+    this.manageCalendarsActor = manageCalendarsActor;
 
     this.profileElts = profileElts;
 
@@ -14,6 +15,9 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
     this.email  = elements.core['sign-in-email'];
     this.password = elements.core['sign-in-password'];
     this.signIn = elements.core['submit-sign-in'];
+
+    this.manageCalendarsElts = manageCalendars;
+    this.manageCalendarsPanel = manageCalendars['manage-calendars-panel'];
 
     this.createUserPanel = elements['create-user-panel'];
     this.createUserEmail = elements.newUser['create-user-email'];
@@ -35,6 +39,9 @@ function Profiles(storage, model, redraw, sections, profileElts, elements, userP
     this.savedPlans = userProfile['saved-plans'];
     userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
     this.prepareDropUpload(userProfile['drop-for-upload']);
+
+    this.manageCalendarsButton = userProfile['manage-calendars-button'];
+    this.manageCalendarsButton.addEventListener('click', () => this.showManage());
 
     this.saveCalendarButton = userProfile['save-current-calendar'];
     this.saveCalendarButton.addEventListener('click', () => this.redraw.saveCurrentCalendar(() => this.model.loadAvailableCalendars()));
@@ -103,6 +110,18 @@ Profiles.prototype.buttonClicked = function() {
         hide(this.invalidEmailPanel);
         hide(this.invalidPasswordPanel);
     }
+    this.redraw.redraw();
+}
+
+Profiles.prototype.showManage = function() {
+    // toggleHidden(this.signInPanel, this.optionsDrawer);
+    hide(this.profileDisplay);
+    hide(this.emailPanel);
+    hide(this.invalidSigninPanel)
+    hide(this.invalidEmailPanel);
+    hide(this.invalidPasswordPanel);
+    show(this.manageCalendarsPanel);
+    this.manageCalendarsActor.redraw();
     this.redraw.redraw();
 }
 
@@ -319,6 +338,7 @@ Profiles.prototype.addPlanListener = function(button, plan) {
 
 Profiles.prototype.modelChanged = function() {
     this.updateCalendarList(this.model.availableCalendars);
+    this.manageCalendarsActor.updateCalendarList(this.model.availableCalendars);
     this.updatePlansList(this.model.savedPlans);
     this.updateCategories();
     this.redraw.redraw();

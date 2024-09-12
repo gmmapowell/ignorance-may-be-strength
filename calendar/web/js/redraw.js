@@ -170,7 +170,6 @@ RedrawClz.prototype.redraw = function() {
 }
 
 RedrawClz.prototype.placeItems = function(todo) {
-	console.log(todo);
 	if (todo.length >= 11) { // if there are 11 or more events, show the first 12 in the available slots ...
 		return todo.slice(0, 11);
 	}
@@ -180,7 +179,6 @@ RedrawClz.prototype.placeItems = function(todo) {
 		var choice = this.chooseSlot(td.starttime);
 		while (ret[choice])
 			choice++;
-		console.log(choice);
 		if (choice > 10) {
 			this.moveBottomsUp(ret);
 			choice = 10;
@@ -222,7 +220,6 @@ RedrawClz.prototype.saveCurrentCalendar = function(reloadList) {
 }
 
 RedrawClz.prototype.uploadComplete = function(stat, msg, reloadList) {
-	console.log("stat =", stat);
 	reloadList();
 }
 
