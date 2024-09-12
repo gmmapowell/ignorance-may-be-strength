@@ -3,7 +3,7 @@ import { SheetRules, SheetRule } from "./stylesheet.js";
 // both of these should be false in the wild
 // they are here to make debugging easier
 const screenOnly = false;
-const testingPrinter = false;
+const testingPrinter = true;
 
 function Styling(storage, sections, print) {
 	this.storage = storage;
@@ -80,7 +80,12 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	if (pageSize.media == "print") {
 		var pr = sr.rule("@page");
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
-		pr.property("margin", pageSize.margin + pageSize.unitIn);
+		// margin doesn't seem to work, but maybe because I've turned it off in the print dialog
+		// pr.property("margin-left", pageSize.margin + pageSize.unitIn);
+		// pr.property("margin-right", pageSize.margin + pageSize.unitIn);
+		// pr.property("margin-top", pageSize.margin + pageSize.unitIn);
+		// pr.property("margin-bottom", pageSize.margin + pageSize.unitIn);
+
 		innerX -= 2 * pageSize.margin;
 		innerY -= 2 * pageSize.margin;
 	}
@@ -92,18 +97,18 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	//   and then is divided up into 12 segments
 	var bx = 2 * 7 * pageSize.borderX;
 	// It seems that for the printer, we can't have a size < 1
-	if (bx < 7)
-		bx = 7;
+	if (bx < 14)
+		bx = 14;
 	var xnoborder = innerX - bx;
 	var xunit = xnoborder / (7 * 13 - 1);
-	// console.log("xs", innerX, xnoborder, xunit);
+	console.log(pageSize.media, "xs", innerX, xnoborder, xunit);
 
 	// the internal space is 12 unit segments
-	var xday = xunit*12;
+	var xday = Math.floor(xunit*12);
 
 	// each of the left and right margins is the same size as .5 the unit, so they combine to make one
-	var xmargin = xunit;
-	// console.log("x =", 7*xday+6*xmargin + 14 * pageSize.borderX);
+	var xmargin = Math.floor(xunit);
+	console.log("x =", 7*xday+6*xmargin + bx);
 
 	// vertically, we have #rows rows and (#rows-1) gaps
 	// the height of each week is 13 units, 12 internally and 1 making up the margins.
@@ -120,7 +125,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	// console.log("yunit = ", yunit);
 
 	// the week itself consists of 12 units
-	var yweek = yunit*12;
+	var yweek = Math.floor(yunit*12);
 	// console.log("yweek =", yweek);
 
 	// and the margin is half a unit, so two of them together is again a unit
@@ -139,6 +144,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	fr.property("padding", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
 	fr.property("width", innerX + pageSize.unitIn);
 	fr.property("height", innerY + pageSize.unitIn);
+	fr.property("margin", pageSize.margin + pageSize.unitIn);
 
 	var bwr = sr.rule(".body-week");
 	bwr.property("height", (yweek + 2*pageSize.borderY) + pageSize.unitIn);
@@ -259,10 +265,11 @@ Styling.prototype.calculatePaperSize = function() {
 			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 11, y : 17, unitIn: "in", borderX: 0.01, borderY: 0.01 };
 			break;
 		case "a3":
-			ret = { media: "print", margin: 6, orientation: "portrait", x : 297, y : 420, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
+			ret = { media: "print", margin: 13, orientation: "portrait", x : 297, y : 420, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
 			break;
+		case "a4":
 		default: /* use A4 as default, just in case */
-			ret = { media: "print", margin: 6, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
+			ret = { media: "print", margin: 13, orientation: "portrait", x : 210, y : 297, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
 			break;
 	}
 	if (andLandscape) {
