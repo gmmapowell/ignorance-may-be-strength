@@ -1,9 +1,10 @@
 import { SheetRules, SheetRule } from "./stylesheet.js";
 
-// both of these should be false in the wild
+// all of these should be false in the wild
 // they are here to make debugging easier
 const screenOnly = false;
-const testingPrinter = true;
+const testingPrinter = false;
+const feedbackBorder = false;
 
 function Styling(storage, sections, print) {
 	this.storage = storage;
@@ -81,6 +82,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		var pr = sr.rule("@page");
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		// margin doesn't seem to work, but maybe because I've turned it off in the print dialog
+		pr.property("margin", "0mm");
 		// pr.property("margin-left", pageSize.margin + pageSize.unitIn);
 		// pr.property("margin-right", pageSize.margin + pageSize.unitIn);
 		// pr.property("margin-top", pageSize.margin + pageSize.unitIn);
@@ -104,10 +106,10 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	console.log(pageSize.media, "xs", innerX, xnoborder, xunit);
 
 	// the internal space is 12 unit segments
-	var xday = Math.floor(xunit*12);
+	var xday = floor(pageSize.unitIn, xunit*12);
 
 	// each of the left and right margins is the same size as .5 the unit, so they combine to make one
-	var xmargin = Math.floor(xunit);
+	var xmargin = floor(pageSize.unitIn, xunit);
 	console.log("x =", 7*xday+6*xmargin + bx);
 
 	// vertically, we have #rows rows and (#rows-1) gaps
@@ -125,7 +127,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	// console.log("yunit = ", yunit);
 
 	// the week itself consists of 12 units
-	var yweek = Math.floor(yunit*12);
+	var yweek = floor(pageSize.unitIn, yunit*12);
 	// console.log("yweek =", yweek);
 
 	// and the margin is half a unit, so two of them together is again a unit
@@ -138,9 +140,11 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 
 	// generate new rules
 	var fr = sr.rule(".feedback");
-	fr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
-	fr.property("border-color", "black");
-	fr.property("border-style", "solid");
+	if (feedbackBorder) {
+		fr.property("border-width", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
+		fr.property("border-color", "black");
+		fr.property("border-style", "solid");
+	}
 	fr.property("padding", pageSize.borderY + pageSize.unitIn, pageSize.borderX + pageSize.unitIn);
 	fr.property("width", innerX + pageSize.unitIn);
 	fr.property("height", innerY + pageSize.unitIn);
@@ -286,6 +290,15 @@ Styling.prototype.calculatePaperSize = function() {
 Styling.prototype.resetVirtualScaleOnMobile = function() {
 	let viewportmeta = document.querySelector('meta[name="viewport"]');
 	viewportmeta.setAttribute("content", "width=device-width, height=device-height, initial-scale=1, minimum-scale=1");
+}
+
+function floor(unit, quant) {
+	if (unit == 'px')
+		return Math.floor(quant);
+	else if (unit == 'mm' || unit == 'in')
+		return Math.floor(quant*10)/10.0;
+	else
+		console.log("what is unit " + unit);
 }
 
 function marginHeight(elm) {
