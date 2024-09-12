@@ -2,8 +2,8 @@ import { SheetRules, SheetRule } from "./stylesheet.js";
 
 // both of these should be false in the wild
 // they are here to make debugging easier
-const screenOnly = true;
-const testingPrinter = false;
+const screenOnly = false;
+const testingPrinter = true;
 
 function Styling(storage, sections, print) {
 	this.storage = storage;
@@ -83,8 +83,8 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		var pr = sr.rule("@page");
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		pr.property("margin", pageSize.margin + pageSize.unitIn);
-		// innerX -= 3 * pageSize.margin;
-		// innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
+		innerX -= 2 * pageSize.margin;
+		innerY -= 2 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
 		// hackX = 0.95; // removing this while I rework to try and avoid hacks
 	}
 
@@ -93,18 +93,20 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	//   a left and right border
 	//   a left margin (except the leftmost - so only six margins)
 	//   and then is divided up into 12 segments
-	var xnoborder = innerX - 2 * 7 * pageSize.borderX;
+	var bx = 2 * 7 * pageSize.borderX;
+	// It seems that for the printer, we can't have a size < 1
+	if (bx < 7)
+		bx = 7;
+	var xnoborder = innerX - bx;
 	var xunit = xnoborder / (7 * 13 - 1);
-
-	// var xday7x13 = innerX / 7;
-	// var xunit = (xday7x13 - 2 * pageSize.borderX) / 13;
-	// xunit *= hackX; // a hack because I don't understand what causes the printer version to wrap
+	console.log("xs", innerX, xnoborder, xunit);
 
 	// the internal space is 12 unit segments
 	var xday = xunit*12;
 
 	// each of the left and right margins is the same size as .5 the unit, so they combine to make one
 	var xmargin = xunit;
+	console.log("x =", 7*xday+6*xmargin + 14 * pageSize.borderX);
 
 	// vertically, we have #rows rows and (#rows-1) gaps
 	// the height of each week is 13 units, 12 internally and 1 making up the margins.
@@ -112,17 +114,17 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 
 	// first take off 2*#rows borders (as well as the outer border)
 	var ynoborder = innerY - pageSize.borderY * 2 * rows;
-	console.log("ynob =", ynoborder);
+	// console.log("ynob =", ynoborder);
 
 	// then divide up into units
 	var divby = rows*13-1;
-	console.log("divby = ", divby);
+	// console.log("divby = ", divby);
 	var yunit = ynoborder / divby;
-	console.log("yunit = ", yunit);
+	// console.log("yunit = ", yunit);
 
 	// the week itself consists of 12 units
 	var yweek = yunit*12;
-	console.log("yweek =", yweek);
+	// console.log("yweek =", yweek);
 
 	// and the margin is half a unit, so two of them together is again a unit
 	var ymargin = yunit;
@@ -243,6 +245,11 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 }
 
 Styling.prototype.calculatePaperSize = function() {
+
+	if (testingPrinter) {
+		return { media: "print", margin: 6, orientation: "portrait", x : 297, y : 210, unitIn: "px", borderX: 0.1, borderY: 0.1 };
+
+	}
 	// this.resetVirtualScaleOnMobile();
 	var currentSize = this.pageSizer.value;
 	var andLandscape = this.isLandscape.checked;
