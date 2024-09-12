@@ -1,5 +1,10 @@
 import { SheetRules, SheetRule } from "./stylesheet.js";
 
+// both of these should be false in the wild
+// they are here to make debugging easier
+const screenOnly = true;
+const testingPrinter = false;
+
 function Styling(storage, sections, print) {
 	this.storage = storage;
 	this.styledDiv = sections['feedback'];
@@ -50,11 +55,19 @@ Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 	// because it doesn't apply.  So I created a "printMeasureSheet" which has *the same dimensions* as the piece of
 	// paper we want to print to, but is tagged "@media 'screen'".  We use this to *do* our calculations, but then
 	// what we really care about is updating "printSheet".
-	document.adoptedStyleSheets = [this.printMeasureSheet]; // for "just now", use a sheet on the screen with the paper dimensions
-	this.pageLayout(this.printLayout, rowInfo, monthdivs, this.calculatePaperSize());
+	if (!screenOnly || testingPrinter) {
+		document.adoptedStyleSheets = [this.printMeasureSheet]; // for "just now", use a sheet on the screen with the paper dimensions
+		this.pageLayout(this.printLayout, rowInfo, monthdivs, this.calculatePaperSize());
+	}
 
 	// Now that we've done all the measuring, we will "adopt" the screenSheet for the screen and the printSheet for the printer
-	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+	if (testingPrinter) {
+		// if we are testing the print layout, adopt the "printMeasureSheet" instead of the screenSheet;
+		// screen and printer should then be "identical"
+		document.adoptedStyleSheets = [this.printMeasureSheet, this.printSheet];
+	} else {
+		document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+	}
 }
 
 Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
@@ -62,7 +75,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 
 	var innerX = pageSize.x, innerY = pageSize.y;
 	console.log("pagesize = ", pageSize);
-	var hackX = 1;
+	// var hackX = 1;
 
 	sr.clear();
 
@@ -70,8 +83,8 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		var pr = sr.rule("@page");
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		pr.property("margin", pageSize.margin + pageSize.unitIn);
-		innerX -= 3 * pageSize.margin;
-		innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
+		// innerX -= 3 * pageSize.margin;
+		// innerY -= 5 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
 		// hackX = 0.95; // removing this while I rework to try and avoid hacks
 	}
 
@@ -85,7 +98,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 
 	// var xday7x13 = innerX / 7;
 	// var xunit = (xday7x13 - 2 * pageSize.borderX) / 13;
-	xunit *= hackX; // a hack because I don't understand what causes the printer version to wrap
+	// xunit *= hackX; // a hack because I don't understand what causes the printer version to wrap
 
 	// the internal space is 12 unit segments
 	var xday = xunit*12;
@@ -96,10 +109,6 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	// vertically, we have #rows rows and (#rows-1) gaps
 	// the height of each week is 13 units, 12 internally and 1 making up the margins.
 	// thus there are a total of 13*#rows-1 units
-
-	// this seems like a complete hack ...
-	innerY -= 14 * pageSize.borderY;
-	console.log("showing in", innerY);
 
 	// first take off 2*#rows borders (as well as the outer border)
 	var ynoborder = innerY - pageSize.borderY * 2 * rows;
@@ -226,10 +235,8 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 	var viewx = window.innerWidth;
 	var viewy = window.innerHeight;
 
-	console.log("view", viewx, viewy);
-
 	var fbx = viewx - borderX * 2; // 16 for double body margin
-	var fby = viewy - this.controlPane.clientHeight - this.optionsDrawer.clientHeight - borderY * 2;
+	var fby = viewy - marginHeight(this.controlPane) - marginHeight(this.optionsDrawer) - borderY * 2;
 
 	var sz = { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
 	return sz;
@@ -268,6 +275,16 @@ Styling.prototype.calculatePaperSize = function() {
 Styling.prototype.resetVirtualScaleOnMobile = function() {
 	let viewportmeta = document.querySelector('meta[name="viewport"]');
 	viewportmeta.setAttribute("content", "width=device-width, height=device-height, initial-scale=1, minimum-scale=1");
+}
+
+function marginHeight(elm) {
+	var eh = elm.clientHeight;
+	if (eh == 0) { // it's not visible ...
+		return 0;
+	}
+	var mt = parseFloat(document.defaultView.getComputedStyle(elm, '').getPropertyValue('margin-top'));
+	var mb = parseFloat(document.defaultView.getComputedStyle(elm, '').getPropertyValue('margin-bottom'));
+    return (eh+mt+mb);
 }
 
 export { Styling };
