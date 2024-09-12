@@ -3,7 +3,7 @@ import { SheetRules, SheetRule } from "./stylesheet.js";
 // both of these should be false in the wild
 // they are here to make debugging easier
 const screenOnly = false;
-const testingPrinter = true;
+const testingPrinter = false;
 
 function Styling(storage, sections, print) {
 	this.storage = storage;
@@ -74,8 +74,6 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	var rows = rowInfo.numRows;
 
 	var innerX = pageSize.x, innerY = pageSize.y;
-	console.log("pagesize = ", pageSize);
-	// var hackX = 1;
 
 	sr.clear();
 
@@ -84,8 +82,7 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		pr.property("margin", pageSize.margin + pageSize.unitIn);
 		innerX -= 2 * pageSize.margin;
-		innerY -= 2 * pageSize.margin; // I feel this should be 2, but that doesn't work, so I ended up with 5.  Maybe at some point I will discover what I've missed
-		// hackX = 0.95; // removing this while I rework to try and avoid hacks
+		innerY -= 2 * pageSize.margin;
 	}
 
 	// calculate desired box sizes
@@ -99,14 +96,14 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		bx = 7;
 	var xnoborder = innerX - bx;
 	var xunit = xnoborder / (7 * 13 - 1);
-	console.log("xs", innerX, xnoborder, xunit);
+	// console.log("xs", innerX, xnoborder, xunit);
 
 	// the internal space is 12 unit segments
 	var xday = xunit*12;
 
 	// each of the left and right margins is the same size as .5 the unit, so they combine to make one
 	var xmargin = xunit;
-	console.log("x =", 7*xday+6*xmargin + 14 * pageSize.borderX);
+	// console.log("x =", 7*xday+6*xmargin + 14 * pageSize.borderX);
 
 	// vertically, we have #rows rows and (#rows-1) gaps
 	// the height of each week is 13 units, 12 internally and 1 making up the margins.
