@@ -1,11 +1,11 @@
 import { CSV } from './csv.js';
-import { CalEvent, ChangeTZ } from './events.js';
+import { CalDateTime, CalEvent, ChangeTZ } from './events.js';
 import { equalsIgnoringCase } from './utils.js';
 
 function CsvCalendar() {
 }
 
-CsvCalendar.parse = function(text, deftz, showtz) {
+CsvCalendar.parse = function(text, deftz) {
     var input = CSV.parse(text);
     var hdrs = input[0];
     var dtfmt = null, tmfmt = null;
@@ -33,7 +33,7 @@ CsvCalendar.parse = function(text, deftz, showtz) {
             newtz = c;
     }
 
-    var dateFormat, timeFormat;
+    var dateFormat = "isodash", timeFormat = "24h";
     
     var events = [];
     var timezones = [];
@@ -43,85 +43,27 @@ CsvCalendar.parse = function(text, deftz, showtz) {
             dateFormat = row[dtfmt];
         if (tmfmt && row[tmfmt])
             timeFormat = row[tmfmt];
-        var date = parseDate(dateFormat, row[dtcol])
-        var time = parseTime(timeFormat, row[tmcol]);
-        var until = parseDate(dateFormat, row[untilcol]);
-        var ends = parseTime(timeFormat, row[endcol]);
+        // var date = parseDate(dateFormat, row[dtcol])
+        // var time = parseTime(timeFormat, row[tmcol]);
+        // var until = parseDate(dateFormat, row[untilcol]);
+        // var ends = parseTime(timeFormat, row[endcol]);
         var etz = row[tzcol];
         if (!etz)
             etz = deftz;
-        var ev = new CalEvent(date, time, row[desccol], etz, until, ends, row[catcol]);
-        ev.redoTZ(showtz);
+
+        var evfrom = CalDateTime.custom(dateFormat, timeFormat, etz, row[dtcol], row[tmcol]);
+        var evto = CalDateTime.custom(dateFormat, timeFormat, etz, row[untilcol], row[endcol]);
+        var ev = new CalEvent(evfrom, evto, row[desccol], row[catcol]);
         events.push(ev);
 
         var ntz = row[newtz];
         if (ntz) {
-            var ctzev = new ChangeTZ(until || date, ends || time, ntz);
+            var ctzev = new ChangeTZ(evto || evfrom, ntz);
             timezones.push(ctzev);
         }
     }
 
     return { events, timezones };
-}
-
-function parseDate(fmt, input) {
-    if (!input) {
-        return "";
-    }
-    switch (fmt) {
-        case "M/D/Y": {
-            var s1 = input.indexOf('/');
-            var s2 = input.lastIndexOf('/');
-            var y = input.substring(s2+1);
-            if (y.length == 2) {
-                y = "20" + y;
-            }
-            var d = input.substring(s1+1, s2);
-            if (d.length == 1) {
-                d = "0" + d;
-            }
-            var m = input.substring(0, s1);
-            if (m.length == 1) {
-                m = "0" + m;
-            }
-            return y + "-" + m + "-" + d;
-        }
-        default: // leave it as it is
-            return input;
-        }
-}
-
-function parseTime(fmt, input) {
-    if (!input) {
-        return "";
-    }
-    switch (fmt) {
-        case "H:M A":
-            var s1 = input.indexOf(':');
-            var s2 = input.indexOf(' ');
-            var apm = input.substring(input.length-2);
-            var h = Number(input.substring(0, s1));
-            if (apm == "PM" && h != 12) {
-                h += 12;
-            } else if (apm == "AM" && h == 12) {
-                h = 0;
-            }
-            h = h.toString();
-            if (h.length == 1) {
-                h = "0" + h;
-            }
-            var m = input.substring(s1+1, s2);
-            if (m.length == 1) {
-                m = '0' + m;
-            }
-            return h + m;
-        default: // leave it as it is
-            input = input.toString();
-            while (input.length < 4) {
-                input = '0' + input;
-            }
-            return input;
-        }
 }
 
 export { CsvCalendar };
