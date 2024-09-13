@@ -1,4 +1,4 @@
-import { CalEvent } from './events.js';
+import { CalDateTime, CalEvent } from './events.js';
 
 function Ics() {
 }
@@ -67,14 +67,15 @@ function makeEvents(blocks, mytz, showtz) {
 		var b = blocks.blocks[i];
 		if (b.type != "VEVENT")
 			continue;
-		var starts = new Date(Date.parse(toStandard(b.fields["DTSTART"])));
-		var date = starts.getFullYear() + "-" + (starts.getMonth()+1).toString().padStart(2, '0') + "-" + starts.getDate().toString().padStart(2, '0');
-		var time = starts.getHours().toString().padStart(2, '0') + starts.getMinutes().toString().padStart(2, '0');
-		var ends = new Date(Date.parse(toStandard(b.fields["DTEND"])));
-		var enddate = ends.getFullYear() + "-" + (ends.getMonth()+1).toString().padStart(2, '0') + "-" + ends.getDate().toString().padStart(2, '0');
-		var endtime = ends.getHours().toString().padStart(2, '0') + ends.getMinutes().toString().padStart(2, '0');
-		var ev = new CalEvent(date, time, b.fields.SUMMARY, mytz, enddate, endtime, null);
-		ev.redoTZ(showtz);
+		// var starts = new Date(Date.parse(toStandard(b.fields["DTSTART"])));
+		// var date = starts.getFullYear() + "-" + (starts.getMonth()+1).toString().padStart(2, '0') + "-" + starts.getDate().toString().padStart(2, '0');
+		// var time = starts.getHours().toString().padStart(2, '0') + starts.getMinutes().toString().padStart(2, '0');
+		// var ends = new Date(Date.parse(toStandard(b.fields["DTEND"])));
+		// var enddate = ends.getFullYear() + "-" + (ends.getMonth()+1).toString().padStart(2, '0') + "-" + ends.getDate().toString().padStart(2, '0');
+		// var endtime = ends.getHours().toString().padStart(2, '0') + ends.getMinutes().toString().padStart(2, '0');
+		// var ev = new CalEvent(CalDateTime.tzjs(mytz, starts), CalDateTime.tzjs(mytz, ends), b.fields.SUMMARY, null);
+		var ev = new CalEvent(CalDateTime.icsDate(mytz, b.fields["DTSTART"]), CalDateTime.icsDate(mytz, b.fields["DTEND"]), b.fields.SUMMARY, null);
+		// ev.redoTZ(showtz);
 		ret.push(ev);
 	}
 	return ret;

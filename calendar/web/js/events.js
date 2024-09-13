@@ -8,6 +8,29 @@ function CalDateTime(origtz, jsd) {
     // console.log(date.toLocaleString('en-GB', { timeZone: tz, hour12: false }));
 }
 
+CalDateTime.tzjs = function(tz, jsd) {
+    var ret = new CalDateTime(tz, jsd);
+    console.log("processing " + jsd + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
+    console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
+    console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
+    console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
+    return ret;
+}
+
+CalDateTime.icsDate = function(tz, ics) {
+    var ret = CalDateTime.standard(tz, toStandard(ics));
+    console.log("processing " + ics + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
+    console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
+    console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
+    console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
+    return ret;
+}
+
+CalDateTime.standard = function(tz, std) {
+    var ret = CalDateTime.tzjs(tz, new Date(Date.parse(std)));
+    return ret;
+}
+
 CalDateTime.custom = function(df, tf, tz, date, time) {
     if (!date || !time)
         return null;
@@ -43,6 +66,8 @@ CalDateTime.prototype.timeString = function(intz) {
 
 function findTZ(tz) {
     switch (tz) {
+        case "UTC":
+            return tz;
         case "EDT":
         case "EST":
             return "America/New_York";
@@ -54,6 +79,10 @@ function findTZ(tz) {
         default:
             throw new Error("not handled time zone: " + tz);
     }
+}
+
+function toStandard(date) {
+	return date.substring(0, 4) + "-" + date.substring(4,6) + "-" + date.substring(6,11) + ":" + date.substring(11,13) + ":" + date.substring(13);
 }
 
 function CalEvent(start, end, description, category) {
