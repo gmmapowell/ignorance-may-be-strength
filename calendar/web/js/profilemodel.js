@@ -12,6 +12,7 @@ function ProfileModel(storage) {
     this.calendarCategories = {};
     this.categoryConfigs = {};
     this.savedPlans = [];
+    this.timezones = [];
     this.storage.addProfileListener(this);
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
@@ -158,13 +159,15 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
         return;
     }
 
-    var events;
+    var events, timezones;
     var props = this.calprops[label];
     var ptz = props && props.tz;
     if (label.endsWith(".ics")) {
         events = Ics.parse(msg, ptz, this.modelProvider.showTz.value);
     } else if (label.endsWith(".csv")) {
-        events = CsvCalendar.parse(msg, ptz, this.modelProvider.showTz.value);
+        var pair = CsvCalendar.parse(msg, ptz, this.modelProvider.showTz.value);
+        events = pair.events;
+        timezones = pair.timezones;
     } else {
         // TODO: support JSON
         console.log("do not know how to parse", label);
@@ -180,6 +183,10 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
             }
         }
         this.calendarCategories[label] = cats;
+    }
+    if (timezones) {
+        // TODO: this needs to be able to be shared across calendars and remember which is which
+        this.timezones = timezones;
     }
 
     this.vis.modelChanged();

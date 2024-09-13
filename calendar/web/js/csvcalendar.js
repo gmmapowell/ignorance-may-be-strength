@@ -1,5 +1,5 @@
 import { CSV } from './csv.js';
-import { CalEvent } from './events.js';
+import { CalEvent, ChangeTZ } from './events.js';
 import { equalsIgnoringCase } from './utils.js';
 
 function CsvCalendar() {
@@ -7,10 +7,9 @@ function CsvCalendar() {
 
 CsvCalendar.parse = function(text, deftz, showtz) {
     var input = CSV.parse(text);
-    var cols = {};
     var hdrs = input[0];
     var dtfmt = null, tmfmt = null;
-    var dtcol = null, tmcol = null, desccol = null, tzcol = null, untilcol = null, endcol = null, catcol = null;
+    var dtcol = null, tmcol = null, desccol = null, tzcol = null, untilcol = null, endcol = null, catcol = null, newtz = null;
     for (var c=0;c<hdrs.length;c++) {
         if (equalsIgnoringCase(hdrs[c], "date"))
             dtcol = c;
@@ -30,11 +29,14 @@ CsvCalendar.parse = function(text, deftz, showtz) {
             dtfmt = c;
         else if (equalsIgnoringCase(hdrs[c], "timeformat"))
             tmfmt = c;
+        else if (equalsIgnoringCase(hdrs[c], "newtz"))
+            newtz = c;
     }
 
     var dateFormat, timeFormat;
     
     var events = [];
+    var timezones = [];
     for (var i=1;i<input.length;i++) {
         var row = input[i];
         if (dtfmt && row[dtfmt])
@@ -51,9 +53,15 @@ CsvCalendar.parse = function(text, deftz, showtz) {
         var ev = new CalEvent(date, time, row[desccol], etz, until, ends, row[catcol]);
         ev.redoTZ(showtz);
         events.push(ev);
+
+        var ntz = row[newtz];
+        if (ntz) {
+            var ctzev = new ChangeTZ(until || date, ends || time, ntz);
+            timezones.push(ctzev);
+        }
     }
 
-    return events;
+    return { events, timezones };
 }
 
 function parseDate(fmt, input) {

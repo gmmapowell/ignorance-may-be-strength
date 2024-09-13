@@ -18,4 +18,8 @@ CalEvent.prototype.redoTZ = function(newtz) {
     console.log("redo " + this.startdate + ": " + this.starttime + " in " + this.tz + " into " + newtz);
 }
 
-export { CalEvent };
+function ChangeTZ(date, time, newtz) {
+
+}
+
+export { CalEvent, ChangeTZ };
