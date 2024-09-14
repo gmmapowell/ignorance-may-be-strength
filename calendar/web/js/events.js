@@ -4,25 +4,23 @@
 function CalDateTime(origtz, jsd) {
     this.origtz = origtz;
     this.jsd = jsd;
-    // console.log(jsd);
-    // console.log(date.toLocaleString('en-GB', { timeZone: tz, hour12: false }));
 }
 
 CalDateTime.tzjs = function(tz, jsd) {
     var ret = new CalDateTime(tz, jsd);
-    console.log("processing " + jsd + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
-    console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
-    console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
-    console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
+    // console.log("processing " + jsd + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
+    // console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
+    // console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
+    // console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
     return ret;
 }
 
 CalDateTime.icsDate = function(tz, ics) {
     var ret = CalDateTime.standard(tz, toStandard(ics));
-    console.log("processing " + ics + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
-    console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
-    console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
-    console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
+    // console.log("processing " + ics + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
+    // console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
+    // console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
+    // console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
     return ret;
 }
 
@@ -39,16 +37,16 @@ CalDateTime.custom = function(df, tf, tz, date, time) {
     var utc = new Date(Date.UTC(dt[0], dt[1]-1, dt[2], tm[0], tm[1]));
     var tzd = applyTimezone(findTZ(tz), utc)
     var ret = new CalDateTime(tz, tzd);
-    console.log("processing " + date + " " + time + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
-    console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
-    console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
-    console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
+    // console.log("processing " + date + " " + time + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
+    // console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
+    // console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
+    // console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
     return ret;
 }
 
 CalDateTime.prototype.dateString = function(intz) {
     // 15/03/2025, 19:30:00
-    var tz = intz ? findTZ(intz) : findTZ(this.origtz);
+    var tz = (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
     var gbfmt = this.jsd.toLocaleString('en-GB', { timeZone: tz, hour12: false });
     var yr = gbfmt.substring(6, 10);
     var mth = gbfmt.substring(3, 5);
@@ -57,7 +55,7 @@ CalDateTime.prototype.dateString = function(intz) {
 }
 
 CalDateTime.prototype.timeString = function(intz) {
-    var tz = intz ? findTZ(intz) : findTZ(this.origtz);
+    var tz = (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
     var gbfmt = this.jsd.toLocaleString('en-GB', { timeZone: tz, hour12: false });
     var hr = gbfmt.substring(12, 14);
     var min = gbfmt.substring(15, 17);
@@ -65,9 +63,12 @@ CalDateTime.prototype.timeString = function(intz) {
 }
 
 function findTZ(tz) {
+    if (tz.includes("/"))
+        return tz;
     switch (tz) {
         case "UTC":
             return tz;
+        case "ET":
         case "EDT":
         case "EST":
             return "America/New_York";
@@ -95,17 +96,21 @@ function CalEvent(start, end, description, category) {
 }
 
 CalEvent.retz = function(events, tz) {
+    if (tz == "SYSTEM")
+        tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     for (var i=0;i<events.length;i++) {
         events[i].redoTZ(tz);
     }
 }
 
 CalEvent.prototype.redoTZ = function(newtz) {
-    console.log("redo " + this.startdate + ": " + this.starttime + " in " + this.tz + " into " + newtz);
-    this.startdate = this.start.tzdate(newtz);
-    this.starttime = this.start.tztime(newtz);
-    this.until = this.end.tzdate(newtz);
-    this.ends = this.end.tztime(newtz);
+    // console.log("change time zone", this.start.jsd, "in", this.start.origtz, "into", newtz);
+    this.startdate = this.start.dateString(newtz);
+    this.starttime = this.start.timeString(newtz);
+    if (this.end) {
+        this.until = this.end.dateString(newtz);
+        this.ends = this.end.timeString(newtz);
+    }
 }
 
 function ChangeTZ(date, time, newtz) {

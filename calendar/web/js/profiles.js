@@ -353,6 +353,7 @@ Profiles.prototype.modelChanged = function() {
     this.manageCalendarsActor.redraw();
     this.updatePlansList(this.model.savedPlans);
     this.updateCategories();
+    this.model.changeTimeZone(null, "do-not-notify");
     this.redraw.redraw();
 }
 

@@ -135,7 +135,7 @@ ModelProvider.prototype.calculate = function() {
 		rowInfo.numRows++;
 	} while (leftDate <= to);
 
-    return { weeks, rowInfo };
+    return { weeks, rowInfo, showTz: this.showTz.value };
 }
 
 function collectEvents(into, cats, cal, forDate) {

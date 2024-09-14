@@ -151,7 +151,11 @@ RedrawClz.prototype.redraw = function() {
 					// var event = document.createElement("div");
 					// event.className = "body-day-event";
 					// events.appendChild(event);
-					var timeText = document.createTextNode(pi.starttime + pi.tz);
+					var timeText;
+					if (model.showTz == "SHOW" && pi.start.origtz)
+						timeText = document.createTextNode(pi.starttime + pi.start.origtz);
+					else
+						timeText = document.createTextNode(pi.starttime);
 					var timeSpan = document.createElement("span");
 					timeSpan.className = "body-day-event-time";
 					timeSpan.appendChild(timeText);

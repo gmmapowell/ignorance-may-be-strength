@@ -137,14 +137,19 @@ ProfileModel.prototype.selectCalendar = function(label, selected) {
     }
 }
 
-ProfileModel.prototype.changeTimeZone = function(tz) {
+ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
+    if (tz)
+        this.showTZ = tz;
+    if (!this.showTZ)
+        return;
     var cals = Object.keys(this.activeCalendars);
     for (var i=0;i<cals.length;i++) {
         var cal = this.activeCalendars[cals[i]];
-        CalEvent.retz(cal, tz);
+        CalEvent.retz(cal, this.showTZ);
     }
     this.modelProvider.saveState();
-    this.vis.modelChanged();
+    if (!donotNotify)
+        this.vis.modelChanged();
 }
 
 ProfileModel.prototype.parseCalendar = function(label, stat, msg) {

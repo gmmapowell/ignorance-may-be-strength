@@ -117,6 +117,7 @@ function init() {
 	addEventListener("afterprint", ev => redraw.mode(true));
 
     modelProvider.restoreState();
+    profileModel.changeTimeZone(storage.currentState('core').showTz);
     styler.restoreState();
 
     // ok, show what we've got
