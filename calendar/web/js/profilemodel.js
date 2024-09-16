@@ -1,6 +1,6 @@
 import { ajax } from './ajax.js';
 import { CsvCalendar } from './csvcalendar.js';
-import { CalEvent } from './events.js';
+import { CalEvent, ChangeTZ } from './events.js';
 import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
@@ -12,7 +12,9 @@ function ProfileModel(storage) {
     this.calendarCategories = {};
     this.categoryConfigs = {};
     this.savedPlans = [];
-    this.timezones = [];
+    this.events = [];
+    this.timezoneChangesMap = {};
+    this.timezoneChanges = [];
     this.storage.addProfileListener(this);
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
@@ -191,10 +193,26 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     }
     if (timezones) {
         // TODO: this needs to be able to be shared across calendars and remember which is which
-        this.timezones = timezones;
+        this.timezoneChangesMap[label] = timezones;
+    } else {
+        delete this.timezoneChangesMap[label];
     }
+    this.mergeTZChanges();
 
     this.vis.modelChanged();
+}
+
+ProfileModel.prototype.mergeTZChanges = function() {
+    this.timezoneChanges.splice(0, this.timezoneChanges.length);
+    var cals = Object.keys(this.timezoneChangesMap);
+    for (var c of cals) {
+        var changes = this.timezoneChangesMap[c];
+        for (var ch of changes) {
+            this.timezoneChanges.push(ch);
+        }
+    }
+    this.timezoneChanges.sort(ChangeTZ.comparator);
+    console.log(this.timezoneChanges);
 }
 
 ProfileModel.prototype.loadPlan = function(plan) {

@@ -46,7 +46,7 @@ CalDateTime.custom = function(df, tf, tz, date, time) {
 
 CalDateTime.prototype.dateString = function(intz) {
     // 15/03/2025, 19:30:00
-    var tz = (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
+    var tz = this.tzToUse(intz); // (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
     var gbfmt = this.jsd.toLocaleString('en-GB', { timeZone: tz, hour12: false });
     var yr = gbfmt.substring(6, 10);
     var mth = gbfmt.substring(3, 5);
@@ -55,11 +55,18 @@ CalDateTime.prototype.dateString = function(intz) {
 }
 
 CalDateTime.prototype.timeString = function(intz) {
-    var tz = (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
+    var tz = this.tzToUse(intz); // (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
     var gbfmt = this.jsd.toLocaleString('en-GB', { timeZone: tz, hour12: false });
     var hr = gbfmt.substring(12, 14);
     var min = gbfmt.substring(15, 17);
     return hr + min;
+}
+
+CalDateTime.prototype.tzToUse = function(intz) {
+    if (!intz || intz == "SHOW")
+        return findTZ(this.origtz);
+    else
+        return findTZ(intz);
 }
 
 function findTZ(tz) {
@@ -113,8 +120,18 @@ CalEvent.prototype.redoTZ = function(newtz) {
     }
 }
 
-function ChangeTZ(date, time, newtz) {
+function ChangeTZ(cdt, newtz) {
+    this.cdt = cdt;
+    this.newtz = newtz;
+}
 
+ChangeTZ.comparator = function(a, b) {
+    if (a.cdt.jsd == b.cdt.jsd)
+        return 0;
+    else if (a.cdt.jsd < b.cdt.jsd)
+        return -1;
+    else
+        return 1;
 }
 
 // return an array [year, month, day]
