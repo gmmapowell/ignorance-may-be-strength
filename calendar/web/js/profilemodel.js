@@ -147,7 +147,7 @@ ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
     var cals = Object.keys(this.activeCalendars);
     for (var i=0;i<cals.length;i++) {
         var cal = this.activeCalendars[cals[i]];
-        CalEvent.retz(cal, this.showTZ);
+        CalEvent.retz(cal, this.showTZ, this.timezoneChanges);
     }
     this.modelProvider.saveState();
     if (!donotNotify)

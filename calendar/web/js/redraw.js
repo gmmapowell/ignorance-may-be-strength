@@ -153,7 +153,9 @@ RedrawClz.prototype.redraw = function() {
 					// events.appendChild(event);
 					var timeText;
 					if (model.showTz == "SHOW" && pi.start.origtz)
-						timeText = document.createTextNode(pi.starttime + pi.start.origtz);
+						timeText = document.createTextNode(pi.starttime + " " + pi.start.origtz);
+					else if (model.showTz == "FOLSHOW")
+						timeText = document.createTextNode(pi.starttime + " " + (pi.start.showTZ ? pi.start.showTZ : ""));
 					else
 						timeText = document.createTextNode(pi.starttime);
 					var timeSpan = document.createElement("span");

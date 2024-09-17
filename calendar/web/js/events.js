@@ -46,7 +46,7 @@ CalDateTime.custom = function(df, tf, tz, date, time) {
 
 CalDateTime.prototype.dateString = function(intz) {
     // 15/03/2025, 19:30:00
-    var tz = this.tzToUse(intz); // (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
+    var tz = this.tzToUse(intz);
     var gbfmt = this.jsd.toLocaleString('en-GB', { timeZone: tz, hour12: false });
     var yr = gbfmt.substring(6, 10);
     var mth = gbfmt.substring(3, 5);
@@ -55,7 +55,7 @@ CalDateTime.prototype.dateString = function(intz) {
 }
 
 CalDateTime.prototype.timeString = function(intz) {
-    var tz = this.tzToUse(intz); // (intz && intz != "SHOW") ? findTZ(intz) : findTZ(this.origtz);
+    var tz = this.tzToUse(intz);
     var gbfmt = this.jsd.toLocaleString('en-GB', { timeZone: tz, hour12: false });
     var hr = gbfmt.substring(12, 14);
     var min = gbfmt.substring(15, 17);
@@ -102,16 +102,35 @@ function CalEvent(start, end, description, category) {
     this.category = category;
 }
 
-CalEvent.retz = function(events, tz) {
+CalEvent.retz = function(events, tz, changes) {
     if (tz == "SYSTEM")
         tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var j=0;
+    var tzc = null;
+    if (tz == "FOLLOW" || tz == "FOLSHOW") {
+        tz = "SHOW";
+        if (changes.length > 0) {
+            tzc = changes[0];
+        }
+    }
     for (var i=0;i<events.length;i++) {
-        events[i].redoTZ(tz);
+        var ev = events[i];
+        if (tzc && tzc.cdt.jsd < ev.start.jsd) {
+            tz = tzc.newtz;
+            j++;
+            if (j < changes.length)
+                tzc = changes[j];
+            else
+                tzc = null;
+        }
+
+        ev.redoTZ(tz);
     }
 }
 
 CalEvent.prototype.redoTZ = function(newtz) {
     // console.log("change time zone", this.start.jsd, "in", this.start.origtz, "into", newtz);
+    this.start.showTZ = newtz;
     this.startdate = this.start.dateString(newtz);
     this.starttime = this.start.timeString(newtz);
     if (this.end) {
