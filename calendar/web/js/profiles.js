@@ -248,7 +248,6 @@ Profiles.prototype.signOutNow = function() {
 }
 
 Profiles.prototype.logSignOutResponse = function(stat, msg) {
-    debugger;
     if (stat / 100 != 2) {
         console.log("sign out response was", stat, msg);
     }

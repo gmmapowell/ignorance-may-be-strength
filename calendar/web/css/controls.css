@@ -11,8 +11,9 @@
     position: absolute;
 }
 
-.profile-button {
+.profile-button, .hamburger-button {
     display: inline-block;
+    vertical-align: top;
     width: 10%;
     top: 0;
     bottom: 0;
@@ -24,6 +25,7 @@
 
 .sign-in, .open-profile {
     text-align: center;
+    margin-top: 1.2em;
 }
 
 .control-panel {

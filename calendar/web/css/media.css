@@ -7,6 +7,7 @@
 
 /* So, we want break at 900px with 96dpi, or 1530 at 170dpi or 2000 at 210dpi */
 @media (max-width: 900px) {
+    /*
     body .control-panel {
         display: none;
     }
@@ -15,6 +16,56 @@
         width: 100%;
         height: 100%;
     }
+    */
+
+    .controls .hamburger-button {
+        display: inline-block;
+        position: absolute;
+        width: 5%;
+        top: 0;
+        bottom: 0;
+        padding: 0 0.2em;
+    }
+
+    .controls .profile-button {
+        display: none;
+    }
+    /*
+    .controls .profile-button {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 10%;
+        bottom: 0;
+        width: 25%;
+    }
+        */
+
+    .hamburger-button .hamburger-text {
+        position: absolute;
+        text-align: center;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        padding-top: calc(100% - 1em);
+    }
+
+    .basic-controls .start-date, .basic-controls .end-date, .print-controls .page-size, .print-controls .landscape  {
+        display: none;
+    }
+
+    .basic-controls .first-day, .basic-controls .show-in-time-zone, .print-controls .shade-weekends {
+        display: inline-block;
+        width: 49%;
+        padding: 0;
+    }
+
+    body .control-panel {
+        left: 10%;
+        width: 90%;
+    }
+
     .options-drawer .sign-in-panel {
         font-size: 50%;
     }
