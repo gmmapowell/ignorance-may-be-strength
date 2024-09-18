@@ -59,6 +59,12 @@ class ProfileHandler {
         return $resp;
     }
 
+    function sign_out() {
+        $resp = [];
+        $resp['action'] = 'signed-out';
+        return $resp;
+    }
+
     function read_profile($email) : ?array {
         $pfl = urlencode($email);
         $pfldir = $this->config->root . "/" . $pfl;
