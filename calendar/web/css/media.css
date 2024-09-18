@@ -51,6 +51,10 @@
         padding-top: calc(100% - 1em);
     }
 
+    .hide-options-in-general-on-narrow {
+        display: none;
+    }
+
     .basic-controls .start-date, .basic-controls .end-date, .print-controls .page-size, .print-controls .landscape  {
         display: none;
     }

@@ -6,6 +6,7 @@ import { Styling } from "./styling.js";
 import { RedrawClz } from "./redraw.js";
 import { Profiles } from "./profiles.js";
 import { ProfileModel } from "./profilemodel.js";
+import { Hamburger } from "./hamburger.js";
 
 function bindElement(into, name) {
     var elt = document.getElementById(name);
@@ -34,10 +35,20 @@ function init() {
     bindElement(print, 'landscape');
 
     var profile = {};
-	var scdiv = document.getElementById('select-calendars');
     bindElement(profile, 'profile-button');
     bindElement(profile, 'sign-in-button');
     bindElement(profile, 'open-profile-button');
+
+    var hamburger = {};
+    bindElement(hamburger, 'hamburger-button');
+    bindElement(hamburger, 'hamburger-padding');
+    bindElement(hamburger, 'hamburger-menu');
+    bindElement(hamburger, 'narrow-options');
+    bindElement(hamburger, 'control-panel');
+    bindElement(hamburger, 'options-drawer');
+    bindElement(hamburger, 'hamburger-sign-in');
+    bindElement(hamburger, 'hamburger-sign-out');
+    bindElement(hamburger, 'feedback');
 
     var userProfile = {};
     bindElement(userProfile, 'user-profile-panel');
@@ -89,6 +100,7 @@ function init() {
     var redraw = new RedrawClz(storage, modelProvider, sections, styler);
     var manageCalendarsActor = new ManageCalendars(manageCalendars, profileModel);
     var profiles = new Profiles(storage, profileModel, redraw, manageCalendarsActor, sections, profile, signin, userProfile, manageCalendars);
+    var hamburgerActor = new Hamburger(hamburger, profiles, profileModel);
     manageCalendarsActor.provideProfiles(profiles);
     profileModel.addPlan(modelProvider);
     profileModel.addVisual(profiles);

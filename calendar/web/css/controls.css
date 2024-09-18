@@ -33,6 +33,11 @@
     left: 12%;
     display: inline-block;
     width: 85%;
+    min-height: 40px;
+}
+
+.control-panel.hidden {
+    display: none;
 }
 
 .basic-controls {
