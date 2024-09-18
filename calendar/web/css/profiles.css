@@ -18,11 +18,15 @@
     width: 40%;
 }
 
-.sign-in-button {
+.confirm-sign-in {
     position: relative;
     display: inline-block;
     left: 40%;
     text-align: left;
+}
+
+.hamburger-button {
+    display: none;
 }
 
 .create-user-panel {
