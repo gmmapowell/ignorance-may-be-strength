@@ -239,12 +239,19 @@ Profiles.prototype.signinFailed = function() {
 Profiles.prototype.signOutNow = function() {
     if (this.storage.hasToken()) {
         var payload = { token: this.storage.getToken() };
-        ajax("/ajax/create-user.php", (stat, msg) => this.logSignOutResponse(stat, msg), "application/json", JSON.stringify(payload));
+        ajax("/ajax/signout.php", (stat, msg) => this.logSignOutResponse(stat, msg), "application/json", JSON.stringify(payload));
         this.storage.clearToken();
     }
     this.updateSignedIn();
     hide(this.profileDisplay);
     this.hidePanel();
+}
+
+Profiles.prototype.logSignOutResponse = function(stat, msg) {
+    debugger;
+    if (stat / 100 != 2) {
+        console.log("sign out response was", stat, msg);
+    }
 }
 
 Profiles.prototype.updateCalendarList = function(cals) {
