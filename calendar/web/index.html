@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="css/overall.css">
 		<link rel="stylesheet" href="css/controls.css">
 		<link rel="stylesheet" href="css/feedback.css">
+		<link rel="stylesheet" href="css/hamburger.css">
 		<link rel="stylesheet" href="css/manage-calendars.css">
 		<link rel="stylesheet" href="css/printing.css" media="print">
 		<link rel="stylesheet" href="css/profiles.css">
@@ -28,7 +29,7 @@
 				<div id='sign-in-button' class='sign-in hidden'>Sign In</div>
 				<div id='open-profile-button' class='open-profile hidden'>Profile</div>
 			</div>
-			<div class="control-panel">
+			<div id='control-panel' class="control-panel">
 				<div class="basic-controls">
 					<div class='start-date'>
 						<label for="start-date">Start Date:</label>
@@ -82,75 +83,87 @@
 					</div>
 				</div>
 			</div>
+			<div id='hamburger-padding' class='hamburger-padding hidden'></div>
 		</div>
-		<div id="options-drawer" class="options-drawer hidden">
-			<div id="sign-in-panel" class="sign-in-panel hidden">
-				<div id="invalid-signin-panel" class="invalid-panel hidden">
-					<p class="invalid-text">Invalid credentials to sign in.  Please try again or enter new credentials to create an account.</p>
-				</div>
-				<div id="invalid-email-panel" class="invalid-panel hidden">
-					<p class="invalid-text">The value is not a valid email address.  Please use a clearly valid email address.</p>
-				</div>
-				<div id='email-panel' class="sign-in-line">
-					<label for='sign-in-email' class="sign-in-label">Email: </label>
-					<input type="email" id="sign-in-email" placeholder="user@domain.com" class="sign-in-input">
-				</div>
-				<div id="invalid-password-panel" class="invalid-panel hidden">
-					<p class="invalid-text">The password is invalid.  Use a password of at least 16 characters.</p>
-				</div>
-				<div class="sign-in-line">
-					<label for='sign-in-password' class="sign-in-label">Password: </label>
-					<input type="password" id="sign-in-password" placeholder="password" class="sign-in-input">
-				</div>
-				<div class="sign-in-line">
-					<input type="button" id="submit-sign-in" value="Sign In" class="confirm-sign-in">
-				</div>
-			</div>
-			<div id="create-user-panel" class="create-user-panel hidden">
-				<p>The user <span id='create-user-email'></span> does not exist.  Create?</p>
-				<input type="button" id="create-user-yes" value="Yes">
-				<input type="button" id="create-user-no" value="No">
-			</div>
-			<div id='user-profile-panel' class="user-profile hidden">
-				<!-- what i really want here are:
-				   - link some URI (and keep a live link to it, but remember that's what you've got)
-				   - choose a file to upload with a chooser (may be ics, csv or json)
-				   - drop target to upload
-
-				   - and then I want a (probably 3-column) list of all the files I've uploaded/linked so that we can choose to include/exclude from the calendar
-				-->
-				<div class="user-profile-buttons">
-					<input type='button' id="manage-calendars-button" value="Manage Calendars">
-					<input type='button' id="save-current-calendar" value="Save Calendar">
-					<input type='button' id="download-current-calendar" value="Download">
-					<input type='button' id="user-profile-reset" value="Reset">
-					<input type='button' id="user-profile-sign-out" value="Sign Out">
-				</div>
-				<div id="available-calendars" class="available-calendars"></div>
-				<div id="calendar-categories" class="calendar-categories"></div>
-				<div id="saved-plans" class="saved-plans"></div>
-
-			</div>
-			<div id='manage-calendars-panel' class="manage-calendars hidden">
-				<div id="drop-for-upload" class="drop-for-upload">
-					<p>Drop calendar files here</p>
-				</div>
-				<div id='manage-calendars-list' class="manage-calendars-list"></div>
-				<div id="manage-calendars-detail" class="manage-calendars-detail hidden">
-					<div>
-						<label for="manage-calendar-called">Calendar:</label>
-						<span id='manage-calendar-called'></span>
+		<div id='hamburger-menu' class='hamburger-menu hidden'>
+			<input type='button' id="hamburger-sign-in" value="Sign In">
+			<!--
+			<input type='button' id="hamburger-manage-calendars-button" value="Manage Calendars">
+			<input type='button' id="hamburger-save-current-calendar" value="Save Calendar">
+			<input type='button' id="hamburger-user-profile-reset" value="Reset">
+		-->
+			<input type='button' id="hamburger-sign-out" value="Sign Out">
+		</div>
+		<div id="narrow-options" class="hide-options-in-general-on-narrow">
+			<div id="options-drawer" class="options-drawer hidden">
+				<div id="sign-in-panel" class="sign-in-panel hidden">
+					<div id="invalid-signin-panel" class="invalid-panel hidden">
+						<p class="invalid-text">Invalid credentials to sign in.  Please try again or enter new credentials to create an account.</p>
 					</div>
-					<div>
-						<label for="manage-calendar-detail-timezone">Time Zone:</label>
-						<select id="manage-calendar-detail-timezone">
-							<option>NONE</option>
-							<option>BST</option>
-							<option>EDT</option>
-						</select>
+					<div id="invalid-email-panel" class="invalid-panel hidden">
+						<p class="invalid-text">The value is not a valid email address.  Please use a clearly valid email address.</p>
 					</div>
-					<div><input id='manage-calendar-apply' type='button' value='Apply'></div>
-					<div><input id='manage-calendar-apply' type='button' value='DELETE Calendar'></div>
+					<div id='email-panel' class="sign-in-line">
+						<label for='sign-in-email' class="sign-in-label">Email: </label>
+						<input type="email" id="sign-in-email" placeholder="user@domain.com" class="sign-in-input">
+					</div>
+					<div id="invalid-password-panel" class="invalid-panel hidden">
+						<p class="invalid-text">The password is invalid.  Use a password of at least 16 characters.</p>
+					</div>
+					<div class="sign-in-line">
+						<label for='sign-in-password' class="sign-in-label">Password: </label>
+						<input type="password" id="sign-in-password" placeholder="password" class="sign-in-input">
+					</div>
+					<div class="sign-in-line">
+						<input type="button" id="submit-sign-in" value="Sign In" class="confirm-sign-in">
+					</div>
+				</div>
+				<div id="create-user-panel" class="create-user-panel hidden">
+					<p>The user <span id='create-user-email'></span> does not exist.  Create?</p>
+					<input type="button" id="create-user-yes" value="Yes">
+					<input type="button" id="create-user-no" value="No">
+				</div>
+				<div id='user-profile-panel' class="user-profile hidden">
+					<!-- what i really want here are:
+					- link some URI (and keep a live link to it, but remember that's what you've got)
+					- choose a file to upload with a chooser (may be ics, csv or json)
+					- drop target to upload
+
+					- and then I want a (probably 3-column) list of all the files I've uploaded/linked so that we can choose to include/exclude from the calendar
+					-->
+					<div class="user-profile-buttons">
+						<input type='button' id="manage-calendars-button" value="Manage Calendars">
+						<input type='button' id="save-current-calendar" value="Save Calendar">
+						<input type='button' id="download-current-calendar" value="Download">
+						<input type='button' id="user-profile-reset" value="Reset">
+						<input type='button' id="user-profile-sign-out" value="Sign Out">
+					</div>
+					<div id="available-calendars" class="available-calendars"></div>
+					<div id="calendar-categories" class="calendar-categories"></div>
+					<div id="saved-plans" class="saved-plans"></div>
+
+				</div>
+				<div id='manage-calendars-panel' class="manage-calendars hidden">
+					<div id="drop-for-upload" class="drop-for-upload">
+						<p>Drop calendar files here</p>
+					</div>
+					<div id='manage-calendars-list' class="manage-calendars-list"></div>
+					<div id="manage-calendars-detail" class="manage-calendars-detail hidden">
+						<div>
+							<label for="manage-calendar-called">Calendar:</label>
+							<span id='manage-calendar-called'></span>
+						</div>
+						<div>
+							<label for="manage-calendar-detail-timezone">Time Zone:</label>
+							<select id="manage-calendar-detail-timezone">
+								<option>NONE</option>
+								<option>BST</option>
+								<option>EDT</option>
+							</select>
+						</div>
+						<div><input id='manage-calendar-apply' type='button' value='Apply'></div>
+						<div><input id='manage-calendar-apply' type='button' value='DELETE Calendar'></div>
+					</div>
 				</div>
 			</div>
 		</div>
