@@ -1,4 +1,4 @@
-dir=/home/gareth/Projects/IgnoranceBlog/calendar/web
-hashes=/home/gareth/Projects/IgnoranceBlog/calendar/hashes
+dir=$HOME/Projects/IgnoranceBlog/calendar/web
+hashes=$HOME/Projects/IgnoranceBlog/calendar/hashes
 removepatt=$dir/
 scploc=gmmapowell@gmmapowell.com:calendar.gmmapowell.com

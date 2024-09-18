@@ -70,7 +70,7 @@ CalDateTime.prototype.tzToUse = function(intz) {
 }
 
 function findTZ(tz) {
-    if (tz.includes("/"))
+    if (!tz || tz.includes("/"))
         return tz;
     switch (tz) {
         case "UTC":
@@ -130,6 +130,8 @@ CalEvent.retz = function(events, tz, changes) {
 
 CalEvent.prototype.redoTZ = function(newtz) {
     // console.log("change time zone", this.start.jsd, "in", this.start.origtz, "into", newtz);
+    if (newtz == "SHOW")
+        newtz = this.start.origtz;
     this.start.showTZ = newtz;
     this.startdate = this.start.dateString(newtz);
     this.starttime = this.start.timeString(newtz);
