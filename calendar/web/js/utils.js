@@ -1,4 +1,8 @@
 
+function setMode(elt, mode) {
+    elt.className = mode;
+}
+
 function isShown(elt) {
     return !elt.classList.contains("hidden");
 }
@@ -35,4 +39,4 @@ function equalsIgnoringCase(text, other) {
     return text.localeCompare(other, undefined, { sensitivity: 'base' }) === 0;
 }
 
-export { toggleHidden, show, hide, isShown, equalsIgnoringCase };
+export { /* toggleHidden, show, hide, isShown, */ setMode, equalsIgnoringCase };

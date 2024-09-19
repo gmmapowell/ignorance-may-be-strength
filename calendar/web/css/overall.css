@@ -4,12 +4,16 @@ body {
 }
 
 .options-drawer {
+    display: none;
+}
+
+.options-drawer {
     width: calc(100% - 1.6em);
     background-color: silver;
     margin: 0.4em;
     padding: 0.4em;
 }
 
-.hidden {
+/* .hidden {
     display: none;
-}
+} */

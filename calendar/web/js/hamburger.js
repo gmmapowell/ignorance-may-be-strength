@@ -1,4 +1,4 @@
-import { hide, show, isShown } from "./utils.js";
+// import { hide, show, isShown } from "./utils.js";
 
 var Hamburger = function(elts, profiles, model) {
     var self = this;
@@ -7,16 +7,21 @@ var Hamburger = function(elts, profiles, model) {
     this.button = elts['hamburger-button'];
     this.menu = elts['hamburger-menu'];
     this.padding = elts['hamburger-padding'];
+    this.modeController = elts['mode-controller'];
+    this.modeOptions = elts['mode-options'];
     this.feedback = elts['feedback'];
     this.narrowOptions = elts['narrow-options'];
     this.signInButton = elts['hamburger-sign-in'];
+    this.chooseDatesButton = elts['hamburger-choose-dates'];
     this.signOutButton = elts['hamburger-sign-out'];
     this.controlpanel = elts['control-panel'];
     this.optionsDrawer = elts['options-drawer'];
     this.button.addEventListener('click', () => self.toggleMe());
     this.signInButton.addEventListener('click', () => { 
-        self.toggleMe(false);
         self.showSignInPanel();
+    });
+    this.chooseDatesButton.addEventListener('click', () => { 
+        self.showChooseDatesPanel();
     });
     this.signOutButton.addEventListener('click', () => { 
         profiles.signOutNow();
@@ -27,6 +32,13 @@ var Hamburger = function(elts, profiles, model) {
 
 Hamburger.prototype.toggleMe = function(explicit) {
     console.log("show/hide hamburger");
+    var haveMenu = this.modeOptions.classList.contains('show-hamburger');
+    if (!haveMenu) {
+        this.modeOptions.classList.add('show-hamburger');
+    } else {
+        this.modeOptions.classList.remove('show-hamburger');
+    }
+    /*
     var menuMode = explicit != undefined ? explicit : isShown(this.menu);
     if (!menuMode) {
         hide(this.controlpanel);
@@ -47,11 +59,21 @@ Hamburger.prototype.toggleMe = function(explicit) {
         show(this.controlpanel);
         show(this.feedback);
     }
+        */
 }
 
 Hamburger.prototype.showSignInPanel = function() {
-    show(this.narrowOptions)
-    show(this.optionsDrawer);
+    this.modeController.className = 'signing-in';
+    this.modeOptions.classList.remove('show-hamburger');
+    // show(this.narrowOptions)
+    // show(this.optionsDrawer);
+}
+
+Hamburger.prototype.showChooseDatesPanel = function() {
+    this.modeController.className = 'choose-dates';
+    this.modeOptions.classList.remove('show-hamburger');
+    // show(this.narrowOptions)
+    // show(this.optionsDrawer);
 }
 
 export { Hamburger };

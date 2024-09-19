@@ -1,4 +1,5 @@
-import { toggleHidden, hide, show, isShown } from "./utils.js";
+// import { toggleHidden, hide, show, isShown } from "./utils.js";
+import { setMode } from "./utils.js";
 import { ajax } from './ajax.js';
 
 function Profiles(storage, model, redraw, manageCalendarsActor, sections, profileElts, elements, userProfile, manageCalendars) {
@@ -6,6 +7,8 @@ function Profiles(storage, model, redraw, manageCalendarsActor, sections, profil
     this.storage = storage;
     this.model = model;
     this.redraw = redraw;
+    this.modeController = sections['mode-controller'];
+    this.signedInController = sections['signed-in-controller'];
     this.optionsDrawer = sections['options-drawer'];
     this.manageCalendarsActor = manageCalendarsActor;
 
@@ -15,6 +18,7 @@ function Profiles(storage, model, redraw, manageCalendarsActor, sections, profil
     this.email  = elements.core['sign-in-email'];
     this.password = elements.core['sign-in-password'];
     this.signIn = elements.core['submit-sign-in'];
+    this.cancel = elements.core['cancel-sign-in'];
 
     this.manageCalendarsElts = manageCalendars;
     this.manageCalendarsPanel = manageCalendars['manage-calendars-panel'];
@@ -30,6 +34,7 @@ function Profiles(storage, model, redraw, manageCalendarsActor, sections, profil
     this.invalidSigninPanel = elements['invalid-signin-panel'];
 
     this.signIn.addEventListener('click', () => self.doSignIn());
+    this.cancel.addEventListener('click', () => self.cancelSignIn());
     this.createUserYes.addEventListener('click', () => self.createUser());
     this.createUserNo.addEventListener('click', () => self.hidePanel());
 
@@ -91,11 +96,13 @@ Profiles.prototype.uploadComplete = function(stat, msg) {
 
 Profiles.prototype.updateSignedIn = function() {
     if (this.model.amSignedIn()) {
-        show(this.profileElts['open-profile-button']);
-        hide(this.profileElts['sign-in-button']);
+        setMode(this.signedInController, "signed-in");
+        // show(this.profileElts['open-profile-button']);
+        // hide(this.profileElts['sign-in-button']);
     } else {
-        hide(this.profileElts['open-profile-button']);
-        show(this.profileElts['sign-in-button']);
+        setMode(this.signedInController, "signed-out");
+        // hide(this.profileElts['open-profile-button']);
+        // show(this.profileElts['sign-in-button']);
     }
 }
 
@@ -104,11 +111,7 @@ Profiles.prototype.buttonClicked = function() {
         toggleHidden(this.profileDisplay, this.optionsDrawer);
         this.model.drawerOpen(isShown(this.optionsDrawer));
     } else {
-        toggleHidden(this.signInPanel, this.optionsDrawer);
-        show(this.emailPanel);
-        hide(this.invalidSigninPanel)
-        hide(this.invalidEmailPanel);
-        hide(this.invalidPasswordPanel);
+        setMode(this.modeController, "signing-in");
     }
     this.redraw.redraw();
 }
@@ -161,6 +164,12 @@ Profiles.prototype.doSignIn = function() {
     ajax("/ajax/signin.php", (stat, msg) => this.handleResponse(stat, msg, "signin"), "application/json", JSON.stringify(payload));
 }
 
+Profiles.prototype.cancelSignIn = function() {
+    setMode(this.modeController, "standard-mode");
+    setMode(this.signedInController, "signed-out signed-out");
+    this.redraw.redraw();
+}
+
 Profiles.prototype.createUser = function() {
     var payload = {email: this.email.value, password: this.password.value};
     ajax("/ajax/create-user.php", (stat, msg) => this.handleResponse(stat, msg, "create"), "application/json", JSON.stringify(payload));
@@ -178,13 +187,15 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
             // if the user is trying to create an account, this is a special message that they cannot use that email;
             // otherwise it is just a "failure"
             if (mode == "create") {
-                show(this.optionsDrawer);
-                hide(this.invalidSigninPanel)
-                show(this.signInPanel);
-                show(this.invalidEmailPanel);
-                show(this.emailPanel);
-                hide(this.invalidPasswordPanel);
-                hide(this.createUserPanel);
+                setMode(this.signedInController, "signed-out signin-invalid-password");
+
+                // show(this.optionsDrawer);
+                // hide(this.invalidSigninPanel)
+                // show(this.signInPanel);
+                // show(this.invalidEmailPanel);
+                // show(this.emailPanel);
+                // hide(this.invalidPasswordPanel);
+                // hide(this.createUserPanel);
             } else {
                 this.signinFailed();
             }
@@ -201,12 +212,7 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
         }
         case "invalid-password": {
             // when creating a user, the password they requested was invalid, so get a new one
-            show(this.optionsDrawer);
-            show(this.signInPanel)
-            hide(this.invalidSigninPanel);
-            hide(this.createUserPanel);
-            hide(this.emailPanel);
-            show(this.invalidPasswordPanel);
+            setMode(this.signedInController, "signed-out signin-invalid-password");
             break;
         }
         case "user-created":
@@ -227,6 +233,8 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
 }
 
 Profiles.prototype.signinFailed = function() {
+    setMode(this.signedInController, "signed-out signin-failed");
+    /*
     show(this.optionsDrawer);
     show(this.invalidSigninPanel);
     show(this.signInPanel);
@@ -234,6 +242,7 @@ Profiles.prototype.signinFailed = function() {
     show(this.emailPanel);
     hide(this.invalidPasswordPanel);
     hide(this.createUserPanel);
+    */
 }
 
 Profiles.prototype.signOutNow = function() {

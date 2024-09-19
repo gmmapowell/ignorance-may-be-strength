@@ -1,4 +1,12 @@
 .feedback {
+	display: none;
+}
+
+#mode-controller.standard-mode .feedback {
+	display: block;
+}
+
+.feedback {
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 }

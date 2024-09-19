@@ -1,3 +1,7 @@
+.hamburger-menu, .hamburger-padding {
+    display: none;
+}
+
 .hamburger-padding {
     /* just make sure the hamburger button is shown */
     /* border:1px solid black; */
@@ -16,6 +20,6 @@
     margin: 5px;
 }
 
-.hamburger-menu input.hidden {
+/* .hamburger-menu input.hidden {
     display: none;
-}
+} */

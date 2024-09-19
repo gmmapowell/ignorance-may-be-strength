@@ -1,4 +1,18 @@
 .controls {
+    display: none;
+}
+
+#mode-controller.standard-mode .controls
+/* , #mode-controller.signing-in .controls  */
+{
+    display: block;
+}
+
+#mode-controller.standard-mode .profile-button {
+    display: inline-block;
+}
+
+.controls {
     position: relative;
     margin: 0.4em;
 }
@@ -12,7 +26,6 @@
 }
 
 .profile-button, .hamburger-button {
-    display: inline-block;
     vertical-align: top;
     width: 10%;
     top: 0;
@@ -36,9 +49,9 @@
     min-height: 40px;
 }
 
-.control-panel.hidden {
+/* .control-panel.hidden {
     display: none;
-}
+} */
 
 .basic-controls {
     display: block;
@@ -52,12 +65,16 @@
     display: block;
 }
 
-.profile-things-tbd.hidden {
+/* .profile-things-tbd.hidden {
     display: none;
-}
+} */
 
 .start-date, .end-date, .first-day, .show-in-time-zone, .shade-weekends, .page-size, .landscape {
     display: inline-block;
     width: 22%;
     padding: 0.3em 0 0.3em 0;
+}
+
+.hamburger-controls-apply {
+    display: none;
 }

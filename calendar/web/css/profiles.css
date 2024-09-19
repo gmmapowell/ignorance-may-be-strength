@@ -1,3 +1,24 @@
+.profile-button, .open-profile, .sign-in, .sign-in-panel, .create-user-panel, .user-profile, .manage-calendars {
+    display: none;
+}
+
+.invalid-panel {
+    display: none;
+}
+
+#mode-controller.standard-mode #signed-in-controller.signed-out .sign-in {
+    display: block;
+}
+
+#mode-controller.signing-in .options-drawer,
+#mode-controller.signing-in .sign-in-panel {
+    display: block;
+}
+
+#signed-in-controller.signin-failed #invalid-signin-panel {
+    display: block;
+}
+
 .sign-in-panel {
     color: green;
 }
