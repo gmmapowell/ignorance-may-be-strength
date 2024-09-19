@@ -27,8 +27,43 @@
         padding: 0 0.2em;
     }
 
-    .controls .profile-button {
+    #mode-controller.standard-mode .controls .profile-button {
         display: none;
+    }
+
+    #mode-controller #mode-options.show-hamburger .control-panel,
+    #mode-controller #mode-options.show-hamburger .feedback {
+        display: none;
+    }
+
+    #mode-controller #mode-options.show-hamburger .hamburger-padding,
+    #mode-controller #mode-options.show-hamburger .hamburger-menu {
+        display: block;
+    }
+
+    #mode-controller #mode-options.show-hamburger #signed-in-controller.signed-out #hamburger-sign-in {
+        display: block;
+    }
+    
+    #mode-controller #mode-options.show-hamburger #signed-in-controller.signed-in #hamburger-sign-in {
+        display: none;
+    }
+    
+    #mode-controller #mode-options.show-hamburger #signed-in-controller.signed-out #hamburger-sign-out {
+        display: none;
+    }
+    
+    #mode-controller #mode-options.show-hamburger #signed-in-controller.signed-in #hamburger-sign-out {
+        display: block;
+    }
+
+    #mode-controller.choose-dates .hamburger-button {
+        display: none;
+    }
+
+    #mode-controller.choose-dates .controls,
+    #mode-controller.choose-dates .hamburger-controls-apply {
+        display: block;
     }
     /*
     .controls .profile-button {
@@ -61,13 +96,18 @@
 
     .basic-controls .first-day, .basic-controls .show-in-time-zone, .print-controls .shade-weekends {
         display: inline-block;
-        width: 49%;
+        width: 42%;
         padding: 0;
+        font-size: 8pt;
+    }
+
+    .basic-controls select {
+        font-size: 7pt;
     }
 
     body .control-panel {
-        left: 10%;
-        width: 90%;
+        left: 12%;
+        width: 85%;
     }
 
     .options-drawer .sign-in-panel {

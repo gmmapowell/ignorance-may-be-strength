@@ -19,6 +19,8 @@ function bindElement(into, name) {
 function init() {
     // First get all the elements from the document
     var sections = {};
+    bindElement(sections, 'mode-controller');
+    bindElement(sections, 'signed-in-controller');
     bindElement(sections, 'controls');
     bindElement(sections, 'options-drawer');
     bindElement(sections, 'feedback');
@@ -43,12 +45,15 @@ function init() {
     bindElement(hamburger, 'hamburger-button');
     bindElement(hamburger, 'hamburger-padding');
     bindElement(hamburger, 'hamburger-menu');
-    bindElement(hamburger, 'narrow-options');
+    // bindElement(hamburger, 'narrow-options');
     bindElement(hamburger, 'control-panel');
     bindElement(hamburger, 'options-drawer');
     bindElement(hamburger, 'hamburger-sign-in');
+    bindElement(hamburger, 'hamburger-choose-dates');
     bindElement(hamburger, 'hamburger-sign-out');
     bindElement(hamburger, 'feedback');
+    bindElement(hamburger, 'mode-controller');
+    bindElement(hamburger, 'mode-options');
 
     var userProfile = {};
     bindElement(userProfile, 'user-profile-panel');
@@ -76,6 +81,7 @@ function init() {
     bindElement(signin.core, 'sign-in-email');
     bindElement(signin.core, 'sign-in-password');
     bindElement(signin.core, 'submit-sign-in');
+    bindElement(signin.core, 'cancel-sign-in');
 
     signin.newUser = {};
     bindElement(signin, 'create-user-panel');

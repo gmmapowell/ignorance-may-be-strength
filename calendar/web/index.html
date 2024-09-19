@@ -23,172 +23,181 @@
 		<script src="js/main.js" type="module"></script>
 	</head>
 	<body>
-		<div id='controls' class="controls">
-			<div id='hamburger-button' class='hamburger-button'><div class='hamburger-text'>=</div></div>
-			<div id='profile-button' class='profile-button'>
-				<div id='sign-in-button' class='sign-in hidden'>Sign In</div>
-				<div id='open-profile-button' class='open-profile hidden'>Profile</div>
-			</div>
-			<div id='control-panel' class="control-panel">
-				<div class="basic-controls">
-					<div class='start-date'>
-						<label for="start-date">Start Date:</label>
-						<input type="date" id="start-date">
+		<div id='mode-controller' class='standard-mode'>
+			<div id="mode-options">
+				<div id="signed-in-controller">
+					<div id='controls' class="controls">
+						<div id='hamburger-button' class='hamburger-button'><div class='hamburger-text'>=</div></div>
+						<div id='profile-button' class='profile-button'>
+							<div id='sign-in-button' class='sign-in'>Sign In</div>
+							<div id='open-profile-button' class='open-profile'>Profile</div>
+						</div>
+						<div id='control-panel' class="control-panel">
+							<div class="basic-controls">
+								<div class='start-date'>
+									<label for="start-date">Start Date:</label>
+									<input type="date" id="start-date">
+								</div>
+								<div class="end-date">
+									<label for="end-date">End Date:</label>
+									<input type="date" id="end-date">
+								</div>
+								<div class="first-day">
+									<label for="first-day">First Day:</label>
+									<select id="first-day">
+										<option value="1">Monday</option>
+										<option value="2">Tuesday</option>
+										<option value="3">Wednesday</option>
+										<option value="4">Thursday</option>
+										<option value="5">Friday</option>
+										<option value="6">Saturday</option>
+										<option value="0">Sunday</option>
+									</select>
+								</div>
+								<div class="show-in-time-zone">
+									<label for="calendar-time-zone">Time Zone:</label>
+									<select id="calendar-time-zone">
+										<option>SYSTEM</option>
+										<option>SHOW</option>
+										<option>FOLLOW</option>
+										<option>FOLSHOW</option>
+										<option>BST</option>
+										<option>EDT</option>
+									</select>
+								</div>
+							</div>
+							<div class="print-controls">
+								<div class="shade-weekends">
+									<input type="checkbox" id="shade-weekends" checked='true'>
+									<label for="landscape">Shade Weekends</label>
+								</div>
+								<div class="page-size">
+									<label for="page-size">Page Size:</label>
+									<select id="page-size">
+										<option value="a4">A4</option>
+										<option value="letter">Letter</option>
+										<option value="a3">A3</option>
+										<option value="tabloid">Tabloid</option>
+									</select>
+								</div>
+								<div class="landscape">
+									<input type="checkbox" id="landscape">
+									<label for="landscape">Landscape</label>
+								</div>
+							</div>
+							<div class="hamburger-controls-apply">
+								<input id='hamburger-controls-apply-button' type="button" value="apply">
+							</div>
+						</div>
+						<div id='hamburger-padding' class='hamburger-padding'></div>
 					</div>
-					<div class="end-date">
-						<label for="end-date">End Date:</label>
-						<input type="date" id="end-date">
-					</div>
-					<div class="first-day">
-						<label for="first-day">First Day:</label>
-						<select id="first-day">
-							<option value="1">Monday</option>
-							<option value="2">Tuesday</option>
-							<option value="3">Wednesday</option>
-							<option value="4">Thursday</option>
-							<option value="5">Friday</option>
-							<option value="6">Saturday</option>
-							<option value="0">Sunday</option>
-						</select>
-					</div>
-					<div class="show-in-time-zone">
-						<label for="calendar-time-zone">Time Zone:</label>
-						<select id="calendar-time-zone">
-							<option>SYSTEM</option>
-							<option>SHOW</option>
-							<option>FOLLOW</option>
-							<option>FOLSHOW</option>
-							<option>BST</option>
-							<option>EDT</option>
-						</select>
-					</div>
-				</div>
-				<div class="print-controls">
-					<div class="shade-weekends">
-						<input type="checkbox" id="shade-weekends" checked='true'>
-						<label for="landscape">Shade Weekends</label>
-					</div>
-					<div class="page-size">
-						<label for="page-size">Page Size:</label>
-						<select id="page-size">
-							<option value="a4">A4</option>
-							<option value="letter">Letter</option>
-							<option value="a3">A3</option>
-							<option value="tabloid">Tabloid</option>
-						</select>
-					</div>
-					<div class="landscape">
-						<input type="checkbox" id="landscape">
-						<label for="landscape">Landscape</label>
-					</div>
-				</div>
-			</div>
-			<div id='hamburger-padding' class='hamburger-padding hidden'></div>
-		</div>
-		<div id='hamburger-menu' class='hamburger-menu hidden'>
-			<input type='button' id="hamburger-sign-in" value="Sign In">
-			<!--
-			<input type='button' id="hamburger-manage-calendars-button" value="Manage Calendars">
-			<input type='button' id="hamburger-save-current-calendar" value="Save Calendar">
-			<input type='button' id="hamburger-user-profile-reset" value="Reset">
-		-->
-			<input type='button' id="hamburger-sign-out" value="Sign Out">
-		</div>
-		<div id="narrow-options" class="hide-options-in-general-on-narrow">
-			<div id="options-drawer" class="options-drawer hidden">
-				<div id="sign-in-panel" class="sign-in-panel hidden">
-					<div id="invalid-signin-panel" class="invalid-panel hidden">
-						<p class="invalid-text">Invalid credentials to sign in.  Please try again or enter new credentials to create an account.</p>
-					</div>
-					<div id="invalid-email-panel" class="invalid-panel hidden">
-						<p class="invalid-text">The value is not a valid email address.  Please use a clearly valid email address.</p>
-					</div>
-					<div id='email-panel' class="sign-in-line">
-						<label for='sign-in-email' class="sign-in-label">Email: </label>
-						<input type="email" id="sign-in-email" placeholder="user@domain.com" class="sign-in-input">
-					</div>
-					<div id="invalid-password-panel" class="invalid-panel hidden">
-						<p class="invalid-text">The password is invalid.  Use a password of at least 16 characters.</p>
-					</div>
-					<div class="sign-in-line">
-						<label for='sign-in-password' class="sign-in-label">Password: </label>
-						<input type="password" id="sign-in-password" placeholder="password" class="sign-in-input">
-					</div>
-					<div class="sign-in-line">
-						<input type="button" id="submit-sign-in" value="Sign In" class="confirm-sign-in">
-					</div>
-				</div>
-				<div id="create-user-panel" class="create-user-panel hidden">
-					<p>The user <span id='create-user-email'></span> does not exist.  Create?</p>
-					<input type="button" id="create-user-yes" value="Yes">
-					<input type="button" id="create-user-no" value="No">
-				</div>
-				<div id='user-profile-panel' class="user-profile hidden">
-					<!-- what i really want here are:
-					- link some URI (and keep a live link to it, but remember that's what you've got)
-					- choose a file to upload with a chooser (may be ics, csv or json)
-					- drop target to upload
-
-					- and then I want a (probably 3-column) list of all the files I've uploaded/linked so that we can choose to include/exclude from the calendar
+					<div id='hamburger-menu' class='hamburger-menu'>
+						<input type='button' id="hamburger-sign-in" value="Sign In">
+						<input type='button' id="hamburger-choose-dates" value="Choose Dates">
+						<!--
+						<input type='button' id="hamburger-manage-calendars-button" value="Manage Calendars">
+						<input type='button' id="hamburger-save-current-calendar" value="Save Calendar">
+						<input type='button' id="hamburger-user-profile-reset" value="Reset">
 					-->
-					<div class="user-profile-buttons">
-						<input type='button' id="manage-calendars-button" value="Manage Calendars">
-						<input type='button' id="save-current-calendar" value="Save Calendar">
-						<input type='button' id="download-current-calendar" value="Download">
-						<input type='button' id="user-profile-reset" value="Reset">
-						<input type='button' id="user-profile-sign-out" value="Sign Out">
+						<input type='button' id="hamburger-sign-out" value="Sign Out">
 					</div>
-					<div id="available-calendars" class="available-calendars"></div>
-					<div id="calendar-categories" class="calendar-categories"></div>
-					<div id="saved-plans" class="saved-plans"></div>
-
-				</div>
-				<div id='manage-calendars-panel' class="manage-calendars hidden">
-					<div id="drop-for-upload" class="drop-for-upload">
-						<p>Drop calendar files here</p>
-					</div>
-					<div id='manage-calendars-list' class="manage-calendars-list"></div>
-					<div id="manage-calendars-detail" class="manage-calendars-detail hidden">
-						<div>
-							<label for="manage-calendar-called">Calendar:</label>
-							<span id='manage-calendar-called'></span>
+					<div id="options-drawer" class="options-drawer">
+						<div id="sign-in-panel" class="sign-in-panel">
+							<div id="invalid-signin-panel" class="invalid-panel">
+								<p class="invalid-text">Invalid credentials to sign in.  Please try again or enter new credentials to create an account.</p>
+							</div>
+							<div id="invalid-email-panel" class="invalid-panel">
+								<p class="invalid-text">The value is not a valid email address.  Please use a clearly valid email address.</p>
+							</div>
+							<div id='email-panel' class="sign-in-line">
+								<label for='sign-in-email' class="sign-in-label">Email: </label>
+								<input type="email" id="sign-in-email" placeholder="user@domain.com" class="sign-in-input">
+							</div>
+							<div id="invalid-password-panel" class="invalid-panel">
+								<p class="invalid-text">The password is invalid.  Use a password of at least 16 characters.</p>
+							</div>
+							<div class="sign-in-line">
+								<label for='sign-in-password' class="sign-in-label">Password: </label>
+								<input type="password" id="sign-in-password" placeholder="password" class="sign-in-input">
+							</div>
+							<div class="sign-in-line">
+								<input type="button" id="submit-sign-in" value="Sign In" class="confirm-sign-in">
+								<input type="button" id="cancel-sign-in" value="Cancel" class="confirm-sign-in">
+							</div>
 						</div>
-						<div>
-							<label for="manage-calendar-detail-timezone">Time Zone:</label>
-							<select id="manage-calendar-detail-timezone">
-								<option>NONE</option>
-								<option>BST</option>
-								<option>EDT</option>
-							</select>
+						<div id="create-user-panel" class="create-user-panel">
+							<p>The user <span id='create-user-email'></span> does not exist.  Create?</p>
+							<input type="button" id="create-user-yes" value="Yes">
+							<input type="button" id="create-user-no" value="No">
 						</div>
-						<div><input id='manage-calendar-apply' type='button' value='Apply'></div>
-						<div><input id='manage-calendar-apply' type='button' value='DELETE Calendar'></div>
+						<div id='user-profile-panel' class="user-profile">
+							<!-- what i really want here are:
+							- link some URI (and keep a live link to it, but remember that's what you've got)
+							- choose a file to upload with a chooser (may be ics, csv or json)
+							- drop target to upload
+		
+							- and then I want a (probably 3-column) list of all the files I've uploaded/linked so that we can choose to include/exclude from the calendar
+							-->
+							<div class="user-profile-buttons">
+								<input type='button' id="manage-calendars-button" value="Manage Calendars">
+								<input type='button' id="save-current-calendar" value="Save Calendar">
+								<input type='button' id="download-current-calendar" value="Download">
+								<input type='button' id="user-profile-reset" value="Reset">
+								<input type='button' id="user-profile-sign-out" value="Sign Out">
+							</div>
+							<div id="available-calendars" class="available-calendars"></div>
+							<div id="calendar-categories" class="calendar-categories"></div>
+							<div id="saved-plans" class="saved-plans"></div>
+		
+						</div>
+						<div id='manage-calendars-panel' class="manage-calendars">
+							<div id="drop-for-upload" class="drop-for-upload">
+								<p>Drop calendar files here</p>
+							</div>
+							<div id='manage-calendars-list' class="manage-calendars-list"></div>
+							<div id="manage-calendars-detail" class="manage-calendars-detail">
+								<div>
+									<label for="manage-calendar-called">Calendar:</label>
+									<span id='manage-calendar-called'></span>
+								</div>
+								<div>
+									<label for="manage-calendar-detail-timezone">Time Zone:</label>
+									<select id="manage-calendar-detail-timezone">
+										<option>NONE</option>
+										<option>BST</option>
+										<option>EDT</option>
+									</select>
+								</div>
+								<div><input id='manage-calendar-apply' type='button' value='Apply'></div>
+								<div><input id='manage-calendar-apply' type='button' value='DELETE Calendar'></div>
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-		<div id='feedback' class="feedback">
-			<div class="body-week">
-				<div class="body-day">
-					<div class="body-day-date">17</div>
-				</div>
-				<div class="body-day">
-					<div class="body-day-date">18</div>
-				</div>
-				<div class="body-day">
-					<div class="body-day-date">19</div>
-				</div>
-				<div class="body-day">
-					<div class="body-day-date">20</div>
-				</div>
-				<div class="body-day">
-					<div class="body-day-date">21</div>
-				</div>
-				<div class="body-day">
-					<div class="body-day-date">22</div>
-				</div>
-				<div class="body-day">
-					<div class="body-day-date">23</div>
+					<div id='feedback' class="feedback">
+						<div class="body-week">
+							<div class="body-day">
+								<div class="body-day-date">17</div>
+							</div>
+							<div class="body-day">
+								<div class="body-day-date">18</div>
+							</div>
+							<div class="body-day">
+								<div class="body-day-date">19</div>
+							</div>
+							<div class="body-day">
+								<div class="body-day-date">20</div>
+							</div>
+							<div class="body-day">
+								<div class="body-day-date">21</div>
+							</div>
+							<div class="body-day">
+								<div class="body-day-date">22</div>
+							</div>
+							<div class="body-day">
+								<div class="body-day-date">23</div>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
