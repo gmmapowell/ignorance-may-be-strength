@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "mediaqueries"
+		},
+		{
+			"path": "metrolink-php"
 		}
 	],
 	"settings": {}
