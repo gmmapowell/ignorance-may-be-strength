@@ -5,10 +5,8 @@ require("../php/transform.php");
 
 final class Transform_test extends TestCase
 {
-    public function test_something() {
-
-        $foo = transform(array());
-        // $this->assertInstanceOf("", $transformer);
-        $this->fail("hello, world");
+    public function test_extract_from() {
+        $transformer = new Transformer(["from" => ["FIR", "VIC"]]);
+        $this->assertEquals(["FIR", "VIC"], $transformer->from);
     }
 }
