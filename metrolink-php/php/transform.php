@@ -8,7 +8,23 @@
     }
 
     function transform($odata) {
-      return [];
+      $ret = [];
+
+      foreach ($odata as $item) {
+        if ($this->filter($item))
+          $ret[] = $this->transformOne($item);
+      }
+      return $ret;
+    }
+
+    function filter($item) {
+      return array_key_exists("TLAREF", $item) && $item["TLAREF"] == "FIR";
+    }
+
+    function transformOne($pid) {
+      if (array_key_exists("TLAREF", $pid)) {
+        return [ "FIR" => [ "VIC" => [ "19:58" ]]];
+      }
     }
   }
 ?>
