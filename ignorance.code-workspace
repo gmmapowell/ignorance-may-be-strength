@@ -16,5 +16,23 @@
 			"path": "metrolink-php"
 		}
 	],
-	"settings": {}
+	"settings": {},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Metrolink PHP Tests",
+				"type": "shell",
+				"command": "phpunit",
+				"args": ["*.php"],
+				"group": "test",
+				"options": {
+					"cwd": "${workspaceFolder}/../metrolink-php/test"
+				},
+				"presentation": {
+					"reveal": "always"
+				}
+			}
+		]
+	}
 }
