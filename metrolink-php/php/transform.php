@@ -92,8 +92,15 @@
 
     function transformOne($pid, $dst) {
       if (array_key_exists("TLAREF", $pid)) {
-        return [ "FIR" => [ "VIC" => [ $dst == 0 ? "19:58" : "20:10" ]]];
+        return [ "FIR" => [ "VIC" => [ $this->date($pid["LastUpdated"], $pid["Wait{$dst}"]) ]]];
       }
+    }
+
+    function date($from, $wait) {
+      $unix = strtotime($from);
+      $when = $unix + $wait * 60;
+      $ret = date('H:i', $when);
+      return $ret;
     }
 
     function merge($ret, $incl) {

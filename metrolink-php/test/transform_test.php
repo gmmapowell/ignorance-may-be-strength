@@ -166,5 +166,27 @@ final class Transform_test extends TestCase
         $this->assertEquals(["Central Park", "Failsworth", "Freehold"], $transformer->to);
     }
 
+    public function test_adding_0_minutes_is_easy() {
+        $transformer = new Transformer([]);
+        $when = $transformer->date("2024-09-17T19:52:55Z", 0);
+        $this->assertEquals("19:52", $when);
+    }
 
+    public function test_adding_5_minutes() {
+        $transformer = new Transformer([]);
+        $when = $transformer->date("2024-09-17T19:52:55Z", 5);
+        $this->assertEquals("19:57", $when);
+    }
+
+    public function test_adding_18_minutes_will_wrap() {
+        $transformer = new Transformer([]);
+        $when = $transformer->date("2024-09-17T19:52:55Z", 18);
+        $this->assertEquals("20:10", $when);
+    }
+
+    public function test_can_wrap_to_tomorrow() {
+        $transformer = new Transformer([]);
+        $when = $transformer->date("2024-09-17T23:55:12Z", 6);
+        $this->assertEquals("00:01", $when);
+    }
 }
