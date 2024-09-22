@@ -84,7 +84,13 @@
       // Apply the origin filters
       if ($this->from) {
         if (!array_key_exists("TLAREF", $item)) return false;
-        if ($item["TLAREF"] != "FIR") return false;
+        $isFrom = $item["TLAREF"];
+        $anyFrom = false;
+        foreach ($this->from as $f) {
+          if ($isFrom == $f)
+            $anyFrom = true;  
+        }
+        if (!$anyFrom) return $anyFrom;
       }
 
       // If it didn't fail, it can be included

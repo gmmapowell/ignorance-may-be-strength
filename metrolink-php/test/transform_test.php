@@ -76,6 +76,28 @@ final class Transform_test extends TestCase
         $this->assertTrue($matches);
     }
 
+    public function test_from_Firswood_passes_filter_in_Dest0() {
+        $transformer = new Transformer(["from" => ["FIR"]]);
+        $matches = $transformer->filter([
+            "TLAREF" => "FIR",
+            "Dest0" => "Victoria",
+            "Wait0" => "6",
+            "LastUpdated" => "2024-09-17T19:52:55Z"
+        ], 0);
+        $this->assertTrue($matches);
+    }
+
+    public function test_from_Victoria_passes_filter_in_Dest0() {
+        $transformer = new Transformer(["from" => ["VIC"]]);
+        $matches = $transformer->filter([
+            "TLAREF" => "VIC",
+            "Dest0" => "Altrincham",
+            "Wait0" => "6",
+            "LastUpdated" => "2024-09-17T19:52:55Z"
+        ], 0);
+        $this->assertTrue($matches);
+    }
+
     public function test_tla_collection() {
         $transformer = new Transformer(["to" => ["ALT"]]);
         $tlas = $transformer->collectTLAs([[
