@@ -2,6 +2,8 @@
   require('metrolink_key.php');
   require('transform.php');
 
+  date_default_timezone_set('UTC');
+  
   $transformer = new Transformer($_GET);
 
   $ch = curl_init("https://api.tfgm.com/odata/Metrolinks");
