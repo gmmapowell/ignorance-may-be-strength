@@ -32,24 +32,26 @@ final class Transform_test extends TestCase
         $transformer = new Transformer(["from" => ["FIR"]]);
         $out = $transformer->transform([[
             "TLAREF" => "FIR",
+            "StationLocation" => "Firswood",
             "Dest0" => "Victoria",
             "Wait0" => "6",
             "LastUpdated" => "2024-09-17T19:52:55Z"
         ]]);
-        $this->assertEquals(["FIR" => ["VIC" => [ "19:58" ]]], $out);
+        $this->assertEquals(["Firswood" => ["Victoria" => [ "19:58" ]]], $out);
     }
 
     public function test_firswood_has_two_trams_to_Victoria() {
         $transformer = new Transformer(["from" => ["FIR"]]);
         $out = $transformer->transform([[
             "TLAREF" => "FIR",
+            "StationLocation" => "Firswood",
             "Dest0" => "Victoria",
             "Wait0" => "6",
             "Dest2" => "Victoria",
             "Wait2" => "18",
             "LastUpdated" => "2024-09-17T19:52:55Z"
         ]]);
-        $this->assertEquals(["FIR" => ["VIC" => [ "19:58", "20:10" ]]], $out);
+        $this->assertEquals(["Firswood" => ["Victoria" => [ "19:58", "20:10" ]]], $out);
     }
 
     public function test_tram_to_Altrincham_passes_with_empty_filter_in_Dest0() {
@@ -188,5 +190,16 @@ final class Transform_test extends TestCase
         $transformer = new Transformer([]);
         $when = $transformer->date("2024-09-17T23:55:12Z", 6);
         $this->assertEquals("00:01", $when);
+    }
+
+    public function test_a_tram_from_Freehold_to_Shaw_is_correctly_reported() {
+        $transformer = new Transformer([]);
+        $route = $transformer->transformOne([
+            "StationLocation" => "Freehold",
+            "Dest0" => "Shaw and Crompton",
+            "Wait0" => "4",
+            "LastUpdated" => "2024-09-17T19:52:55Z"
+        ], "0");
+        $this->assertEquals(["Freehold" => [ "Shaw and Crompton" => [ "19:56"]]], $route);
     }
 }

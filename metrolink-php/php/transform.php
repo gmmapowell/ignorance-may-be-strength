@@ -2,6 +2,7 @@
 
   class Transformer {
     var $from, $to;
+
     public function __construct($params) {
       $this->from = array_key_exists('from', $params) ? $params['from'] : [];
       $this->to = array_key_exists('to', $params) ? $params['to'] : [];
@@ -91,9 +92,11 @@
     }
 
     function transformOne($pid, $dst) {
-      if (array_key_exists("TLAREF", $pid)) {
-        return [ "FIR" => [ "VIC" => [ $this->date($pid["LastUpdated"], $pid["Wait{$dst}"]) ]]];
-      }
+      $from = $pid["StationLocation"];
+      $to = $pid["Dest{$dst}"];
+      $now = $pid["LastUpdated"];
+      $wait = $pid["Wait{$dst}"];
+      return [ $from => [ $to => [ $this->date($now, $wait) ]]];
     }
 
     function date($from, $wait) {
