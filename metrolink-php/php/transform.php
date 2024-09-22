@@ -7,6 +7,38 @@
       $this->to = array_key_exists('to', $params) ? $params['to'] : [];
     }
 
+    function analyze($odata) {
+      $tlas = $this->collectTLAs($odata);
+      $input = $this->to;
+      $this->to = [];
+      foreach ($input as $dest) {
+        $this->analyzeOne($tlas, $dest);
+      }
+    }
+
+    function collectTLAs($odata) {
+      $tlas = [];
+      foreach ($odata as $pid) {
+        // Obviously we need to have a TLAREF and a StationLocation
+        if (!array_key_exists("TLAREF", $pid)) continue;
+        if (!array_key_exists("StationLocation", $pid)) continue;
+
+        // Once it's done, don't do it again
+        if (array_key_exists($pid["TLAREF"], $tlas)) continue;
+
+        // map it
+        $tlas[$pid["TLAREF"]] = $pid["StationLocation"];
+      }
+      return $tlas;
+    }
+
+    function analyzeOne($tlas, $dest) {
+      if (array_key_exists($dest, $tlas))
+        $this->to[] = $tlas[$dest];
+      else
+        $this->to[] = $dest;
+    }
+
     function transform($odata) {
       $ret = [];
 
