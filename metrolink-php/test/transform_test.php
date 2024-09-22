@@ -72,5 +72,32 @@ final class Transform_test extends TestCase
             "LastUpdated" => "2024-09-17T19:52:55Z"
         ], 0);
         $this->assertTrue($matches);
-    }}
-?>
+    }
+
+    public function test_tla_collection() {
+        $transformer = new Transformer(["to" => ["ALT"]]);
+        $tlas = $transformer->collectTLAs([[
+            "TLAREF" => "ALT",
+            "StationLocation" => "Altrincham"
+        ],[
+            "TLAREF" => "SPS",
+            "StationLocation" => "St Peter's Square"
+        ],[
+            "TLAREF" => "ALT",
+            "StationLocation" => "Altrincham"
+        ],[
+            "TLAREF" => "WST",
+            "StationLocation" => "Weaste"
+        ]]);
+        $this->assertEquals(["ALT" => "Altrincham", "SPS" => "St Peter's Square", "WST" => "Weaste"], $tlas);
+    }
+
+    public function test_analysis_can_turn_ALT_to_Altrincham() {
+        $transformer = new Transformer(["to" => ["ALT"]]);
+        $transformer->analyze([[
+            "TLAREF" => "ALT",
+            "StationLocation" => "Altrincham"
+        ]]);
+        $this->assertEquals(["Altrincham"], $transformer->to);
+    }
+}

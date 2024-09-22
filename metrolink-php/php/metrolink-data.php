@@ -10,6 +10,7 @@
   $response = curl_exec($ch);
 
   $data = json_decode($response);
+  $transformer->analyze($data->value);
   $transformed = $transformer->transform($data->value);
   print json_encode($transformed);
 ?>
