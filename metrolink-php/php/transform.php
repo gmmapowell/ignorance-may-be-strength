@@ -9,10 +9,11 @@
 
     function analyze($odata) {
       $tlas = $this->collectTLAs($odata);
+      $lines = $this->collectLines($odata);
       $input = $this->to;
       $this->to = [];
       foreach ($input as $dest) {
-        $this->analyzeOne($tlas, $dest);
+        $this->analyzeOne($tlas, $lines, $dest);
       }
     }
 
@@ -32,9 +33,27 @@
       return $tlas;
     }
 
-    function analyzeOne($tlas, $dest) {
+    function collectLines($odata) {
+      $lines = [];
+      foreach ($odata as $pid) {
+        // Obviously we need the things we want to map
+        if (!array_key_exists("Line", $pid)) continue;
+        if (!array_key_exists("Direction", $pid)) continue;
+        if (!array_key_exists("StationLocation", $pid)) continue;
+
+        $lineName = substr($pid["Direction"], 0, 1) . "-" . $pid["Line"];
+        $lines[$lineName][] = $pid["StationLocation"];
+      }
+      return $lines;
+    }
+
+    function analyzeOne($tlas, $lines, $dest) {
       if (array_key_exists($dest, $tlas))
         $this->to[] = $tlas[$dest];
+      else if (array_key_exists($dest, $lines)) {
+        foreach ($lines[$dest] as $d)
+          $this->to[] = $d;
+      }
       else
         $this->to[] = $dest;
     }

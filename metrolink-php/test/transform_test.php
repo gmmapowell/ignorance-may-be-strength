@@ -100,4 +100,71 @@ final class Transform_test extends TestCase
         ]]);
         $this->assertEquals(["Altrincham"], $transformer->to);
     }
+
+    public function test_line_collection() {
+        $transformer = new Transformer([]);
+        $lines = $transformer->collectLines([[
+            "StationLocation" => "Firswood",
+            "Line" => "South Manchester",
+            "Direction" => "Outgoing",
+        ],[
+            "StationLocation" => "Firswood",
+            "Line" => "South Manchester",
+            "Direction" => "Incoming",
+        ],[
+            "StationLocation" => "Central Park",
+            "Direction" => "Outgoing",
+            "Line" => "Oldham & Rochdale",
+        ],[
+            "StationLocation" => "Failsworth",
+            "Direction" => "Outgoing",
+            "Line" => "Oldham & Rochdale",
+        ],[
+            "StationLocation" => "Freehold",
+            "Direction" => "Outgoing",
+            "Line" => "Oldham & Rochdale",
+        ],[
+            "StationLocation" => "Weaste",
+            "Direction" => "Incoming",
+            "Line" => "Eccles",
+        ]]);
+        $this->assertEquals([
+            "O-South Manchester" => ["Firswood"],
+            "I-South Manchester" => ["Firswood"],
+            "I-Eccles" => ["Weaste"],
+            "O-Oldham & Rochdale" => ["Central Park", "Failsworth", "Freehold"]
+        ], $lines);
+    }
+
+    public function test_analysis_will_expand_outbound_oldham() {
+        $transformer = new Transformer(["to" => ["O-Oldham & Rochdale"]]);
+        $transformer->analyze([[
+            "StationLocation" => "Firswood",
+            "Line" => "South Manchester",
+            "Direction" => "Outgoing",
+        ],[
+            "StationLocation" => "Firswood",
+            "Line" => "South Manchester",
+            "Direction" => "Incoming",
+        ],[
+            "StationLocation" => "Central Park",
+            "Direction" => "Outgoing",
+            "Line" => "Oldham & Rochdale",
+        ],[
+            "StationLocation" => "Failsworth",
+            "Direction" => "Outgoing",
+            "Line" => "Oldham & Rochdale",
+        ],[
+            "StationLocation" => "Freehold",
+            "Direction" => "Outgoing",
+            "Line" => "Oldham & Rochdale",
+        ],[
+            "StationLocation" => "Weaste",
+            "Direction" => "Incoming",
+            "Line" => "Eccles",
+        ]]);
+        $this->assertEquals(["Central Park", "Failsworth", "Freehold"], $transformer->to);
+    }
+
+
 }
