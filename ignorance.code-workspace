@@ -14,6 +14,10 @@
 		},
 		{
 			"path": "metrolink-php"
+		},
+		{
+			"name": "metrolink-watch",
+			"path": "metrolink-watch"
 		}
 	],
 	"settings": {},

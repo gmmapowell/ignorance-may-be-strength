@@ -1,0 +1,42 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // for the documentation about the tasks.json format
+
+    // keybindings are in  ~/Library/Application\ Support/Code/User/keybindings.json
+
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run With Coverage",
+            "type": "npm",
+            "script": "coverage",
+            "options": {
+                "cwd": "${relativeFileDirname}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Test Behavior",
+            "type": "npm",
+            "script": "test-behavior",
+            "options": {
+                "cwd": "${relativeFileDirname}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Refresh Chrome",
+            "type": "shell",
+            "command": "refreshChrome"
+        },
+        {
+            "label": "Rebuild Library",
+            "type": "shell",
+            "command": "scripts/assembleJS.sh",
+            "options": {
+                "cwd": "${workspaceFolder}/../Tools"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
