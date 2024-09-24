@@ -78,7 +78,14 @@
 
       // Apply the destination filters
       if ($this->to) {
-        if ($item[$d] != $this->to[0]) return false;
+        if (!array_key_exists($d, $item)) return false;
+        $isTo = $item[$d];
+        $anyTo = false;
+        foreach ($this->to as $f) {
+          if ($isTo == $f)
+            $anyTo = true;  
+        }
+        if (!$anyTo) return $anyTo;
       }
 
       // Apply the origin filters
