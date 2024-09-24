@@ -1,6 +1,7 @@
 import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Communications;
+import Toybox.Lang;
 
 class metrolink_watchView extends WatchUi.View {
 
@@ -37,13 +38,13 @@ class metrolink_watchView extends WatchUi.View {
         View.onUpdate(dc);
     }
 
-    function onReceive(responseCode, data) {
+    function onReceive(responseCode as Number, data as String) as Void {
         if (responseCode == 200) {
             System.println("Request Successful");
         } else {
            System.println("Request failed, code: " + responseCode);
-        };
-    };
+        }
+    }
 
     // Called when this View is removed from the screen. Save the
     // state of this View here. This includes freeing resources from
