@@ -28,7 +28,6 @@ class metrolink_watchView extends WatchUi.View {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         System.println("update");
-        textArea.setText("hello, world\nthis is a test\nof multiple lines\n");
         var params = { "from[]" => "FIR" };
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
@@ -45,6 +44,8 @@ class metrolink_watchView extends WatchUi.View {
         if (responseCode == 200) {
             System.println("Request Successful");
             System.println(data["Firswood"]);
+            textArea.setText("hello, world\nthis is a test\nof multiple lines\n");
+            WatchUi.requestUpdate();
         } else {
             System.println("Request failed, code: " + responseCode);
         }
