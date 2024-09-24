@@ -28,7 +28,7 @@ class metrolink_watchView extends WatchUi.View {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         System.println("update");
-        textArea.setText("hello, world");
+        textArea.setText("hello, world\nthis is a test\nof multiple lines\n");
         var params = { "from[]" => "FIR" };
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
