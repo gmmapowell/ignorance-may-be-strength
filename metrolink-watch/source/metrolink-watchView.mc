@@ -60,7 +60,9 @@ class metrolink_watchView extends WatchUi.View {
 
     function onReceive(responseCode as Number, data as Dictionary) as Void {
         if (responseCode == 200) {
-            textArea.setText(assembleMessage(data));
+            if (data instanceof Dictionary) {
+                textArea.setText(assembleMessage(data));
+            }
             WatchUi.requestUpdate();
         } else {
             System.println("Request failed, code: " + responseCode);

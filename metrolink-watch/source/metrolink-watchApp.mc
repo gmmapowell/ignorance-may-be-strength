@@ -29,7 +29,8 @@ class metrolink_watchApp extends Application.AppBase {
 function configureRoutes() as Array<Route> {
     var altiRoute = new Route("ALTI", ["MKT", "PCG"], ["ALT"]);
     var traffRoute = new Route("TRC", ["TRC"], []);
-    return [ altiRoute, traffRoute ];
+    var oksRoute = new Route("OKS", ["OHK"], ["MON", "EDD"]);
+    return [ altiRoute, oksRoute, traffRoute ];
 }
 
 class Route {
