@@ -13,7 +13,7 @@ class metrolink_watchView extends WatchUi.View {
     // Load your resources here
     function onLayout(dc as Dc) as Void {
         System.println("layout");
-        setLayout(Rez.Layouts.MainLayout(dc));
+        setLayout(Rez.Layouts.RouteLayout(dc));
     }
 
     // Called when this View is brought to the foreground. Restore
