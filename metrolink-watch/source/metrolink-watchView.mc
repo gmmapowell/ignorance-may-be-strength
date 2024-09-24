@@ -30,7 +30,7 @@ class metrolink_watchView extends WatchUi.View {
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => { "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED },
-            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_URL_ENCODED
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
         };
         var responseCallback = method(:onReceive); 
         Communications.makeWebRequest("https://gmmapowell.com/metrolink-data.php", params, options, responseCallback);
@@ -38,11 +38,12 @@ class metrolink_watchView extends WatchUi.View {
         View.onUpdate(dc);
     }
 
-    function onReceive(responseCode as Number, data as String) as Void {
+    function onReceive(responseCode as Number, data as Dictionary) as Void {
         if (responseCode == 200) {
             System.println("Request Successful");
+            System.println(data["Firswood"]);
         } else {
-           System.println("Request failed, code: " + responseCode);
+            System.println("Request failed, code: " + responseCode);
         }
     }
 
