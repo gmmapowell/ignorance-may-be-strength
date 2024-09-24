@@ -1,5 +1,6 @@
 import Toybox.Graphics;
 import Toybox.WatchUi;
+import Toybox.Communications;
 
 class metrolink_watchView extends WatchUi.View {
 
@@ -24,9 +25,25 @@ class metrolink_watchView extends WatchUi.View {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         System.println("update");
+        var params = { "from[]" => "FIR" };
+        var options = {
+            :method => Communications.HTTP_REQUEST_METHOD_GET,
+            :headers => { "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED },
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_URL_ENCODED
+        };
+        var responseCallback = method(:onReceive); 
+        Communications.makeWebRequest("https://gmmapowell.com/metrolink-data.php", params, options, responseCallback);
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
     }
+
+    function onReceive(responseCode, data) {
+        if (responseCode == 200) {
+            System.println("Request Successful");
+        } else {
+           System.println("Request failed, code: " + responseCode);
+        };
+    };
 
     // Called when this View is removed from the screen. Save the
     // state of this View here. This includes freeing resources from
