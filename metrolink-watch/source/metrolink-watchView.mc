@@ -2,10 +2,12 @@ import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Communications;
 import Toybox.Lang;
+using Toybox.Timer;
 
 class metrolink_watchView extends WatchUi.View {
     var route;
     var textArea;
+    var timer as Timer.Timer?;
 
     function initialize(route as Route) {
         self.route = route;
@@ -26,26 +28,32 @@ class metrolink_watchView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        var params = {};
-        if (route.from) {
-            for (var i=0;i<route.from.size();i++) {
-                var key = "from[" + i + "]";
-                params[key] = route.from[i];
+        if (timer == null) {
+            var params = {};
+            if (route.from) {
+                for (var i=0;i<route.from.size();i++) {
+                    var key = "from[" + i + "]";
+                    params[key] = route.from[i];
+                }
             }
-        }
-        if (route.to) {
-            for (var i=0;i<route.to.size();i++) {
-                var key = "to[" + i + "]";
-                params[key] = route.to[i];
+            if (route.to) {
+                for (var i=0;i<route.to.size();i++) {
+                    var key = "to[" + i + "]";
+                    params[key] = route.to[i];
+                }
             }
+            var options = {
+                :method => Communications.HTTP_REQUEST_METHOD_GET,
+                :headers => { "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED },
+                :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
+            };
+            var responseCallback = method(:onReceive); 
+            Communications.makeWebRequest("https://gmmapowell.com/metrolink-data.php", params, options, responseCallback);
+
+            timer = new Timer.Timer();
+            timer.start(method(:timerCallback), 15000, false);
         }
-        var options = {
-            :method => Communications.HTTP_REQUEST_METHOD_GET,
-            :headers => { "Content-Type" => Communications.REQUEST_CONTENT_TYPE_URL_ENCODED },
-            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
-        };
-        var responseCallback = method(:onReceive); 
-        Communications.makeWebRequest("https://gmmapowell.com/metrolink-data.php", params, options, responseCallback);
+
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
     }
@@ -57,6 +65,11 @@ class metrolink_watchView extends WatchUi.View {
         } else {
             System.println("Request failed, code: " + responseCode);
         }
+    }
+
+    function timerCallback() as Void {
+        timer = null;
+        WatchUi.requestUpdate();
     }
 
     function assembleMessage(data as Dictionary) as String {
@@ -98,6 +111,10 @@ class metrolink_watchView extends WatchUi.View {
     // state of this View here. This includes freeing resources from
     // memory.
     function onHide() as Void {
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
     }
 
 }
