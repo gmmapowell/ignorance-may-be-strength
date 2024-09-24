@@ -4,6 +4,7 @@ import Toybox.Communications;
 import Toybox.Lang;
 
 class metrolink_watchView extends WatchUi.View {
+    var textArea;
 
     function initialize() {
         System.println("init view");
@@ -14,6 +15,7 @@ class metrolink_watchView extends WatchUi.View {
     function onLayout(dc as Dc) as Void {
         System.println("layout");
         setLayout(Rez.Layouts.RouteLayout(dc));
+        textArea = self.findDrawableById("routeInfo") as TextArea;
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -26,6 +28,7 @@ class metrolink_watchView extends WatchUi.View {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         System.println("update");
+        textArea.setText("hello, world");
         var params = { "from[]" => "FIR" };
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
