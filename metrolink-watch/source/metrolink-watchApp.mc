@@ -21,7 +21,7 @@ class metrolink_watchApp extends Application.AppBase {
 
     // Return the initial view of your application here
     function getInitialView() as [Views] or [Views, InputDelegates] {
-        return [ new metrolink_watchView(routes[0]), new metrolink_openRoutes() ];
+        return [ new metrolink_watchView(routes[0]), new metrolink_openRoutes(routes) ];
     }
 
 }
