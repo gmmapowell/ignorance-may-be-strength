@@ -5,11 +5,13 @@ import Toybox.Lang;
 using Toybox.Timer;
 
 class metrolink_watchView extends WatchUi.View {
+    var showWait;
     var route;
     var textArea;
     var timer as Timer.Timer?;
 
     function initialize(route as Route) {
+        self.showWait = true;
         self.route = route;
         View.initialize();
     }
@@ -28,6 +30,10 @@ class metrolink_watchView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
+        if (showWait) {
+            textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
+            showWait = false;
+        }
         if (timer == null) {
             var params = {};
             if (route.from) {
