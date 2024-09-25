@@ -11,7 +11,9 @@ class metrolink_openRoutes extends WatchUi.BehaviorDelegate {
 
 	function onSelect() {
 		System.println("on select...");
-		WatchUi.pushView(new metrolink_watchView(routes[0]), new metrolink_navigate(routes), WatchUi.SLIDE_IMMEDIATE);
+		var view = new metrolink_watchView(routes[0]);
+		var handler = new metrolink_navigate(routes, view);
+		WatchUi.pushView(view, handler, WatchUi.SLIDE_IMMEDIATE);
 		return true;
 	}
 }

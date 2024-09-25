@@ -16,6 +16,14 @@ class metrolink_watchView extends WatchUi.View {
         View.initialize();
     }
 
+    function previousRoute() {
+        System.println("previous");
+    }
+
+    function nextRoute() {
+        System.println("next");
+    }
+
     // Load your resources here
     function onLayout(dc as Dc) as Void {
         setLayout(Rez.Layouts.RouteLayout(dc));
