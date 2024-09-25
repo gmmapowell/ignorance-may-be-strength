@@ -68,10 +68,12 @@ class metrolink_watchView extends WatchUi.View {
         if (responseCode == 200) {
             if (data instanceof Dictionary) {
                 textArea.setText(assembleMessage(data));
+            } else {
+                textArea.setText("\nNo trams currently found on the\n" + route.name + "\nroute");
             }
             WatchUi.requestUpdate();
         } else {
-            System.println("Request failed, code: " + responseCode);
+            textArea.setText("Error querying server.\nResponse Code:\n" + responseCode + "\nroute\n" + route.name);
         }
     }
 
