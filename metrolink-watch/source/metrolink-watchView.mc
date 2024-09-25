@@ -73,7 +73,16 @@ class metrolink_watchView extends WatchUi.View {
             }
             WatchUi.requestUpdate();
         } else {
-            textArea.setText("Error querying server.\nResponse Code:\n" + responseCode + "\nroute\n" + route.name);
+            var msg;
+            switch (responseCode) {
+                case Communications.BLE_CONNECTION_UNAVAILABLE:
+                    msg = "\nCannot connect to phone using Bluetooth";
+                    break;
+                default:
+                    msg = "Error querying server.\nResponse Code:\n" + responseCode + "\nroute\n" + route.name;
+                    break;
+            }
+            textArea.setText(msg);
         }
     }
 
