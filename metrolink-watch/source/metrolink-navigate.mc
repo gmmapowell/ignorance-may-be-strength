@@ -10,7 +10,6 @@ class metrolink_navigate extends WatchUi.InputDelegate {
 	}
 
 	function onSwipe(ev) {
-		System.println(ev.getDirection());
 		switch (ev.getDirection()) {
 		case SWIPE_RIGHT: {
 			view.previousRoute();

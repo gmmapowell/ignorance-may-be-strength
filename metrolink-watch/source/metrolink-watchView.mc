@@ -3,6 +3,7 @@ import Toybox.WatchUi;
 import Toybox.Communications;
 import Toybox.Lang;
 using Toybox.Timer;
+using Toybox.Application.Storage;
 
 class metrolink_watchView extends WatchUi.View {
     var showWait;
@@ -14,25 +15,30 @@ class metrolink_watchView extends WatchUi.View {
     function initialize(routes as Array<Route>) {
         self.showWait = true;
         self.routes = routes;
-        self.currRoute = 0;
+        var stored = Storage.getValue("currRoute");
+        if (stored) {
+            self.currRoute = stored;
+        } else {
+            self.currRoute = 0;
+        }
         View.initialize();
     }
 
     function previousRoute() {
-        System.println("previous");
         self.currRoute --;
         if (self.currRoute < 0) {
             self.currRoute = self.routes.size()-1;
         }
+        Storage.setValue("currRoute", currRoute);
         reset();
     }
 
     function nextRoute() {
-        System.println("next");
         self.currRoute ++;
         if (self.currRoute >= self.routes.size()) {
             self.currRoute = 0;
         }
+        Storage.setValue("currRoute", currRoute);
         reset();
     }
 
