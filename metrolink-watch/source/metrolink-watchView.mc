@@ -6,22 +6,34 @@ using Toybox.Timer;
 
 class metrolink_watchView extends WatchUi.View {
     var showWait;
-    var route;
+    var routes;
+    var currRoute;
     var textArea;
     var timer as Timer.Timer?;
 
-    function initialize(route as Route) {
+    function initialize(routes as Array<Route>) {
         self.showWait = true;
-        self.route = route;
+        self.routes = routes;
+        self.currRoute = 0;
         View.initialize();
     }
 
     function previousRoute() {
         System.println("previous");
+        self.currRoute --;
+        if (self.currRoute < 0) {
+            self.currRoute = self.routes.size()-1;
+        }
+        reset();
     }
 
     function nextRoute() {
         System.println("next");
+        self.currRoute ++;
+        if (self.currRoute >= self.routes.size()) {
+            self.currRoute = 0;
+        }
+        reset();
     }
 
     // Load your resources here
@@ -42,6 +54,7 @@ class metrolink_watchView extends WatchUi.View {
             textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
             showWait = false;
         }
+        var route = self.routes[self.currRoute];
         if (timer == null) {
             var params = {};
             if (route.from) {
@@ -73,6 +86,7 @@ class metrolink_watchView extends WatchUi.View {
     }
 
     function onReceive(responseCode as Number, data as Dictionary) as Void {
+        var route = self.routes[self.currRoute];
         if (responseCode == 200) {
             if (data instanceof Dictionary) {
                 textArea.setText(assembleMessage(data));
@@ -96,6 +110,13 @@ class metrolink_watchView extends WatchUi.View {
 
     function timerCallback() as Void {
         timer = null;
+        WatchUi.requestUpdate();
+    }
+
+    function reset() as Void {
+        timer.stop();
+        timer = null;
+        showWait = true;
         WatchUi.requestUpdate();
     }
 
