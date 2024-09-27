@@ -13,14 +13,7 @@ class metrolink_watchView extends WatchUi.View {
     var timer as Timer.Timer?;
 
     function initialize(routes as Array<Route>) {
-        self.showWait = true;
         self.routes = routes;
-        var stored = Storage.getValue("currRoute");
-        if (stored) {
-            self.currRoute = stored;
-        } else {
-            self.currRoute = 0;
-        }
         View.initialize();
     }
 
@@ -52,6 +45,14 @@ class metrolink_watchView extends WatchUi.View {
     // the state of this View and prepare it to be shown. This includes
     // loading resources into memory.
     function onShow() as Void {
+        var stored = Storage.getValue("currRoute");
+        if (stored) {
+            self.currRoute = stored;
+        } else {
+            self.currRoute = 0;
+        }
+        self.timer = null;
+        self.showWait = true;
     }
 
     // Update the view
@@ -120,7 +121,9 @@ class metrolink_watchView extends WatchUi.View {
     }
 
     function reset() as Void {
-        timer.stop();
+        if (timer != null) {
+            timer.stop();
+        }
         timer = null;
         showWait = true;
         WatchUi.requestUpdate();
