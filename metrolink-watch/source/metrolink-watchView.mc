@@ -9,7 +9,7 @@ class metrolink_watchView extends WatchUi.View {
     var showWait;
     var routes;
     var currRoute;
-    var textArea;
+    // var textArea;
     var timer as Timer.Timer?;
 
     function initialize(routes as Array<Route>) {
@@ -35,12 +35,6 @@ class metrolink_watchView extends WatchUi.View {
         reset();
     }
 
-    // Load your resources here
-    function onLayout(dc as Dc) as Void {
-        setLayout(Rez.Layouts.RouteLayout(dc));
-        textArea = self.findDrawableById("routeInfo") as TextArea;
-    }
-
     // Called when this View is brought to the foreground. Restore
     // the state of this View and prepare it to be shown. This includes
     // loading resources into memory.
@@ -58,7 +52,7 @@ class metrolink_watchView extends WatchUi.View {
     // Update the view
     function onUpdate(dc as Dc) as Void {
         if (showWait) {
-            textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
+            // textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
             showWait = false;
         }
         var route = self.routes[self.currRoute];
@@ -96,9 +90,9 @@ class metrolink_watchView extends WatchUi.View {
         var route = self.routes[self.currRoute];
         if (responseCode == 200) {
             if (data instanceof Dictionary) {
-                textArea.setText(assembleMessage(data));
+                // textArea.setText(assembleMessage(data));
             } else {
-                textArea.setText("\nNo trams currently found on the\n" + route.name + "\nroute");
+                // textArea.setText("\nNo trams currently found on the\n" + route.name + "\nroute");
             }
             WatchUi.requestUpdate();
         } else {
@@ -111,7 +105,7 @@ class metrolink_watchView extends WatchUi.View {
                     msg = "Error querying server.\nResponse Code:\n" + responseCode + "\nroute\n" + route.name;
                     break;
             }
-            textArea.setText(msg);
+            // textArea.setText(msg);
         }
     }
 
