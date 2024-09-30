@@ -36,6 +36,16 @@ class metrolink_watchView extends WatchUi.View {
         reset();
     }
 
+    function scrollUp() {
+        textArea.scrollUp();
+        WatchUi.requestUpdate();
+    }
+
+    function scrollDown() {
+        textArea.scrollDown();
+        WatchUi.requestUpdate();
+    }
+
     // Load your resources here
     function onLayout(dc as Dc) as Void {
         setLayout([self.textArea] as Array<WatchUi.Drawable>);

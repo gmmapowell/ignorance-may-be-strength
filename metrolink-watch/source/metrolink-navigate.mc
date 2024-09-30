@@ -19,6 +19,14 @@ class metrolink_navigate extends WatchUi.InputDelegate {
 			view.nextRoute();
 			break;
 		}
+		case SWIPE_UP: {
+			view.scrollDown();
+			break;
+		}
+		case SWIPE_DOWN: {
+			view.scrollUp();
+			break;
+		}
 		}
 		return true;
 	}
