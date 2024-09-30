@@ -58,7 +58,7 @@ class metrolink_watchView extends WatchUi.View {
         dc.fillRectangle(dc.getWidth()/2, dc.getHeight()/2, dc.getWidth()/2, dc.getHeight()/2);
         if (showWait) {
             // textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
-            showWait = false;
+            // showWait = false;
             dc.drawText(
                 dc.getWidth() / 2,
                 dc.getHeight() / 2,
