@@ -51,6 +51,8 @@ class metrolink_watchView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(dc.getWidth()/2, dc.getHeight()/2, dc.getWidth()/2, dc.getHeight()/2);
         if (showWait) {
             // textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
             showWait = false;
