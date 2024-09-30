@@ -54,6 +54,13 @@ class metrolink_watchView extends WatchUi.View {
         if (showWait) {
             // textArea.setText("\n\nPlease Wait.\nLoading Data...\n");
             showWait = false;
+            dc.drawText(
+                dc.getWidth() / 2,
+                dc.getHeight() / 2,
+                Graphics.FONT_SMALL,
+                "Please Wait.",
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+            );
         }
         var route = self.routes[self.currRoute];
         if (timer == null) {
