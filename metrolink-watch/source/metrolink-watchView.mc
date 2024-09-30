@@ -51,6 +51,9 @@ class metrolink_watchView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
+        // Call the parent onUpdate function to redraw the layout
+        View.onUpdate(dc);
+        
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         dc.fillRectangle(dc.getWidth()/2, dc.getHeight()/2, dc.getWidth()/2, dc.getHeight()/2);
         if (showWait) {
@@ -91,8 +94,6 @@ class metrolink_watchView extends WatchUi.View {
             timer.start(method(:timerCallback), 15000, false);
         }
 
-        // Call the parent onUpdate function to redraw the layout
-        View.onUpdate(dc);
     }
 
     function onReceive(responseCode as Number, data as Dictionary) as Void {
