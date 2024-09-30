@@ -14,6 +14,7 @@ class metrolink_watchView extends WatchUi.View {
 
     function initialize(routes as Array<Route>) {
         self.routes = routes;
+        self.textArea = new WatchUi.TextArea({:identifier=>"routeInfo", :width=>240, :text=>"", :justification=>Graphics.TEXT_JUSTIFY_CENTER, :height=>240, :font=>[Graphics.FONT_MEDIUM] as Array<Graphics.FontType>});
         View.initialize();
     }
 
@@ -37,8 +38,7 @@ class metrolink_watchView extends WatchUi.View {
 
     // Load your resources here
     function onLayout(dc as Dc) as Void {
-        setLayout(Rez.Layouts.RouteLayout(dc));
-        textArea = self.findDrawableById("routeInfo") as TextArea;
+        setLayout([self.textArea] as Array<WatchUi.Drawable>);
     }
 
     // Called when this View is brought to the foreground. Restore
