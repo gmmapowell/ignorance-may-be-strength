@@ -55,25 +55,6 @@ function init() {
     bindElement(userProfile, 'calendar-categories');
     bindElement(userProfile, 'saved-plans');
 
-    var signin = {};
-    bindElement(signin, 'sign-in-panel');
-    signin.core = {};
-    bindElement(signin.core, 'sign-in-email');
-    bindElement(signin.core, 'sign-in-password');
-    bindElement(signin.core, 'submit-sign-in');
-    bindElement(signin.core, 'cancel-sign-in');
-
-    signin.newUser = {};
-    bindElement(signin, 'create-user-panel');
-    bindElement(signin.newUser, 'create-user-yes');
-    bindElement(signin.newUser, 'create-user-no');
-    bindElement(signin.newUser, 'create-user-email');
-
-    bindElement(signin, 'email-panel');
-    bindElement(signin, 'invalid-signin-panel');
-    bindElement(signin, 'invalid-email-panel');
-    bindElement(signin, 'invalid-password-panel');
-
     // create a wrapper around localStorage
     var storage = new CalendarStorage();
 

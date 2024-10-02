@@ -6,12 +6,12 @@ import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
     this.storage = storage;
-    this.drawerState = new StateElement("profile", "drawerState");
-    this.availableCalendars = {};
+    this.drawerState = new StateElement("profile", "drawerState", false);
+    this.availableCalendars = new StateElement("profile", "selectedCalendars", {});
     this.activeCalendars = {};
-    this.calprops = {};
+    this.calprops = new StateElement("profile", "calendarProps", {});
     this.calendarCategories = {};
-    this.categoryConfigs = {};
+    this.categoryConfigs = new StateElement("profile", "configs", {});
     this.savedPlans = [];
     this.events = [];
     this.timezoneChangesMap = {};
@@ -59,8 +59,9 @@ ProfileModel.prototype.addVisual = function(vis) {
 
 ProfileModel.prototype.reset = function() {
     this.drawerState.set(false);
-    for (var c of Object.keys(this.availableCalendars)) {
-        this.availableCalendars[c] = false;
+    var acs = this.availableCalendars.value();
+    for (var c of Object.keys(acs)) {
+        acs[c] = false;
     }
     this.activeCalendars = {};
     this.categoryConfigs = {};
@@ -72,19 +73,19 @@ ProfileModel.prototype.amSignedIn = function() {
 }
 
 ProfileModel.prototype.signedIn = function() {
-    this.availableCalendars = {};
+    this.availableCalendars.set({});
     this.loadAvailableCalendars();
     this.activeCalendars = {};
     this.calendarCategories = {};
-    this.categoryConfigs = {};
+    this.categoryConfigs.set({});
     this.vis.modelChanged();
 }
 
 ProfileModel.prototype.signedOut = function() {
-    this.availableCalendars = {};
+    this.availableCalendars.set({});
     this.activeCalendars = {};
     this.calendarCategories = {};
-    this.categoryConfigs = {};
+    this.categoryConfigs.set({});
     this.storage.clear();
     this.vis.modelChanged();
 }
@@ -103,13 +104,14 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
     if (stat == 200) {
         var info = JSON.parse(msg);
         this.savedPlans = [];
+        var acs = this.availableCalendars.value();
         for (var c of info.calendars) {
             if (c.endsWith(".caljs")) {
                 console.log('have a saved plan', c);
                 this.savedPlans.push(c);
             } else {
-                if (!Object.keys(this.availableCalendars).includes(c)) {
-                    this.availableCalendars[c] = false;
+                if (!Object.keys(acs).includes(c)) {
+                    acs[c] = false;
                 }
             }
         }
@@ -119,8 +121,8 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
 }
 
 ProfileModel.prototype.selectCalendarAction = function(label, selected) {
-    this.availableCalendars[label] = selected;
-    this.storeCurrentState();
+    this.availableCalendars.value()[label] = selected;
+    this.availableCalendars.store();
     
     if (selected)
         this.includeCalendar(label);
@@ -150,9 +152,10 @@ ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
         this.showTZ = tz;
     if (!this.showTZ)
         return;
-    var cals = Object.keys(this.activeCalendars);
+    var acs = this.activeCalendars;
+    var cals = Object.keys(acs);
     for (var i=0;i<cals.length;i++) {
-        var cal = this.activeCalendars[cals[i]];
+        var cal = acs[cals[i]];
         CalEvent.retz(cal, this.showTZ, this.timezoneChanges);
     }
     this.modelProvider.saveState();

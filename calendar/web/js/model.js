@@ -99,8 +99,9 @@ ModelProvider.prototype.calculate = function() {
 
 			var events = [];
 			var cats = new Set();
-			for (var url in this.profile.activeCalendars) {
-				collectEvents(events, cats, this.profile.activeCalendars[url], calDate);
+			var cals = this.profile.activeCalendars;
+			for (var url in Object.keys(cals)) {
+				collectEvents(events, cats, cals[url], calDate);
 			}
 
 			var highlights = new Set();

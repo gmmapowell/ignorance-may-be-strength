@@ -48,6 +48,8 @@ function Profiles(storage, redraw) {
 }
 
 Profiles.prototype.init = function() {
+    var self = this;
+
     this.signIn.addEventListener('click', () => self.doSignIn());
     this.cancel.addEventListener('click', () => self.cancelSignIn());
     this.createUserYes.addEventListener('click', () => self.createUser());
@@ -164,11 +166,13 @@ Profiles.prototype.closeDrawer = function() {
 }
 
 Profiles.prototype.hidePanel = function() {
-    hide(this.optionsDrawer);
-    hide(this.signInPanel);
-    hide(this.createUserPanel);
+    // hide(this.optionsDrawer);
+    // hide(this.signInPanel);
+    // hide(this.createUserPanel);
+    this.modeOptions.closeDrawer();
     this.email.value = '';
     this.password.value = '';
+    this.redraw.redraw();
 }
 
 Profiles.prototype.doSignIn = function() {
@@ -232,6 +236,7 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
             // the user successfully logged in, so store the (returned) token
             this.storage.bindToken(resp.token);
             this.updateSignedIn();
+            setMode(this.modeController, "standard-mode");
             // this.hidePanel();
             break;
         }
@@ -264,7 +269,7 @@ Profiles.prototype.signOutNow = function() {
         this.storage.clearToken();
     }
     this.updateSignedIn();
-    hide(this.profileDisplay);
+    // hide(this.profileDisplay);
     this.hidePanel();
 }
 
@@ -376,7 +381,7 @@ Profiles.prototype.addPlanListener = function(button, plan) {
 }
 
 Profiles.prototype.modelChanged = function() {
-    this.updateCalendarList(this.model.availableCalendars);
+    this.updateCalendarList(this.model.availableCalendars.value());
     this.manageCalendarsActor.redraw();
     this.updatePlansList(this.model.savedPlans);
     this.updateCategories();

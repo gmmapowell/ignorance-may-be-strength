@@ -6,20 +6,33 @@ var ControllerOfType = function(type) {
 	this.type = type;
 }
 
-var StateElement = function(category, entry) {
+var StateElement = function(category, entry, defvalue) {
 	this.category = category;
 	this.entry = entry;
+	this.defvalue = defvalue;
 
 	// should be set up during autowire
 	this.sharedstate = null;
 }
 
 StateElement.prototype.value = function() {
-	return this.sharedstate.map[this.entry];
+	if (this.sharedstate && this.sharedstate.map) {
+		if (!this.sharedstate.map[this.entry]) {
+			this.sharedstate.map[this.entry] = this.defvalue;
+		}
+		return this.sharedstate.map[this.entry];
+	}
+	return this.defvalue;
 }
 
 StateElement.prototype.set = function(val) {
-	this.sharedstate.map[this.entry] = val;
+	if (this.sharedstate && this.sharedstate.map) {
+		this.sharedstate.map[this.entry] = val;
+		this.sharedstate.store();
+	}
+}
+
+StateElement.prototype.store = function() {
 	this.sharedstate.store();
 }
 
@@ -107,6 +120,10 @@ var SharedState = function(storage, category) {
 	this.storage = storage;
 	this.category = category;
 	this.map = storage.currentState(category);
+	if (!this.map) {
+		this.map = {};
+		this.store();
+	}
 }
 
 SharedState.prototype.load = function() {

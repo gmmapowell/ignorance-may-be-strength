@@ -30,7 +30,8 @@ ManageCalendars.prototype.provideProfiles = function(profiles) {
 }
 
 ManageCalendars.prototype.redraw = function() {
-    var cals = Object.keys(this.model.availableCalendars);
+    var acs = this.model.availableCalendars.value();
+    var cals = Object.keys(acs);
     this.list.innerHTML = '';
     for (var i=0;i<cals.length;i++) {
         var k = cals[i];
