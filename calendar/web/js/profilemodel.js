@@ -1,11 +1,15 @@
 import { ajax } from './ajax.js';
-import { StateElement } from './autowire.js';
+import { AutoWireStorage, ControllerOfType, StateElement } from './autowire.js';
 import { CsvCalendar } from './csvcalendar.js';
 import { CalEvent, ChangeTZ } from './events.js';
 import { Ics } from './ics.js';
+import { ModelProvider } from './model.js';
+import { Profiles } from './profiles.js';
 
-function ProfileModel(storage) {
-    this.storage = storage;
+function ProfileModel() {
+    this.storage = new AutoWireStorage();
+    this.modelProvider = new ControllerOfType(ModelProvider);
+    this.vis = new ControllerOfType(Profiles);
     this.drawerState = new StateElement("profile", "drawerState", false);
     this.availableCalendars = new StateElement("profile", "selectedCalendars", {});
     this.activeCalendars = {};
@@ -16,18 +20,13 @@ function ProfileModel(storage) {
     this.events = [];
     this.timezoneChangesMap = {};
     this.timezoneChanges = [];
+}
+
+ProfileModel.prototype.init = function() {
     this.storage.addProfileListener(this);
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
     }
-}
-
-ProfileModel.prototype.addPlan = function(planner) {
-    this.modelProvider = planner;
-}
-
-ProfileModel.prototype.addVisual = function(vis) {
-    this.vis = vis;
     /*
     var state = this.storage.currentState("profile");
     if (state) {
@@ -52,7 +51,7 @@ ProfileModel.prototype.addVisual = function(vis) {
     }
     */
     if (this.drawerState.value()) {
-        vis.openDrawer();
+        this.vis.openDrawer();
     }
     var acs = this.availableCalendars.value();
     if (acs) {
@@ -63,7 +62,7 @@ ProfileModel.prototype.addVisual = function(vis) {
             }
         };
     }
-    vis.modelChanged();
+    this.vis.modelChanged();
 }
 
 ProfileModel.prototype.reset = function() {

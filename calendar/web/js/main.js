@@ -10,85 +10,51 @@ import { Profiles } from "./profiles.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Hamburger } from "./hamburger.js";
 
-function bindElement(into, name) {
-    var elt = document.getElementById(name);
-    if (!elt) {
-        throw new Error("there is no element called " + name);
-    }
-    into[name] = elt;
-}
-
 function init() {
-    // First get all the elements from the document
-    var sections = {};
-    bindElement(sections, 'mode-controller');
-    bindElement(sections, 'signed-in-controller');
-    bindElement(sections, 'controls');
-    bindElement(sections, 'options-drawer');
-    bindElement(sections, 'feedback');
-
-    var core = {};
-    bindElement(core, 'start-date');
-    bindElement(core, 'end-date');
-    bindElement(core, 'first-day');
-    bindElement(core, 'calendar-time-zone');
-    bindElement(core, 'shade-weekends');
-
-    var profileButton = {};
-    bindElement(profileButton, 'profile-button');
-
-    var userProfile = {};
-    bindElement(userProfile, 'user-profile-reset');
-
     // create a wrapper around localStorage
     var storage = new CalendarStorage();
 
-    // then create all the model objects
-    var profileModel = new ProfileModel(storage);
-
-    // then create all the actors
-    var modelProvider = new ModelProvider(storage, core, profileModel);
-	var styler = new Styling(storage, sections);
-    var redraw = new RedrawClz(storage, modelProvider, sections, styler);
-    var manageCalendars = new ManageCalendars();
-    var profiles = new Profiles(storage, redraw);
-
-    var modeOptions = new ModeOptions();
-    var hamburger = new Hamburger(profiles, profileModel);
+    // then create the model object
+    var profileModel = new ProfileModel();
     
-    new AutoWire(document, storage).wireUp(profileModel, modeOptions, profiles, styler, hamburger, manageCalendars);
+    // then create all the actors
+    // TODO: REMOVE DIRECT REFERENCES TO STORAGE!!! (Use either StateElement or AutoWireStorage if you need the whole thing)
+    var modelProvider = new ModelProvider(storage);
+	var styler = new Styling(storage);
+    var redraw = new RedrawClz(storage);
+    var manageCalendars = new ManageCalendars();
+    var profiles = new Profiles(storage);
+    var modeOptions = new ModeOptions();
+    var hamburger = new Hamburger();
 
-    profileModel.addPlan(modelProvider);
-    profileModel.addVisual(profiles);
- 
-    // wire up events
-    redraw.onChange(core['start-date']);
-    redraw.onChange(core['end-date']);
-    redraw.onChange(core['first-day']);
-    core['calendar-time-zone'].addEventListener('change', ev => profileModel.changeTimeZone(core['calendar-time-zone'].selectedOptions[0].value));
-    redraw.onChange(core['shade-weekends']);
-
-    redraw.onChange(styler.pageSizer);
-    redraw.onChange(styler.isLandscape);
-
-    profileButton['profile-button'].addEventListener('click', () => profiles.buttonClicked());
-    userProfile['user-profile-reset'].addEventListener('click', () => {
+    // the reset function refers to many of these but is called in AutoWire
+    var doReset = function() {
         modelProvider.reset();
         profileModel.reset();
         styler.reset();
         profiles.modelChanged();
         profiles.closeDrawer();
-    });
+    }
 
+    // then get everything wired together
+    new AutoWire(document, storage)
+        .wireUp(profileModel, modelProvider, modeOptions, profiles, redraw, styler, hamburger, manageCalendars)
+        .callWithElements(elt => redraw.onChange(elt), 'start-date', 'end-date', 'first-day', 'shade-weekends', 'page-size', 'landscape')
+        .elementListener('change', ev => profileModel.changeTimeZone(ev.target.selectedOptions[0].value), 'calendar-time-zone')
+        .elementListener('click', ev => profiles.buttonClicked(), 'profile-button')
+        .elementListener('click', doReset, 'user-profile-reset');
+
+    // Add specific global event listeners
 	addEventListener("beforeprint", ev => redraw.mode(false));
 	addEventListener("resize", () => redraw.windowResized());
 	addEventListener("afterprint", ev => redraw.mode(true));
 
+    // I think these should all go into "init"
     modelProvider.restoreState();
     profileModel.changeTimeZone(storage.currentState('core').showTz);
     styler.restoreState();
 
-    // ok, show what we've got
+    // ok, show what we've got - this shouldn't be necessary, but just in case ...
 	redraw.redraw();
 }
 

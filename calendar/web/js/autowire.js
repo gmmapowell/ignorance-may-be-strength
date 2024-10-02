@@ -6,6 +6,9 @@ var ControllerOfType = function(type) {
 	this.type = type;
 }
 
+var AutoWireStorage = function() {
+}
+
 var StateElement = function(category, entry, defvalue) {
 	this.category = category;
 	this.entry = entry;
@@ -64,13 +67,17 @@ AutoWire.prototype.wireUp = function(...objs) {
 			objs[o].init();
 		}
 	}
+
+	return this; // for chaining
 }
 
 AutoWire.prototype.enableStorage = function(obj) {
 	var props = Object.keys(obj);
 	for (var p in props) {
 		var k = props[p];
-		if (obj[k] instanceof StateElement) {
+		if (obj[k] instanceof AutoWireStorage) {
+			obj[k] = this.storageProvider;
+		} else if (obj[k] instanceof StateElement) {
 			var se = obj[k];
 			if (!this.storageCategories[se.category]) {
 				this.storageCategories[se.category] = new SharedState(this.storageProvider, se.category);
@@ -111,6 +118,22 @@ AutoWire.prototype.connectElement = function(obj, prop, ewi) {
 	obj[prop] = document.getElementById(ewi.label);
 }
 
+
+AutoWire.prototype.callWithElements = function(fn, ...elts) {
+	for (var e of elts) {
+		var elt = this.elementProvider.getElementById(e);
+		fn.call(null, elt);
+	}
+
+	return this;
+}
+
+AutoWire.prototype.elementListener = function(evname, fn, ...elts) {
+	this.callWithElements(elt => elt.addEventListener(evname, fn), elts);
+
+	return this;
+}
+
 /**
  * This class is used to share state between clients of the same category.
  * This is just used internally by Autowire and StateElement
@@ -134,4 +157,4 @@ SharedState.prototype.store = function() {
 	this.storage.storeState(this.category, this.map);
 }
 
-export { ElementWithId, ControllerOfType, StateElement, AutoWire };
+export { ElementWithId, ControllerOfType, AutoWireStorage, StateElement, AutoWire };

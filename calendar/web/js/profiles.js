@@ -4,11 +4,12 @@ import { setMode } from "./utils.js";
 import { ajax } from './ajax.js';
 import { ProfileModel } from "./profilemodel.js";
 import { ManageCalendars } from "./manage.js";
+import { RedrawClz } from "./redraw.js";
 
-function Profiles(storage, redraw) {
+function Profiles(storage) {
     this.storage = storage;
     this.model = new ControllerOfType(ProfileModel);
-    this.redraw = redraw;
+    this.redraw = new ControllerOfType(RedrawClz);
     this.manageCalendarsActor = new ControllerOfType(ManageCalendars);
 
     this.modeController = new ElementWithId('mode-controller');

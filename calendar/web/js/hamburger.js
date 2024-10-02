@@ -1,15 +1,16 @@
 import { ElementWithId, ControllerOfType } from "./autowire.js";
 import { ModeOptions } from "./modeOptions.js";
+import { ProfileModel } from "./profilemodel.js";
+import { Profiles } from "./profiles.js";
 
-var Hamburger = function(profiles, model) {
-    this.profiles = profiles;
-    this.model = model;
+var Hamburger = function() {
+    this.profiles = new ControllerOfType(Profiles);
+    this.model = new ControllerOfType(ProfileModel);
 
     this.button = new ElementWithId('hamburger-button');
     this.menu = new ElementWithId('hamburger-menu');
     this.padding = new ElementWithId('hamburger-padding');
     this.modeController = new ElementWithId('mode-controller');
-    // this.modeOptions = new ElementWithId('mode-options');
     this.feedback = new ElementWithId('feedback');
     this.narrowOptions = new ElementWithId('narrow-options');
     this.signInButton = new ElementWithId('hamburger-sign-in');

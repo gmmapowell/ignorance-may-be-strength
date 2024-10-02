@@ -7,11 +7,11 @@ const screenOnly = false;
 const testingPrinter = false;
 const feedbackBorder = false;
 
-function Styling(storage, sections) {
+function Styling(storage) {
 	this.storage = storage;
-	this.styledDiv = sections['feedback'];
-	this.controlPane = sections['controls'];
-	this.optionsDrawer = sections['options-drawer'];
+	this.styledDiv = new ElementWithId('feedback');
+	this.controlPane = new ElementWithId('controls');
+	this.optionsDrawer = new ElementWithId('options-drawer');
 	this.pageSizer = new ElementWithId('page-size');
 	this.isLandscape = new ElementWithId('landscape');
 

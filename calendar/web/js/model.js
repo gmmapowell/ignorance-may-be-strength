@@ -1,12 +1,14 @@
+import { ControllerOfType, ElementWithId } from "./autowire.js";
+import { ProfileModel } from "./profilemodel.js";
 
-function ModelProvider(storage, core, prof) {
+function ModelProvider(storage) {
 	this.storage = storage;
-    this.start = core['start-date'];
-    this.end = core['end-date'];
-    this.first = core['first-day'];
-	this.showTz = core['calendar-time-zone'];
-    this.weekendShadeOption = core['shade-weekends'];
-	this.profile = prof;
+    this.start = new ElementWithId('start-date');
+    this.end = new ElementWithId('end-date');
+    this.first = new ElementWithId('first-day');
+	this.showTz = new ElementWithId('calendar-time-zone');
+    this.weekendShadeOption = new ElementWithId('shade-weekends');
+	this.profile = new ControllerOfType(ProfileModel);
 	this.recoveredPlan = null;
 }
 

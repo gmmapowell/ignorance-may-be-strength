@@ -1,13 +1,19 @@
 import { ajax } from './ajax.js';
 import { download } from "./download.js";
+import { ControllerOfType, ElementWithId } from './autowire.js';
+import { ModelProvider } from './model.js';
+import { Styling } from './styling.js';
 
-function RedrawClz(storage, m, sections, styling) {
+function RedrawClz(storage) {
 	this.storage = storage;
-    this.modelProvider = m;
-    this.fbdiv = sections['feedback'];
+    this.modelProvider = new ControllerOfType(ModelProvider);
+    this.styling = new ControllerOfType(Styling);
+	this.fbdiv = new ElementWithId('feedback');
+	this.redrawWhenResized = true;
+}
+
+RedrawClz.prototype.init = function() {
 	this.handleDroppedPlans(this.fbdiv);
-    this.styling = styling;
-    this.redrawWhenResized = true;
 }
 
 RedrawClz.prototype.handleDroppedPlans = function(targetZone) {
