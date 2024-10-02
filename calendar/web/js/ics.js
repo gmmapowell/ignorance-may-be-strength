@@ -4,16 +4,16 @@ function Ics() {
 }
 
 Ics.parse = function(text, mytz, showtz) {
-	var lines = joinLongLines(text.split(/\r\n/));
-	var blocked = makeHierarchical(lines);
+	var lines = Ics.joinLongLines(text.split(/\r\n/));
+	var blocked = Ics.makeHierarchical(lines);
 	if (blocked) {
-		return makeEvents(blocked, mytz, showtz);
+		return Ics.makeEvents(blocked, mytz, showtz);
 	} else {
 		return null;
 	}
 }
 
-function joinLongLines(lines) {
+Ics.joinLongLines = function(lines) {
 	var i=0;
 	var ret = [];
 	while (i < lines.length) {
@@ -26,7 +26,7 @@ function joinLongLines(lines) {
 	return ret;
 }
 
-function makeHierarchical(lines) {
+Ics.makeHierarchical = function(lines) {
 	var ret = { type: "VCALENDAR", blocks: [], fields: {} };
 	if (lines[0] != "BEGIN:VCALENDAR") {
 		console.log("not a calendar"); // errors
@@ -35,7 +35,7 @@ function makeHierarchical(lines) {
 	var curr = ret;
 	var stack = [ ];
 	for (var i=1;i<lines.length && lines[i] != "END:VCALENDAR";i++) {
-		var kv = lines[i].split(/:/);
+		var kv = Ics.split(lines[i]);
 		if (kv[0] == "BEGIN") {	
 			var next = { type: kv[1], blocks: [], fields: {} };
 			curr.blocks.push(next);
@@ -54,7 +54,17 @@ function makeHierarchical(lines) {
 	return ret;
 }
 
-function makeEvents(blocks, mytz, showtz) {
+Ics.split = function(line) {
+	var col = line.indexOf(':');
+	var semi = line.indexOf(';');
+	if (semi != -1 && (col == -1 || semi < col)) {
+		return [ line.substring(0, semi), line.substring(semi+1) ];
+	} else {
+		return [ line.substring(0, col), line.substring(col+1) ];
+	}
+}
+
+Ics.makeEvents = function(blocks, mytz, showtz) {
 	if (!mytz)
 		mytz = "UTC";
 	// This assumes that blocks is a VCALENDAR containing VEVENT objects
@@ -81,7 +91,7 @@ function makeEvents(blocks, mytz, showtz) {
 	return ret;
 }
 
-function toStandard(date) {
+Ics.toStandard = function(date) {
 	return date.substring(0, 4) + "-" + date.substring(4,6) + "-" + date.substring(6,11) + ":" + date.substring(11,13) + ":" + date.substring(13);
 }
 

@@ -36,6 +36,19 @@
 				"presentation": {
 					"reveal": "always"
 				}
+			},
+			{
+				"label": "Calendar Tests",
+				"type": "shell",
+				"command": "npm",
+				"args": ["test"],
+				"group": "test",
+				"options": {
+					"cwd": "${workspaceFolder}/../calendar"
+				},
+				"presentation": {
+					"reveal": "always"
+				}
 			}
 		]
 	}

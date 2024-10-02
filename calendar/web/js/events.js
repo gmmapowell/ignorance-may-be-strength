@@ -16,6 +16,12 @@ CalDateTime.tzjs = function(tz, jsd) {
 }
 
 CalDateTime.icsDate = function(tz, ics) {
+    var col = ics.indexOf(':');
+    if (col != -1) {
+        var tzp = ics.substring(0, col);
+        ics = ics.substring(col+1);
+        tz = tzp.replace("TZID=", "");
+    }
     var ret = CalDateTime.standard(tz, toStandard(ics));
     // console.log("processing " + ics + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
     // console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
