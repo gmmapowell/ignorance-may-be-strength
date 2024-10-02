@@ -6,6 +6,10 @@
     display: none;
 }
 
+#mode-controller.standard-mode #signed-in-controller.signed-in .open-profile {
+    display: block;
+}
+
 #mode-controller.standard-mode #signed-in-controller.signed-out .sign-in {
     display: block;
 }

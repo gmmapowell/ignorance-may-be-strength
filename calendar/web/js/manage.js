@@ -1,13 +1,28 @@
-// import { toggleHidden, hide, show, isShown } from "./utils.js";
+import { ElementWithId, ControllerOfType } from "./autowire.js";
+import { ProfileModel } from "./profilemodel.js";
+import { Profiles } from "./profiles.js";
 
 function ManageCalendars(elts, model) {
-    this.model = model;
-    this.list = elts['manage-calendars-list'];
-    this.detail = elts['manage-calendars-detail'];
-    this.called = elts['manage-calendar-called'];
-    this.tz = elts['manage-calendar-detail-timezone'];
-    this.apply = elts['manage-calendar-apply'];
+    this.model = new ControllerOfType(ProfileModel);
+    this.profiles = new ControllerOfType(Profiles);
+
+    this.closeMe = new ElementWithId('close-manage-calendars');
+    this.list = new ElementWithId('manage-calendars-list');
+    this.detail = new ElementWithId('manage-calendars-detail');
+    this.called = new ElementWithId('manage-calendar-called');
+    this.tz = new ElementWithId('manage-calendar-detail-timezone');
+    this.apply = new ElementWithId('manage-calendar-apply');
+}
+
+ManageCalendars.prototype.init = function() {
     this.apply.addEventListener('click', () => this.applyDetails());
+    /*
+    var x = document.createElement("input");
+    x.setAttribute("type", "button");
+    x.value = "X";
+    this.list.appendChild(x);
+    */
+    this.closeMe.addEventListener('click', () => this.profiles.hideManage());
 }
 
 ManageCalendars.prototype.provideProfiles = function(profiles) {
@@ -17,11 +32,6 @@ ManageCalendars.prototype.provideProfiles = function(profiles) {
 ManageCalendars.prototype.redraw = function() {
     var cals = Object.keys(this.model.availableCalendars);
     this.list.innerHTML = '';
-    var x = document.createElement("input");
-    x.setAttribute("type", "button");
-    x.value = "X";
-    this.list.appendChild(x);
-    x.addEventListener('click', () => this.profiles.hideManage());
     for (var i=0;i<cals.length;i++) {
         var k = cals[i];
         var e = document.createElement("input");

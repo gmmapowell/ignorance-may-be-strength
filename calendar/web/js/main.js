@@ -1,3 +1,5 @@
+import { AutoWire } from './autowire.js';
+import { ModeOptions } from './modeOptions.js';
 import { ModelProvider } from "./model.js";
 import { CalendarStorage } from "./storage.js";
 import { ManageCalendars } from "./manage.js";
@@ -41,20 +43,6 @@ function init() {
     bindElement(profile, 'sign-in-button');
     bindElement(profile, 'open-profile-button');
 
-    var hamburger = {};
-    bindElement(hamburger, 'hamburger-button');
-    bindElement(hamburger, 'hamburger-padding');
-    bindElement(hamburger, 'hamburger-menu');
-    // bindElement(hamburger, 'narrow-options');
-    bindElement(hamburger, 'control-panel');
-    bindElement(hamburger, 'options-drawer');
-    bindElement(hamburger, 'hamburger-sign-in');
-    bindElement(hamburger, 'hamburger-choose-dates');
-    bindElement(hamburger, 'hamburger-sign-out');
-    bindElement(hamburger, 'feedback');
-    bindElement(hamburger, 'mode-controller');
-    bindElement(hamburger, 'mode-options');
-
     var userProfile = {};
     bindElement(userProfile, 'user-profile-panel');
     bindElement(userProfile, 'manage-calendars-button');
@@ -66,14 +54,6 @@ function init() {
     bindElement(userProfile, 'available-calendars');
     bindElement(userProfile, 'calendar-categories');
     bindElement(userProfile, 'saved-plans');
-
-    var manageCalendars = {};
-    bindElement(manageCalendars, 'manage-calendars-panel');
-    bindElement(manageCalendars, 'manage-calendars-list');
-    bindElement(manageCalendars, 'manage-calendars-detail');
-    bindElement(manageCalendars, 'manage-calendar-called');
-    bindElement(manageCalendars, 'manage-calendar-apply');
-    bindElement(manageCalendars, 'manage-calendar-detail-timezone');
 
     var signin = {};
     bindElement(signin, 'sign-in-panel');
@@ -104,10 +84,13 @@ function init() {
     var modelProvider = new ModelProvider(storage, core, profileModel);
 	var styler = new Styling(storage, sections, print);
     var redraw = new RedrawClz(storage, modelProvider, sections, styler);
-    var manageCalendarsActor = new ManageCalendars(manageCalendars, profileModel);
-    var profiles = new Profiles(storage, profileModel, redraw, manageCalendarsActor, sections, profile, signin, userProfile, manageCalendars);
-    var hamburgerActor = new Hamburger(hamburger, profiles, profileModel);
-    manageCalendarsActor.provideProfiles(profiles);
+    var manageCalendars = new ManageCalendars();
+    var profiles = new Profiles(storage, redraw);
+
+    var modeOptions = new ModeOptions();
+    var hamburger = new Hamburger(profiles, profileModel);
+    new AutoWire(document).wireUp(profileModel, modeOptions, profiles, hamburger, manageCalendars);
+
     profileModel.addPlan(modelProvider);
     profileModel.addVisual(profiles);
  

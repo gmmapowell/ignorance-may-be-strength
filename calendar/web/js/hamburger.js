@@ -1,21 +1,28 @@
-// import { hide, show, isShown } from "./utils.js";
+import { ElementWithId, ControllerOfType } from "./autowire.js";
+import { ModeOptions } from "./modeOptions.js";
 
-var Hamburger = function(elts, profiles, model) {
-    var self = this;
+var Hamburger = function(profiles, model) {
     this.profiles = profiles;
     this.model = model;
-    this.button = elts['hamburger-button'];
-    this.menu = elts['hamburger-menu'];
-    this.padding = elts['hamburger-padding'];
-    this.modeController = elts['mode-controller'];
-    this.modeOptions = elts['mode-options'];
-    this.feedback = elts['feedback'];
-    this.narrowOptions = elts['narrow-options'];
-    this.signInButton = elts['hamburger-sign-in'];
-    this.chooseDatesButton = elts['hamburger-choose-dates'];
-    this.signOutButton = elts['hamburger-sign-out'];
-    this.controlpanel = elts['control-panel'];
-    this.optionsDrawer = elts['options-drawer'];
+
+    this.button = new ElementWithId('hamburger-button');
+    this.menu = new ElementWithId('hamburger-menu');
+    this.padding = new ElementWithId('hamburger-padding');
+    this.modeController = new ElementWithId('mode-controller');
+    // this.modeOptions = new ElementWithId('mode-options');
+    this.feedback = new ElementWithId('feedback');
+    this.narrowOptions = new ElementWithId('narrow-options');
+    this.signInButton = new ElementWithId('hamburger-sign-in');
+    this.chooseDatesButton = new ElementWithId('hamburger-choose-dates');
+    this.signOutButton = new ElementWithId('hamburger-sign-out');
+    this.controlpanel = new ElementWithId('control-panel');
+    this.optionsDrawer = new ElementWithId('options-drawer');
+
+    this.modeOptions = new ControllerOfType(ModeOptions);
+}
+
+Hamburger.prototype.init = function() {
+    var self = this;
     this.button.addEventListener('click', () => self.toggleMe());
     this.signInButton.addEventListener('click', () => { 
         self.showSignInPanel();
@@ -32,12 +39,7 @@ var Hamburger = function(elts, profiles, model) {
 
 Hamburger.prototype.toggleMe = function(explicit) {
     console.log("show/hide hamburger");
-    var haveMenu = this.modeOptions.classList.contains('show-hamburger');
-    if (!haveMenu) {
-        this.modeOptions.classList.add('show-hamburger');
-    } else {
-        this.modeOptions.classList.remove('show-hamburger');
-    }
+    this.modeOptions.toggleHamburger();
     /*
     var menuMode = explicit != undefined ? explicit : isShown(this.menu);
     if (!menuMode) {

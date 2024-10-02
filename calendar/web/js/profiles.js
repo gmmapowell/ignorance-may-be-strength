@@ -1,57 +1,62 @@
-// import { toggleHidden, hide, show, isShown } from "./utils.js";
+import { ElementWithId, ControllerOfType } from "./autowire.js";
+import { ModeOptions } from "./modeOptions.js";
 import { setMode } from "./utils.js";
 import { ajax } from './ajax.js';
+import { ProfileModel } from "./profilemodel.js";
+import { ManageCalendars } from "./manage.js";
 
-function Profiles(storage, model, redraw, manageCalendarsActor, sections, profileElts, elements, userProfile, manageCalendars) {
-    var self = this;
+function Profiles(storage, redraw) {
     this.storage = storage;
-    this.model = model;
+    this.model = new ControllerOfType(ProfileModel);
     this.redraw = redraw;
-    this.modeController = sections['mode-controller'];
-    this.signedInController = sections['signed-in-controller'];
-    this.optionsDrawer = sections['options-drawer'];
-    this.manageCalendarsActor = manageCalendarsActor;
+    this.manageCalendarsActor = new ControllerOfType(ManageCalendars);
 
-    this.profileElts = profileElts;
+    this.modeController = new ElementWithId('mode-controller');
+    this.signedInController = new ElementWithId('signed-in-controller')
+    this.optionsDrawer = new ElementWithId('options-drawer');
 
-    this.signInPanel = elements['sign-in-panel'];
-    this.email  = elements.core['sign-in-email'];
-    this.password = elements.core['sign-in-password'];
-    this.signIn = elements.core['submit-sign-in'];
-    this.cancel = elements.core['cancel-sign-in'];
+    this.signInPanel = new ElementWithId('sign-in-panel');
+    this.email  = new ElementWithId('sign-in-email');
+    this.password = new ElementWithId('sign-in-password');
+    this.signIn = new ElementWithId('submit-sign-in');
+    this.cancel = new ElementWithId('cancel-sign-in');
 
-    this.manageCalendarsElts = manageCalendars;
-    this.manageCalendarsPanel = manageCalendars['manage-calendars-panel'];
+    this.manageCalendarsPanel = new ElementWithId('manage-calendars-panel');
 
-    this.createUserPanel = elements['create-user-panel'];
-    this.createUserEmail = elements.newUser['create-user-email'];
-    this.createUserYes = elements.newUser['create-user-yes'];
-    this.createUserNo = elements.newUser['create-user-no'];
+    this.createUserPanel = new ElementWithId('create-user-panel');
+    this.createUserEmail = new ElementWithId('create-user-email');
+    this.createUserYes = new ElementWithId('create-user-yes');
+    this.createUserNo = new ElementWithId('create-user-no');
 
-    this.emailPanel = elements['email-panel'];
-    this.invalidEmailPanel = elements['invalid-email-panel'];
-    this.invalidPasswordPanel = elements['invalid-password-panel'];
-    this.invalidSigninPanel = elements['invalid-signin-panel'];
+    this.emailPanel = new ElementWithId('email-panel');
+    this.invalidEmailPanel = new ElementWithId('invalid-email-panel');
+    this.invalidPasswordPanel = new ElementWithId('invalid-password-panel');
+    this.invalidSigninPanel = new ElementWithId('invalid-signin-panel');
 
+    this.profileDisplay = new ElementWithId('user-profile-panel');
+    this.availableCalendars = new ElementWithId('available-calendars');
+    this.calendarCategories = new ElementWithId('calendar-categories');
+    this.savedPlans = new ElementWithId('saved-plans');
+    this.signOut = new ElementWithId('user-profile-sign-out');
+    this.dropUpload = new ElementWithId('drop-for-upload');
+
+    this.manageCalendarsButton = new ElementWithId('manage-calendars-button');
+    this.saveCalendarButton = new ElementWithId('save-current-calendar');
+    this.downloadCalendarButton = new ElementWithId('download-current-calendar');
+
+    this.modeOptions = new ControllerOfType(ModeOptions);
+}
+
+Profiles.prototype.init = function() {
     this.signIn.addEventListener('click', () => self.doSignIn());
     this.cancel.addEventListener('click', () => self.cancelSignIn());
     this.createUserYes.addEventListener('click', () => self.createUser());
     this.createUserNo.addEventListener('click', () => self.hidePanel());
 
-    this.profileDisplay = userProfile['user-profile-panel'];
-    this.availableCalendars = userProfile['available-calendars'];
-    this.calendarCategories = userProfile['calendar-categories'];
-    this.savedPlans = userProfile['saved-plans'];
-    userProfile['user-profile-sign-out'].addEventListener('click', () => self.signOutNow());
-    this.prepareDropUpload(userProfile['drop-for-upload']);
-
-    this.manageCalendarsButton = userProfile['manage-calendars-button'];
+    this.signOut.addEventListener('click', () => self.signOutNow());
+    this.prepareDropUpload(this.dropUpload);
     this.manageCalendarsButton.addEventListener('click', () => this.showManage());
-
-    this.saveCalendarButton = userProfile['save-current-calendar'];
     this.saveCalendarButton.addEventListener('click', () => this.redraw.saveCurrentCalendar(() => this.model.loadAvailableCalendars()));
-
-    this.downloadCalendarButton = userProfile['download-current-calendar'];
     this.downloadCalendarButton.addEventListener('click', () => this.redraw.downloadCurrentCalendar());
 
     this.updateSignedIn();
@@ -108,8 +113,7 @@ Profiles.prototype.updateSignedIn = function() {
 
 Profiles.prototype.buttonClicked = function() {
     if (this.model.amSignedIn()) {
-        toggleHidden(this.profileDisplay, this.optionsDrawer);
-        this.model.drawerOpen(isShown(this.optionsDrawer));
+        this.modeOptions.toggleProfile();
     } else {
         setMode(this.modeController, "signing-in");
     }
@@ -117,25 +121,30 @@ Profiles.prototype.buttonClicked = function() {
 }
 
 Profiles.prototype.showManage = function() {
+    this.modeOptions.showManage();
+
     // toggleHidden(this.signInPanel, this.optionsDrawer);
-    hide(this.profileDisplay);
-    hide(this.emailPanel);
-    hide(this.invalidSigninPanel)
-    hide(this.invalidEmailPanel);
-    hide(this.invalidPasswordPanel);
-    show(this.manageCalendarsPanel);
+    // hide(this.profileDisplay);
+    // hide(this.emailPanel);
+    // hide(this.invalidSigninPanel)
+    // hide(this.invalidEmailPanel);
+    // hide(this.invalidPasswordPanel);
+    // show(this.manageCalendarsPanel);
     this.manageCalendarsActor.redraw();
     this.redraw.redraw();
 }
 
 Profiles.prototype.hideManage = function() {
+    this.modeOptions.hideManage();
     // toggleHidden(this.signInPanel, this.optionsDrawer);
+    /*
     show(this.profileDisplay);
     hide(this.emailPanel);
     hide(this.invalidSigninPanel)
     hide(this.invalidEmailPanel);
     hide(this.invalidPasswordPanel);
     hide(this.manageCalendarsPanel);
+    */
     this.manageCalendarsActor.redraw();
     this.redraw.redraw();
 }
@@ -205,9 +214,9 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
             // the user does not exist: do you want to create the user with the given password?
             this.createUserEmail.innerHTML = '';
             this.createUserEmail.appendChild(document.createTextNode(this.email.value));
-            show(this.optionsDrawer);
-            hide(this.signInPanel);
-            show(this.createUserPanel);
+            // show(this.optionsDrawer);
+            // hide(this.signInPanel);
+            // show(this.createUserPanel);
             break;
         }
         case "invalid-password": {
@@ -220,7 +229,7 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
             // the user successfully logged in, so store the (returned) token
             this.storage.bindToken(resp.token);
             this.updateSignedIn();
-            this.hidePanel();
+            // this.hidePanel();
             break;
         }
         case "signin-failed": {

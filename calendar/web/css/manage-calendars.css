@@ -2,6 +2,10 @@
     display: block;
 }
 
+input.close-manage-calendars {
+    display: inline-block;
+}
+
 .manage-calendars-list {
     display: inline-block;
     vertical-align: top;

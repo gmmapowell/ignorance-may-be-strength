@@ -7,6 +7,14 @@ body {
     display: none;
 }
 
+#mode-options.show-profile #signed-in-controller.signed-in .options-drawer,
+#mode-options.show-profile.show-user-profile #signed-in-controller.signed-in .user-profile,
+#mode-options.show-profile.show-manage-calendars #signed-in-controller.signed-in .manage-calendars
+{
+    display: block;
+}
+
+
 .options-drawer {
     width: calc(100% - 1.6em);
     background-color: silver;

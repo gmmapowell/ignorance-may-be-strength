@@ -3,34 +3,41 @@ function setMode(elt, mode) {
     elt.className = mode;
 }
 
-function isShown(elt) {
-    return !elt.classList.contains("hidden");
+function hasClass(elt, clz) {
+    return !elt.classList.contains(clz);
 }
 
-function toggleHidden(elt, container) {
-    if (elt.classList.contains("hidden")) {
-        elt.classList.remove("hidden");
-        if (container)
-            container.classList.remove("hidden");
-    } else {
-        elt.classList.add("hidden");
-        if (container)
-            container.classList.add("hidden");
-    }
-}
-
-function show(...elts) {
+function toggleClass(clz, ...elts) {
+    if (!elts || elts.length == 0)
+        throw new Error("must specify at least one element");
+    var anyApplied = false;
     for (var elt of elts) {
-        if (elt.classList.contains("hidden")) {
-            elt.classList.remove("hidden");
+        if (elt.classList.contains(clz)) {
+            elt.classList.remove(clz);
+        } else {
+            elt.classList.add(clz);
+            anyApplied = true;
+        }
+    }
+    return anyApplied;
+}
+
+function ensureClass(clz, ...elts) {
+    if (!elts || elts.length == 0)
+        throw new Error("must specify at least one element");
+    for (var elt of elts) {
+        if (!elt.classList.contains(clz)) {
+            elt.classList.add(clz);
         }
     }
 }
 
-function hide(...elts) {
+function removeClass(clz, ...elts) {
+    if (!elts || elts.length == 0)
+        throw new Error("must specify at least one element");
     for (var elt of elts) {
-        if (!elt.classList.contains("hidden")) {
-            elt.classList.add("hidden");
+        if (elt.classList.contains(clz)) {
+            elt.classList.remove(clz);
         }
     }
 }
@@ -39,4 +46,4 @@ function equalsIgnoringCase(text, other) {
     return text.localeCompare(other, undefined, { sensitivity: 'base' }) === 0;
 }
 
-export { /* toggleHidden, show, hide, isShown, */ setMode, equalsIgnoringCase };
+export { toggleClass, ensureClass, removeClass, hasClass, setMode, equalsIgnoringCase };
