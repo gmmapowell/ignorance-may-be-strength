@@ -2,7 +2,7 @@ import { ElementWithId, ControllerOfType } from "./autowire.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Profiles } from "./profiles.js";
 
-function ManageCalendars(elts, model) {
+function ManageCalendars() {
     this.model = new ControllerOfType(ProfileModel);
     this.profiles = new ControllerOfType(Profiles);
 

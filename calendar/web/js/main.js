@@ -89,7 +89,7 @@ function init() {
 
     var modeOptions = new ModeOptions();
     var hamburger = new Hamburger(profiles, profileModel);
-    new AutoWire(document).wireUp(profileModel, modeOptions, profiles, hamburger, manageCalendars);
+    new AutoWire(document, storage).wireUp(profileModel, modeOptions, profiles, hamburger, manageCalendars);
 
     profileModel.addPlan(modelProvider);
     profileModel.addVisual(profiles);

@@ -113,7 +113,8 @@ Profiles.prototype.updateSignedIn = function() {
 
 Profiles.prototype.buttonClicked = function() {
     if (this.model.amSignedIn()) {
-        this.modeOptions.toggleProfile();
+        var shown = this.modeOptions.toggleProfile();
+        this.model.drawerOpen(shown);
     } else {
         setMode(this.modeController, "signing-in");
     }
@@ -150,13 +151,15 @@ Profiles.prototype.hideManage = function() {
 }
 
 Profiles.prototype.openDrawer = function() {
-    show(this.profileDisplay, this.optionsDrawer);
+    // show(this.profileDisplay, this.optionsDrawer);
+    this.modeOptions.openDrawer();
     this.redraw.redraw();
 }
 
 Profiles.prototype.closeDrawer = function() {
-    hide(this.optionsDrawer);
-    hide(this.profileDisplay);
+    // hide(this.optionsDrawer);
+    // hide(this.profileDisplay);
+    this.modeOptions.closeDrawer();
     this.redraw.redraw();
 }
 
@@ -347,7 +350,7 @@ function makeColorPicker(catn, chosen) {
 
 Profiles.prototype.addCalendarListener = function(cb, label) {
     cb.addEventListener('change', () => {
-        this.model.selectCalendar(label, cb.checked);
+        this.model.selectCalendarAction(label, cb.checked);
 
         // we will need to redraw after the calendar has been successfully loaded
         // this is done in modelChanged()

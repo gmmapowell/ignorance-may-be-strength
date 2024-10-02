@@ -16,7 +16,7 @@ var ModeOptions = function() {
 }
 
 ModeOptions.prototype.toggleHamburger = function() {
-	toggleClass('show-hamburger', this.mydiv);
+	return toggleClass('show-hamburger', this.mydiv);
 }
 
 ModeOptions.prototype.toggleProfile = function() {
@@ -25,6 +25,17 @@ ModeOptions.prototype.toggleProfile = function() {
 		this.cleanSubProfiles();
 		ensureClass('show-user-profile', this.mydiv);
 	}
+	return applied;
+}
+
+ModeOptions.prototype.openDrawer = function() {
+	ensureClass('show-profile', this.mydiv);
+	this.cleanSubProfiles();
+	ensureClass('show-user-profile', this.mydiv);
+}
+
+ModeOptions.prototype.closeDrawer = function() {
+	removeClass('show-profile', this.mydiv);
 }
 
 ModeOptions.prototype.showManage = function() {

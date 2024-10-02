@@ -1,11 +1,12 @@
 import { ajax } from './ajax.js';
+import { StateElement } from './autowire.js';
 import { CsvCalendar } from './csvcalendar.js';
 import { CalEvent, ChangeTZ } from './events.js';
 import { Ics } from './ics.js';
 
 function ProfileModel(storage) {
     this.storage = storage;
-    this.drawerState = false;
+    this.drawerState = new StateElement("profile", "drawerState");
     this.availableCalendars = {};
     this.activeCalendars = {};
     this.calprops = {};
@@ -27,6 +28,7 @@ ProfileModel.prototype.addPlan = function(planner) {
 
 ProfileModel.prototype.addVisual = function(vis) {
     this.vis = vis;
+    /*
     var state = this.storage.currentState("profile");
     if (state) {
         if (state.drawerState) {
@@ -42,23 +44,21 @@ ProfileModel.prototype.addVisual = function(vis) {
             this.showtz = state.showtz;
         }
 
-        // selectCalendar is a bit heavyweight for this since it writes state back
-        // NB: Any other state must be read BEFORE we do this
-        // TODO: split this into two steps: read the active calendars, then select them
         if (state.selectedCalendars) {
             for (var c of state.selectedCalendars) {
-                this.selectCalendar(c, true);
+                this.includeCalendar(c, true);
             };
         }
-        if (this.drawerState) {
-            vis.openDrawer();
-        }
-        vis.modelChanged();
     }
+    */
+    if (this.drawerState.value()) {
+        vis.openDrawer();
+    }
+    vis.modelChanged();
 }
 
 ProfileModel.prototype.reset = function() {
-    this.drawerState = false;
+    this.drawerState.set(false);
     for (var c of Object.keys(this.availableCalendars)) {
         this.availableCalendars[c] = false;
     }
@@ -90,8 +90,7 @@ ProfileModel.prototype.signedOut = function() {
 }
 
 ProfileModel.prototype.drawerOpen = function(isOpen) {
-    this.drawerState = isOpen;
-    this.storeCurrentState();
+    this.drawerState.set(isOpen);
 }
 
 ProfileModel.prototype.loadAvailableCalendars = function() {
@@ -119,24 +118,31 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
     }
 }
 
-ProfileModel.prototype.selectCalendar = function(label, selected) {
+ProfileModel.prototype.selectCalendarAction = function(label, selected) {
     this.availableCalendars[label] = selected;
     this.storeCurrentState();
+    
+    if (selected)
+        this.includeCalendar(label);
+    else
+        this.removeCalendar(label);
+}
 
-    if (selected) {
-        // so the next step is to retrieve and parse this
-        // I think we want to retrieve it every time we select it to allow for updates
-        var opts = {};
-        opts['x-identity-token'] = this.storage.getToken();
-        opts['x-calendar-name'] = label;
-        ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, null, opts);
-        // and then somewhere else this model needs to be taken into account for redraw
-    } else {
-        // clear out the parsed version of the calendar (if any)
-        delete this.activeCalendars[label]; // if it has been loaded and parsed
-        delete this.calendarCategories[label];
-        this.vis.modelChanged();
-    }
+ProfileModel.prototype.includeCalendar = function(label) {
+    // so the next step is to retrieve and parse this
+    // I think we want to retrieve it every time we select it to allow for updates
+    var opts = {};
+    opts['x-identity-token'] = this.storage.getToken();
+    opts['x-calendar-name'] = label;
+    ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, null, opts);
+    // and then somewhere else this model needs to be taken into account for redraw
+}
+
+ProfileModel.prototype.removeCalendar = function(label) {
+    // clear out the parsed version of the calendar (if any)
+    delete this.activeCalendars[label]; // if it has been loaded and parsed
+    delete this.calendarCategories[label];
+    this.vis.modelChanged();
 }
 
 ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
@@ -258,6 +264,8 @@ ProfileModel.prototype.chooseCategoryColor = function(cat, color) {
     this.vis.modelChanged();
 }
 
+/*
+
 ProfileModel.prototype.storeCurrentState = function() {
     var statecals = [];
     for (var c of Object.keys(this.availableCalendars)) {
@@ -275,5 +283,6 @@ ProfileModel.prototype.storeCurrentState = function() {
 
     this.storage.storeState("profile", state);
 }
+    */
 
 export { ProfileModel };
