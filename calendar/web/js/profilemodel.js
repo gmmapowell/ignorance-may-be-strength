@@ -54,6 +54,15 @@ ProfileModel.prototype.addVisual = function(vis) {
     if (this.drawerState.value()) {
         vis.openDrawer();
     }
+    var acs = this.availableCalendars.value();
+    if (acs) {
+        var keys = Object.keys(acs);
+        for (var k of keys) {
+            if (acs[k]) {
+                this.includeCalendar(k, true);
+            }
+        };
+    }
     vis.modelChanged();
 }
 
@@ -164,7 +173,7 @@ ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
 }
 
 ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
-    if (!this.availableCalendars[label]) {
+    if (!this.availableCalendars.value()[label]) {
         // I am considering this a race condition where the checkbox has been toggled on and off again before we can retrieve the calendar by ajax
         // so we want to ignore this "belated" response
         return;
