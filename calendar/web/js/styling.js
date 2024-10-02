@@ -1,3 +1,4 @@
+import { ElementWithId } from "./autowire.js";
 import { SheetRules, SheetRule } from "./stylesheet.js";
 
 // all of these should be false in the wild
@@ -6,13 +7,13 @@ const screenOnly = false;
 const testingPrinter = false;
 const feedbackBorder = false;
 
-function Styling(storage, sections, print) {
+function Styling(storage, sections) {
 	this.storage = storage;
 	this.styledDiv = sections['feedback'];
 	this.controlPane = sections['controls'];
 	this.optionsDrawer = sections['options-drawer'];
-	this.pageSizer = print['page-size'];
-	this.isLandscape = print['landscape'];
+	this.pageSizer = new ElementWithId('page-size');
+	this.isLandscape = new ElementWithId('landscape');
 
 	this.screenSheet = new CSSStyleSheet({ media: "screen" });
 	this.screenLayout = new SheetRules(this.screenSheet);
