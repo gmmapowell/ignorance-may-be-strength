@@ -198,7 +198,6 @@ Profiles.prototype.handleResponse = function(stat, msg, mode) {
         return;
     }
     var resp = JSON.parse(msg);
-    console.log(resp);
     switch (resp.action) {
         case "invalid-email": {
             // if the user is trying to create an account, this is a special message that they cannot use that email;

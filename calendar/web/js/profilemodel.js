@@ -73,8 +73,7 @@ ProfileModel.prototype.reset = function() {
         acs[c] = false;
     }
     this.activeCalendars = {};
-    this.categoryConfigs = {};
-    this.storeCurrentState();
+    this.categoryConfigs.set({});
 }
 
 ProfileModel.prototype.amSignedIn = function() {
@@ -83,18 +82,20 @@ ProfileModel.prototype.amSignedIn = function() {
 
 ProfileModel.prototype.signedIn = function() {
     this.availableCalendars.set({});
-    this.loadAvailableCalendars();
     this.activeCalendars = {};
     this.calendarCategories = {};
     this.categoryConfigs.set({});
+    this.loadAvailableCalendars();
     this.vis.modelChanged();
 }
 
 ProfileModel.prototype.signedOut = function() {
+    this.drawerState.set(false);
     this.availableCalendars.set({});
     this.activeCalendars = {};
     this.calendarCategories = {};
     this.categoryConfigs.set({});
+    this.modelProvider.reset();
     this.storage.clear();
     this.vis.modelChanged();
 }
@@ -116,7 +117,6 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
         var acs = this.availableCalendars.value();
         for (var c of info.calendars) {
             if (c.endsWith(".caljs")) {
-                console.log('have a saved plan', c);
                 this.savedPlans.push(c);
             } else {
                 if (!Object.keys(acs).includes(c)) {
@@ -229,7 +229,6 @@ ProfileModel.prototype.mergeTZChanges = function() {
         }
     }
     this.timezoneChanges.sort(ChangeTZ.comparator);
-    console.log(this.timezoneChanges);
 }
 
 ProfileModel.prototype.loadPlan = function(plan) {
@@ -246,7 +245,6 @@ ProfileModel.prototype.updateFromPlan = function(stat, msg) {
     }
 
     var plan = JSON.parse(msg);
-    console.log("have", plan);
     this.modelProvider.overridePlan(plan);
     this.vis.modelChanged();
 }
@@ -263,37 +261,15 @@ ProfileModel.prototype.categories = function() {
 }
 
 ProfileModel.prototype.category = function(cat) {
-    var ret = this.categoryConfigs[cat];
+    var ret = this.categoryConfigs.value()[cat];
     if (ret)
         return ret;
     return { color: "--" };
 }
 
 ProfileModel.prototype.chooseCategoryColor = function(cat, color) {
-    this.categoryConfigs[cat] = { color };
-    this.storeCurrentState();
+    this.categoryConfigs.value()[cat] = { color };
     this.vis.modelChanged();
 }
-
-/*
-
-ProfileModel.prototype.storeCurrentState = function() {
-    var statecals = [];
-    for (var c of Object.keys(this.availableCalendars)) {
-        if (this.availableCalendars[c]) {
-            statecals.push(c);
-        }
-    }
-
-    var state = {
-        drawerState: this.drawerState,
-        selectedCalendars: statecals,
-        calendarProps: this.calprops,
-        configs: this.categoryConfigs
-    };
-
-    this.storage.storeState("profile", state);
-}
-    */
 
 export { ProfileModel };

@@ -51,14 +51,6 @@ RedrawClz.prototype.windowResized = function(ev) {
 		this.redraw();
 }
 
-RedrawClz.prototype.onChange = function(elt) {
-	elt.addEventListener('change', () => {
-		this.modelProvider.saveState();
-		// this.styling.saveState();
-		this.redraw();
-	});
-}
-
 RedrawClz.prototype.redraw = function() {
     var model = this.modelProvider.calculate();
     // console.log(JSON.stringify(model));

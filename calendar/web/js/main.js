@@ -38,7 +38,7 @@ function init() {
     // then get everything wired together
     new AutoWire(document, storage)
         .wireUp(profileModel, modelProvider, modeOptions, profiles, redraw, styler, hamburger, manageCalendars)
-        .callWithElements(elt => redraw.onChange(elt), 'start-date', 'end-date', 'first-day', 'shade-weekends', 'page-size', 'landscape')
+        .elementListener('change', ev => redraw.redraw(), 'start-date', 'end-date', 'first-day', 'shade-weekends', 'page-size', 'landscape')
         .elementListener('change', ev => profileModel.changeTimeZone(ev.target.selectedOptions[0].value), 'calendar-time-zone')
         .elementListener('click', ev => profiles.buttonClicked(), 'profile-button')
         .elementListener('click', doReset, 'user-profile-reset');

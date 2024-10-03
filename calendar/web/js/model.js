@@ -2,8 +2,8 @@ import { ControllerOfType, ElementWithId } from "./autowire.js";
 import { ProfileModel } from "./profilemodel.js";
 
 function ModelProvider() {
-    this.start = new ElementWithId('start-date', 'value').storedAs('core', 'start', new Date());
-    this.end = new ElementWithId('end-date', 'value').storedAs('core', 'end', new Date());
+    this.start = new ElementWithId('start-date', 'value').storedAs('core', 'start', new Date().toISOString().substring(0, 10));
+    this.end = new ElementWithId('end-date', 'value').storedAs('core', 'end', new Date().toISOString().substring(0, 10));
     this.first = new ElementWithId('first-day', 'value').storedAs('core', 'first', 1);
 	this.showTz = new ElementWithId('calendar-time-zone', 'value').storedAs('core', 'showTz', 'SYSTEM');
     this.weekendShadeOption = new ElementWithId('shade-weekends', 'value').storedAs('core', 'weekendShadeOption', true);

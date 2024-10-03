@@ -131,7 +131,8 @@ AutoWire.prototype.connectElement = function(obj, prop, ewi) {
 	obj[prop] = elt;
 	if (ewi.storeAs) {
 		this.attachStorageTo(ewi.storeAs);
-		elt[ewi.valueField] = ewi.storeAs.value();
+		var val = ewi.storeAs.value();
+		elt[ewi.valueField] = val;
 		elt.addEventListener('change', ev => {
 			ewi.storeAs.set(ev.target[ewi.valueField]);
 		});
@@ -139,12 +140,21 @@ AutoWire.prototype.connectElement = function(obj, prop, ewi) {
 }
 
 AutoWire.prototype.callWithElements = function(fn, ...elts) {
-	for (var e of elts) {
-		var elt = this.elementProvider.getElementById(e);
-		fn.call(null, elt);
-	}
-
+	this.applyToArray(fn, elts);
 	return this;
+}
+
+AutoWire.prototype.applyToArray = function(fn, elts) {
+	for (var e of elts) {
+		if (Array.isArray(e)) {
+			this.applyToArray(fn, e);			
+		} else {
+			var elt = this.elementProvider.getElementById(e);
+			if (!elt)
+				throw new Error("there is no element: " + e);
+			fn.call(null, elt);
+		}
+	}
 }
 
 AutoWire.prototype.elementListener = function(evname, fn, ...elts) {
