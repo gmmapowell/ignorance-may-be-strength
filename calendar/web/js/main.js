@@ -42,7 +42,7 @@ function init() {
         .elementListener('change', ev => redraw.redraw(), 'start-date', 'end-date', 'first-day', 'shade-weekends', 'page-size', 'landscape')
         .elementListener('change', ev => profileModel.changeTimeZone(ev.target.selectedOptions[0].value), 'calendar-time-zone')
         .elementListener('click', ev => profiles.buttonClicked(), 'profile-button')
-        .elementListener('click', doReset, 'user-profile-reset');
+        .elementListener('click', doReset, 'user-profile-reset', 'hamburger-reset');
 
     // Make sure redraw happens continuously
 	addEventListener("beforeprint", ev => redraw.mode(false));

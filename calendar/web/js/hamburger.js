@@ -16,8 +16,11 @@ var Hamburger = function() {
     this.modeController = new ElementWithId('mode-controller');
     this.feedback = new ElementWithId('feedback');
     this.narrowOptions = new ElementWithId('narrow-options');
+    this.closeMenu = new ElementWithId('hamburger-close');
     this.signInButton = new ElementWithId('hamburger-sign-in');
     this.chooseDatesButton = new ElementWithId('hamburger-choose-dates');
+    this.selectCalendars = new ElementWithId('hamburger-select-calendars');
+    this.resetAll = new ElementWithId('hamburger-reset');
     this.signOutButton = new ElementWithId('hamburger-sign-out');
     this.controlpanel = new ElementWithId('control-panel');
     this.optionsDrawer = new ElementWithId('options-drawer');
@@ -29,11 +32,19 @@ var Hamburger = function() {
 Hamburger.prototype.init = function() {
     var self = this;
     this.feedback.addEventListener('click', () => self.toggleMe());
+    this.closeMenu.addEventListener('click', () => { 
+        self.modeOptions.hideHamburger();
+    });
     this.signInButton.addEventListener('click', () => { 
         self.showSignInPanel();
     });
     this.chooseDatesButton.addEventListener('click', () => { 
         self.showChooseDatesPanel();
+    });
+    this.resetAll.addEventListener('click', () => {
+        // the reset is handled by the "doReset" listener at the top level
+        // we just need to close the menu
+        self.modeOptions.hideHamburger();
     });
     this.signOutButton.addEventListener('click', () => { 
         self.profiles.signOutNow();
