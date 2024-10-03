@@ -1,4 +1,7 @@
-.controls, .options-drawer {
+#mode-controller #mode-options .controls, 
+#mode-controller #mode-options #signed-in-controller .options-drawer,
+#mode-controller #mode-options #signed-in-controller .hamburger-menu
+ {
 	display: none;
 }
 
