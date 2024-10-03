@@ -1,10 +1,12 @@
 import { ElementWithId, ControllerOfType } from "./autowire.js";
+import { ModeOptions } from "./modeOptions.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Profiles } from "./profiles.js";
 
 function ManageCalendars() {
     this.model = new ControllerOfType(ProfileModel);
     this.profiles = new ControllerOfType(Profiles);
+    this.modeOptions = new ControllerOfType(ModeOptions);
 
     this.closeMe = new ElementWithId('close-manage-calendars');
     this.list = new ElementWithId('manage-calendars-list');
@@ -12,16 +14,12 @@ function ManageCalendars() {
     this.called = new ElementWithId('manage-calendar-called');
     this.tz = new ElementWithId('manage-calendar-detail-timezone');
     this.apply = new ElementWithId('manage-calendar-apply');
+    this.delete = new ElementWithId('manage-calendar-delete');
 }
 
 ManageCalendars.prototype.init = function() {
     this.apply.addEventListener('click', () => this.applyDetails());
-    /*
-    var x = document.createElement("input");
-    x.setAttribute("type", "button");
-    x.value = "X";
-    this.list.appendChild(x);
-    */
+    this.delete.addEventListener('click', () => this.deleteCalendar());
     this.closeMe.addEventListener('click', () => this.profiles.hideManage());
 }
 
@@ -41,7 +39,6 @@ ManageCalendars.prototype.redraw = function() {
         e.addEventListener('click', showDetailFn(this, k));
         this.list.appendChild(e);
     }
-    this.detail.classList.add("hidden");
 }
 
 function showDetailFn(obj, k) {
@@ -57,14 +54,18 @@ ManageCalendars.prototype.showDetailsFor = function(k, c) {
     }
     this.detail.classList.remove("hidden");
     this.called.innerText = k;
+    this.modeOptions.showManageDetails();
 }
 
 ManageCalendars.prototype.applyDetails = function() {
     var k = this.currentCalendar;
     this.model.calprops[k] = { tz: this.tz.selectedOptions[0].value };
-    this.model.storeCurrentState();
     this.currentCalendar = null;
-    this.detail.classList.add("hidden");
+    this.modeOptions.hideManageDetails();
+}
+
+ManageCalendars.prototype.deleteCalendar = function() {
+    console.log("delete", this.currentCalendar);
 }
 
 export { ManageCalendars };

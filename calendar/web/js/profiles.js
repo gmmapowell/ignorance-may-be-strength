@@ -140,16 +140,6 @@ Profiles.prototype.showManage = function() {
 
 Profiles.prototype.hideManage = function() {
     this.modeOptions.hideManage();
-    // toggleHidden(this.signInPanel, this.optionsDrawer);
-    /*
-    show(this.profileDisplay);
-    hide(this.emailPanel);
-    hide(this.invalidSigninPanel)
-    hide(this.invalidEmailPanel);
-    hide(this.invalidPasswordPanel);
-    hide(this.manageCalendarsPanel);
-    */
-    this.manageCalendarsActor.redraw();
     this.redraw.redraw();
 }
 

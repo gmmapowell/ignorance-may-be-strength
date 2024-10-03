@@ -12,10 +12,10 @@ input.close-manage-calendars {
 }
 
 .manage-calendars-detail {
-    display: inline-block;
+    display: none;
     vertical-align: top;
 }
 
-/* .manage-calendars-detail.hidden {
-    display: none;
-} */
+#mode-options.show-manage-detail .manage-calendars-detail {
+    display: inline-block;
+}

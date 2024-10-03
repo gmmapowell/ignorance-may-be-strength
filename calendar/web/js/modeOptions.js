@@ -53,6 +53,16 @@ ModeOptions.prototype.hideManage = function() {
 ModeOptions.prototype.cleanSubProfiles = function() {
 	removeClass('show-user-profile', this.mydiv);
 	removeClass('show-manage-calendars', this.mydiv);
+	removeClass('show-manage-detail', this.mydiv);
+}
+
+ModeOptions.prototype.hideManageDetails = function() {
+	removeClass('show-manage-detail', this.mydiv);
+}
+
+ModeOptions.prototype.showManageDetails = function() {
+	this.showManage();
+	ensureClass('show-manage-detail', this.mydiv);
 }
 
 export { ModeOptions }
