@@ -20,7 +20,8 @@ var Hamburger = function() {
     this.signInButton = new ElementWithId('hamburger-sign-in');
     this.chooseDatesButton = new ElementWithId('hamburger-choose-dates');
     this.selectCalendars = new ElementWithId('hamburger-select-calendars');
-    this.calSelect = new ElementWithId('hamburger-calendars-select-button');
+    this.configureCategories = new ElementWithId('hamburger-configure-categories');
+    this.doneSelecting = new ElementWithId('hamburger-done-selecting-button');
     this.resetAll = new ElementWithId('hamburger-reset');
     this.signOutButton = new ElementWithId('hamburger-sign-out');
     this.controlpanel = new ElementWithId('control-panel');
@@ -45,8 +46,12 @@ Hamburger.prototype.init = function() {
     this.selectCalendars.addEventListener('click', () => { 
         self.showCalendarsPanel();
     });
-    this.calSelect.addEventListener('click', () => {
+    this.configureCategories.addEventListener('click', () => { 
+        self.showCategoriesPanel();
+    });
+    this.doneSelecting.addEventListener('click', () => {
         self.modeController.className = 'standard-mode';
+        self.redraw.redraw();
     });
     this.resetAll.addEventListener('click', () => {
         // the reset is handled by the "doReset" listener at the top level
@@ -81,6 +86,11 @@ Hamburger.prototype.showChooseDatesPanel = function() {
 
 Hamburger.prototype.showCalendarsPanel = function() {
     this.modeController.className = 'select-calendars';
+    this.modeOptions.hideHamburger();
+}
+
+Hamburger.prototype.showCategoriesPanel = function() {
+    this.modeController.className = 'configure-categories';
     this.modeOptions.hideHamburger();
 }
 

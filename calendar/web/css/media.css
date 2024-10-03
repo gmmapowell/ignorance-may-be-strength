@@ -75,6 +75,23 @@
         display: none;
     }
 
+    #mode-controller.configure-categories .controls,
+    #mode-controller.configure-categories .options-drawer,
+    #mode-controller.configure-categories .user-profile,
+    #mode-controller.configure-categories .calendar-categories
+    {
+        display: block;
+    }
+
+    #mode-controller.configure-categories .user-profile-buttons,
+    #mode-controller.configure-categories .available-calendars,
+    #mode-controller.configure-categories .saved-plans,
+    #mode-controller.configure-categories .controls
+    {
+        display: none;
+    }
+
+
 
     #mode-controller.choose-dates .control-panel
     {
