@@ -268,7 +268,7 @@ ProfileModel.prototype.category = function(cat) {
 }
 
 ProfileModel.prototype.chooseCategoryColor = function(cat, color) {
-    this.categoryConfigs.value()[cat] = { color };
+    this.categoryConfigs.setField(cat, { color });
     this.vis.modelChanged();
 }
 

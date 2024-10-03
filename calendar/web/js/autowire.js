@@ -44,6 +44,14 @@ StateElement.prototype.set = function(val) {
 	}
 }
 
+StateElement.prototype.setField = function(key, val) {
+	if (this.sharedstate && this.sharedstate.map) {
+		var submap = this.sharedstate.map[this.entry];
+		submap[key] = val;
+		this.sharedstate.store();
+	}
+}
+
 StateElement.prototype.store = function() {
 	this.sharedstate.store();
 }
