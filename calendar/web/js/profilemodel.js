@@ -62,6 +62,7 @@ ProfileModel.prototype.init = function() {
             }
         };
     }
+    this.changeTimeZone(this.modelProvider.showTz.value);
     this.vis.modelChanged();
 }
 
@@ -166,7 +167,6 @@ ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
         var cal = acs[cals[i]];
         CalEvent.retz(cal, this.showTZ, this.timezoneChanges);
     }
-    this.modelProvider.saveState();
     if (!donotNotify)
         this.vis.modelChanged();
 }

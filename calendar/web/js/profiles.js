@@ -1,4 +1,4 @@
-import { ElementWithId, ControllerOfType } from "./autowire.js";
+import { ElementWithId, ControllerOfType, AutoWireStorage } from "./autowire.js";
 import { ModeOptions } from "./modeOptions.js";
 import { setMode } from "./utils.js";
 import { ajax } from './ajax.js';
@@ -6,8 +6,8 @@ import { ProfileModel } from "./profilemodel.js";
 import { ManageCalendars } from "./manage.js";
 import { RedrawClz } from "./redraw.js";
 
-function Profiles(storage) {
-    this.storage = storage;
+function Profiles() {
+    this.storage = new AutoWireStorage();
     this.model = new ControllerOfType(ProfileModel);
     this.redraw = new ControllerOfType(RedrawClz);
     this.manageCalendarsActor = new ControllerOfType(ManageCalendars);

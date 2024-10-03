@@ -7,8 +7,7 @@ const screenOnly = false;
 const testingPrinter = false;
 const feedbackBorder = false;
 
-function Styling(storage) {
-	this.storage = storage;
+function Styling() {
 	this.styledDiv = new ElementWithId('feedback');
 	this.controlPane = new ElementWithId('controls');
 	this.optionsDrawer = new ElementWithId('options-drawer');
@@ -26,21 +25,6 @@ function Styling(storage) {
 	this.screenWatermarks = {};
 	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
-
-/*
-Styling.prototype.saveState = function() {
-	var print = { size: this.pageSizer.value, landscape: this.isLandscape.checked };
-	this.storage.storeState("print", print);
-}
-
-Styling.prototype.restoreState = function() {
-	var print = this.storage.currentState("print");
-	if (print) {
-		this.pageSizer.value = print.size;
-		this.isLandscape.checked = print.landscape;
-	}
-}
-*/
 
 Styling.prototype.reset = function() {
 	this.pageSizer.value = "A4";

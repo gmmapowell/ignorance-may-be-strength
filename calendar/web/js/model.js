@@ -1,38 +1,18 @@
 import { ControllerOfType, ElementWithId } from "./autowire.js";
 import { ProfileModel } from "./profilemodel.js";
 
-function ModelProvider(storage) {
-	this.storage = storage;
-    this.start = new ElementWithId('start-date');
-    this.end = new ElementWithId('end-date');
-    this.first = new ElementWithId('first-day');
-	this.showTz = new ElementWithId('calendar-time-zone');
-    this.weekendShadeOption = new ElementWithId('shade-weekends');
+function ModelProvider() {
+    this.start = new ElementWithId('start-date', 'value').storedAs('core', 'start', new Date());
+    this.end = new ElementWithId('end-date', 'value').storedAs('core', 'end', new Date());
+    this.first = new ElementWithId('first-day', 'value').storedAs('core', 'first', 1);
+	this.showTz = new ElementWithId('calendar-time-zone', 'value').storedAs('core', 'showTz', 'SYSTEM');
+    this.weekendShadeOption = new ElementWithId('shade-weekends', 'value').storedAs('core', 'weekendShadeOption', true);
 	this.profile = new ControllerOfType(ProfileModel);
 	this.recoveredPlan = null;
 }
 
 function utc(d) {
 	return new Date(d.getTime() + d.getTimezoneOffset() * 60000);
-}
-
-ModelProvider.prototype.saveState = function() {
-	var core = { start: this.start.value, end: this.end.value, first: this.first.value, showTz: this.showTz.value, weekendShadeOption: this.weekendShadeOption.checked };
-	this.storage.storeState("core", core);
-}
-
-ModelProvider.prototype.restoreState = function() {
-	var core = this.storage.currentState("core");
-	if (core) {
-		this.start.valueAsDate = new Date(core.start);
-		this.end.valueAsDate = new Date(core.end);
-		this.first.value = core.first;
-		this.showTz.value = core.showTz;
-		this.weekendShadeOption.checked = core.weekendShadeOption;
-		this.recoveredPlan = null;
-	} else {
-		this.reset();
-	}
 }
 
 ModelProvider.prototype.reset = function() {
@@ -42,7 +22,7 @@ ModelProvider.prototype.reset = function() {
 	this.weekendShadeOption.value = true;
 	this.first.value = 1;
 	this.recoveredPlan = null;
-	this.saveState();
+	// this.saveState();
 }
 
 ModelProvider.prototype.overridePlan = function(loadedPlan) {

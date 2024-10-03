@@ -1,11 +1,11 @@
 import { ajax } from './ajax.js';
 import { download } from "./download.js";
-import { ControllerOfType, ElementWithId } from './autowire.js';
+import { AutoWireStorage, ControllerOfType, ElementWithId } from './autowire.js';
 import { ModelProvider } from './model.js';
 import { Styling } from './styling.js';
 
-function RedrawClz(storage) {
-	this.storage = storage;
+function RedrawClz() {
+    this.storage = new AutoWireStorage();
     this.modelProvider = new ControllerOfType(ModelProvider);
     this.styling = new ControllerOfType(Styling);
 	this.fbdiv = new ElementWithId('feedback');

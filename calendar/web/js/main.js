@@ -18,12 +18,11 @@ function init() {
     var profileModel = new ProfileModel();
     
     // then create all the actors
-    // TODO: DO NOT PASS IN REFERENCES TO STORAGE!!! (Use StateElement in the constructor instead -  or AutoWireStorage if you need the whole thing)
-    var modelProvider = new ModelProvider(storage);
-	var styler = new Styling(storage);
-    var redraw = new RedrawClz(storage);
+    var modelProvider = new ModelProvider();
+	var styler = new Styling();
+    var redraw = new RedrawClz();
     var manageCalendars = new ManageCalendars();
-    var profiles = new Profiles(storage);
+    var profiles = new Profiles();
     var modeOptions = new ModeOptions();
     var hamburger = new Hamburger();
 
@@ -44,17 +43,10 @@ function init() {
         .elementListener('click', ev => profiles.buttonClicked(), 'profile-button')
         .elementListener('click', doReset, 'user-profile-reset');
 
-    // Add specific global event listeners
+    // Make sure redraw happens continuously
 	addEventListener("beforeprint", ev => redraw.mode(false));
 	addEventListener("resize", () => redraw.windowResized());
 	addEventListener("afterprint", ev => redraw.mode(true));
-
-    // I think these should all go into "init"
-    modelProvider.restoreState();
-    profileModel.changeTimeZone(storage.currentState('core').showTz);
-    // styler.restoreState();
-
-    // ok, show what we've got - this shouldn't be necessary, but just in case ...
 	redraw.redraw();
 }
 
