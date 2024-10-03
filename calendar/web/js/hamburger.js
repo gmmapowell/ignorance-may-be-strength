@@ -20,6 +20,7 @@ var Hamburger = function() {
     this.signInButton = new ElementWithId('hamburger-sign-in');
     this.chooseDatesButton = new ElementWithId('hamburger-choose-dates');
     this.selectCalendars = new ElementWithId('hamburger-select-calendars');
+    this.calSelect = new ElementWithId('hamburger-calendars-select-button');
     this.resetAll = new ElementWithId('hamburger-reset');
     this.signOutButton = new ElementWithId('hamburger-sign-out');
     this.controlpanel = new ElementWithId('control-panel');
@@ -40,6 +41,12 @@ Hamburger.prototype.init = function() {
     });
     this.chooseDatesButton.addEventListener('click', () => { 
         self.showChooseDatesPanel();
+    });
+    this.selectCalendars.addEventListener('click', () => { 
+        self.showCalendarsPanel();
+    });
+    this.calSelect.addEventListener('click', () => {
+        self.modeController.className = 'standard-mode';
     });
     this.resetAll.addEventListener('click', () => {
         // the reset is handled by the "doReset" listener at the top level
@@ -69,6 +76,11 @@ Hamburger.prototype.showSignInPanel = function() {
 
 Hamburger.prototype.showChooseDatesPanel = function() {
     this.modeController.className = 'choose-dates';
+    this.modeOptions.hideHamburger();
+}
+
+Hamburger.prototype.showCalendarsPanel = function() {
+    this.modeController.className = 'select-calendars';
     this.modeOptions.hideHamburger();
 }
 

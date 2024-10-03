@@ -10,7 +10,7 @@
     #feedback {
         pointer-events: all;
     }
-    
+
     .controls .hamburger-button {
         display: inline-block;
         position: absolute;
@@ -58,6 +58,23 @@
     #mode-controller.choose-dates .hamburger-controls-apply {
         display: block;
     }
+
+    #mode-controller.select-calendars .controls,
+    #mode-controller.select-calendars .options-drawer,
+    #mode-controller.select-calendars .user-profile,
+    #mode-controller.select-calendars .available-calendars
+    {
+        display: block;
+    }
+
+    #mode-controller.select-calendars .user-profile-buttons,
+    #mode-controller.select-calendars .calendar-categories,
+    #mode-controller.select-calendars .saved-plans,
+    #mode-controller.select-calendars .controls
+    {
+        display: none;
+    }
+
 
     #mode-controller.choose-dates .control-panel
     {
@@ -130,27 +147,6 @@
         font-size: 16px;
     }
 
-    /*
-    .basic-controls .first-day, .basic-controls .show-in-time-zone {
-        display: inline-block;
-        width: 42%;
-        padding: 0;
-        font-size: 8pt;
-    }
-
-    .basic-controls select {
-        font-size: 7pt;
-    }
-
-    .controls input {
-        font-size: 7pt;
-    }
-
-    body .control-panel {
-        left: 12%;
-        width: 85%;
-    }
-*/
     .options-drawer .sign-in-panel {
         font-size: 50%;
     }
