@@ -3,7 +3,7 @@ import { ModeOptions } from './modeOptions.js';
 import { ModelProvider } from "./model.js";
 import { CalendarStorage } from "./storage.js";
 import { ManageCalendars } from "./manage.js";
-
+import { Ajax } from "./ajax.js";
 import { Styling } from "./styling.js";
 import { RedrawClz } from "./redraw.js";
 import { Profiles } from "./profiles.js";
@@ -13,6 +13,7 @@ import { Hamburger } from "./hamburger.js";
 function init() {
     // create a wrapper around localStorage
     var storage = new CalendarStorage();
+    var ajax = new Ajax(storage, "x-identity-token");
 
     // then create the model object
     var profileModel = new ProfileModel();
@@ -37,7 +38,7 @@ function init() {
 
     // then get everything wired together
     new AutoWire(document, storage)
-        .wireUp(profileModel, modelProvider, modeOptions, profiles, redraw, styler, hamburger, manageCalendars)
+        .wireUp(ajax, profileModel, modelProvider, modeOptions, profiles, redraw, styler, hamburger, manageCalendars)
         .elementListener('change', ev => redraw.redraw(), 'start-date', 'end-date', 'first-day', 'shade-weekends', 'page-size', 'landscape')
         .elementListener('change', ev => profileModel.changeTimeZone(ev.target.selectedOptions[0].value), 'calendar-time-zone')
         .elementListener('click', ev => profiles.buttonClicked(), 'profile-button')

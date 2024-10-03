@@ -1,3 +1,36 @@
+var Ajax = function(tokenProvider, secureHdr) {
+	this.tokenProvider = tokenProvider;
+	this.secureHdr = secureHdr;
+}
+
+Ajax.prototype.secureUri = function(uri) {
+	return new AjaxRequest(this, uri, true);
+}
+
+var AjaxRequest = function(ajax, uri, wantToken) {
+	this.ajax = ajax;
+	this.uri = uri;
+	this.wantToken = wantToken;
+	this.headers = {};
+	this.hdlr = null;
+}
+
+AjaxRequest.prototype.header = function(hdr, val) {
+	this.headers[hdr] = val;
+	return this;
+}
+
+AjaxRequest.prototype.invoke = function(hdlr) {
+	if (this.wantToken) {
+		var tok = this.ajax.tokenProvider.getToken();
+		if (!tok) {
+			hdlr(401, "No token found");
+			return;
+		}
+		this.headers[this.ajax.secureHdr] = tok;
+	}
+	ajax(this.uri, hdlr, null, null, "GET", this.headers);
+}
 
 function ajax(url, handler, ct, payload, verb, headers) {
 	if (!verb) {
@@ -28,4 +61,4 @@ function feedback(handler) {
 	}
 }
   
-export { ajax };
+export { ajax, Ajax };

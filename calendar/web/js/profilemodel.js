@@ -1,4 +1,4 @@
-import { ajax } from './ajax.js';
+import { Ajax, ajax } from './ajax.js';
 import { AutoWireStorage, ControllerOfType, StateElement } from './autowire.js';
 import { CsvCalendar } from './csvcalendar.js';
 import { CalEvent, ChangeTZ } from './events.js';
@@ -8,6 +8,7 @@ import { Profiles } from './profiles.js';
 
 function ProfileModel() {
     this.storage = new AutoWireStorage();
+    this.ajax = new ControllerOfType(Ajax);
     this.modelProvider = new ControllerOfType(ModelProvider);
     this.vis = new ControllerOfType(Profiles);
     this.drawerState = new StateElement("profile", "drawerState", false);
@@ -105,9 +106,8 @@ ProfileModel.prototype.drawerOpen = function(isOpen) {
 }
 
 ProfileModel.prototype.loadAvailableCalendars = function() {
-    var opts = {};
-    opts['x-identity-token'] = this.storage.getToken();
-    ajax("/ajax/load-calendars.php", (stat, msg) => this.calendarsLoaded(stat, msg), null, null, null, opts);
+    this.ajax.secureUri("/ajax/load-calendars.php")
+        .invoke((stat, msg) => this.calendarsLoaded(stat, msg));
 }
 
 ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
@@ -115,15 +115,21 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
         var info = JSON.parse(msg);
         this.savedPlans = [];
         var acs = this.availableCalendars.value();
+        var ks = Object.keys(acs);
+        for (var k of ks) {
+            if (!info.calendars.includes(k))
+                delete acs[k];
+        }
         for (var c of info.calendars) {
             if (c.endsWith(".caljs")) {
                 this.savedPlans.push(c);
             } else {
-                if (!Object.keys(acs).includes(c)) {
+                if (!ks.includes(c)) {
                     acs[c] = false;
                 }
             }
         }
+        this.availableCalendars.set(acs);
         this.savedPlans.sort();
         this.vis.modelChanged();
     }
@@ -140,13 +146,9 @@ ProfileModel.prototype.selectCalendarAction = function(label, selected) {
 }
 
 ProfileModel.prototype.includeCalendar = function(label) {
-    // so the next step is to retrieve and parse this
-    // I think we want to retrieve it every time we select it to allow for updates
-    var opts = {};
-    opts['x-identity-token'] = this.storage.getToken();
-    opts['x-calendar-name'] = label;
-    ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.parseCalendar(label, stat, msg), null, null, null, opts);
-    // and then somewhere else this model needs to be taken into account for redraw
+    this.ajax.secureUri("/ajax/retrieve-calendar.php")
+        .header('x-calendar-name', label)
+        .invoke((stat, msg) => this.parseCalendar(label, stat, msg));
 }
 
 ProfileModel.prototype.removeCalendar = function(label) {
@@ -232,10 +234,9 @@ ProfileModel.prototype.mergeTZChanges = function() {
 }
 
 ProfileModel.prototype.loadPlan = function(plan) {
-    var opts = {};
-    opts['x-identity-token'] = this.storage.getToken();
-    opts['x-calendar-name'] = plan;
-    ajax("/ajax/retrieve-calendar.php", (stat, msg) => this.updateFromPlan(stat, msg), null, null, null, opts);
+    this.ajax.secureUri("/ajax/retrieve-calendar.php")
+        .header('x-calendar-name', plan)
+        .invoke((stat, msg) => this.updateFromPlan(stat, msg));
 }
 
 ProfileModel.prototype.updateFromPlan = function(stat, msg) {

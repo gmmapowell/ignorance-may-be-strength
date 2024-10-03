@@ -1,3 +1,4 @@
+import { Ajax } from "./ajax.js";
 import { ElementWithId, ControllerOfType } from "./autowire.js";
 import { ModeOptions } from "./modeOptions.js";
 import { ProfileModel } from "./profilemodel.js";
@@ -7,6 +8,7 @@ function ManageCalendars() {
     this.model = new ControllerOfType(ProfileModel);
     this.profiles = new ControllerOfType(Profiles);
     this.modeOptions = new ControllerOfType(ModeOptions);
+    this.ajax = new ControllerOfType(Ajax);
 
     this.closeMe = new ElementWithId('close-manage-calendars');
     this.list = new ElementWithId('manage-calendars-list');
@@ -29,7 +31,7 @@ ManageCalendars.prototype.provideProfiles = function(profiles) {
 
 ManageCalendars.prototype.redraw = function() {
     var acs = this.model.availableCalendars.value();
-    var cals = Object.keys(acs);
+    var cals = Object.keys(acs).sort();
     this.list.innerHTML = '';
     for (var i=0;i<cals.length;i++) {
         var k = cals[i];
@@ -66,6 +68,14 @@ ManageCalendars.prototype.applyDetails = function() {
 
 ManageCalendars.prototype.deleteCalendar = function() {
     console.log("delete", this.currentCalendar);
+    this.ajax.secureUri("/ajax/delete-calendar.php")
+        .header('x-calendar-name', this.currentCalendar)
+        .invoke((stat, msg) => this.refreshCalendars(stat, msg));
+    this.modeOptions.hideManageDetails();
+}
+
+ManageCalendars.prototype.refreshCalendars = function(stat, msg) {
+    this.model.loadAvailableCalendars();
 }
 
 export { ManageCalendars };

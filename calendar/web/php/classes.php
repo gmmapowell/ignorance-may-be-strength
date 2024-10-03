@@ -140,6 +140,11 @@ class ProfileHandler {
         readfile($cuser['dir'] . '/' . $called);
     }
 
+    function delete_calendar($called) {
+        $cuser = $this->current_user();
+        unlink($cuser['dir'] . '/' . $called);
+    }
+
     function generate_token_for(string $userdir) : string {
         for (;;) {
             $token = $this->make_token();
