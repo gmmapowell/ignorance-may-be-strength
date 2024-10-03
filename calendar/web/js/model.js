@@ -100,7 +100,13 @@ ModelProvider.prototype.calculate = function() {
 			var toShow = [];
 			if (events.length > 0) {
 				for (var j=0;j<events.length;j++) {
-					var next = events[j];
+					var next = structuredClone(events[j]);
+					if (!next.end && next.category) {
+						var cat = this.profile.category(next.category);
+						if (cat && cat.color) {
+							next.color = cat.color;
+						}
+					}
 					for (var k=0;k<toShow.length;k++) {
 						if (next.starttime < toShow[k].starttime) {
 							toShow.splice(k, 0, next);

@@ -99,15 +99,7 @@ RedrawClz.prototype.redraw = function() {
 			}
 			weekdiv.appendChild(daydiv);
 
-			// the first aspect is the date
-			var date = document.createElement("div");
-			date.className = "body-day-date";
-			daydiv.appendChild(date);
-
-			// and set the date text in here
-			var dateValue = document.createTextNode(day.cellDate);
-			date.appendChild(dateValue);
-
+			// add background highlights for ranges
             var cd = day.highlights;
 			if (cd && cd.length) {
 				var colorBars = document.createElement("div");
@@ -128,6 +120,15 @@ RedrawClz.prototype.redraw = function() {
 				}
 			}
 
+			// add a row for the date
+			var date = document.createElement("div");
+			date.className = "body-day-date";
+			daydiv.appendChild(date);
+
+			// and set the date text in here
+			var dateValue = document.createTextNode(day.cellDate);
+			date.appendChild(dateValue);
+
             var toShow = day.toShow;
 			if (toShow.length > 0) {
 				// var events = document.createElement("div");
@@ -144,6 +145,9 @@ RedrawClz.prototype.redraw = function() {
 					var idiv = document.createElement("div");
 					idiv.className = "diary-row";
 					idiv.classList.add("diary-row-" + j);
+					if (pi.color) {
+						idiv.classList.add("body-day-color-" + pi.color);
+					}
 					daydiv.appendChild(idiv);
 
 					// var event = document.createElement("div");

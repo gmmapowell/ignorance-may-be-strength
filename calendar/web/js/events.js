@@ -36,10 +36,15 @@ CalDateTime.standard = function(tz, std) {
 }
 
 CalDateTime.custom = function(df, tf, tz, date, time) {
-    if (!date || !time)
+    if (!date)
         return null;
     var dt = parseDate(df, date);
-    var tm = parseTime(tf, time);
+    var tm;
+    if (time)
+        tm = parseTime(tf, time);
+    else {
+        tm = [12, 0];
+    }
     var utc = new Date(Date.UTC(dt[0], dt[1]-1, dt[2], tm[0], tm[1]));
     var tzd = applyTimezone(findTZ(tz), utc)
     var ret = new CalDateTime(tz, tzd);
