@@ -65,16 +65,6 @@
     #mode-controller.choose-dates .hamburger-controls-apply {
         display: block;
     }
-    /*
-    .controls .profile-button {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 10%;
-        bottom: 0;
-        width: 25%;
-    }
-        */
 
     .hamburger-button .hamburger-text {
         position: absolute;
@@ -90,11 +80,25 @@
         display: none;
     }
 
-    .basic-controls .start-date, .basic-controls .end-date, .print-controls .page-size, .print-controls .landscape  {
+    .basic-controls .start-date, .basic-controls .end-date, .print-controls .shade-weekends, .print-controls .page-size, .print-controls .landscape  {
         display: none;
     }
 
-    .basic-controls .first-day, .basic-controls .show-in-time-zone, .print-controls .shade-weekends {
+    #mode-controller.choose-dates .controls .basic-controls .start-date,
+    #mode-controller.choose-dates .controls .basic-controls .end-date,
+    #mode-controller.choose-dates .basic-controls .first-day,
+    #mode-controller.choose-dates .basic-controls .first-day select,
+    #mode-controller.choose-dates .basic-controls .show-in-time-zone, 
+    #mode-controller.choose-dates .basic-controls .show-in-time-zone select, 
+    #mode-controller.choose-dates .print-controls .shade-weekends,
+    #mode-controller.choose-dates .print-controls .shade-weekends select
+    {
+        display: block;
+        font-size: 8pt;
+        padding: 0.3em 0 0.3em 0;
+    }
+
+    .basic-controls .first-day, .basic-controls .show-in-time-zone {
         display: inline-block;
         width: 42%;
         padding: 0;
@@ -102,6 +106,10 @@
     }
 
     .basic-controls select {
+        font-size: 7pt;
+    }
+
+    .controls input {
         font-size: 7pt;
     }
 

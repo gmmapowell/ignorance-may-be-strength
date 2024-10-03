@@ -19,6 +19,10 @@ ModeOptions.prototype.toggleHamburger = function() {
 	return toggleClass('show-hamburger', this.mydiv);
 }
 
+ModeOptions.prototype.hideHamburger = function() {
+	return removeClass('show-hamburger', this.mydiv);
+}
+
 ModeOptions.prototype.toggleProfile = function() {
 	var applied = toggleClass('show-profile', this.mydiv);
 	if (applied) {

@@ -3,7 +3,6 @@
 }
 
 #mode-controller.standard-mode .controls
-/* , #mode-controller.signing-in .controls  */
 {
     display: block;
 }
@@ -49,10 +48,6 @@
     min-height: 40px;
 }
 
-/* .control-panel.hidden {
-    display: none;
-} */
-
 .basic-controls {
     display: block;
 }
@@ -64,10 +59,6 @@
 .profile-things-tbd {
     display: block;
 }
-
-/* .profile-things-tbd.hidden {
-    display: none;
-} */
 
 .start-date, .end-date, .first-day, .show-in-time-zone, .shade-weekends, .page-size, .landscape {
     display: inline-block;
