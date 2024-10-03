@@ -22,7 +22,6 @@ ModelProvider.prototype.reset = function() {
 	this.weekendShadeOption.value = true;
 	this.first.value = 1;
 	this.recoveredPlan = null;
-	// this.saveState();
 }
 
 ModelProvider.prototype.overridePlan = function(loadedPlan) {

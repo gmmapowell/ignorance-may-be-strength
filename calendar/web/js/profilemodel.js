@@ -1,4 +1,4 @@
-import { Ajax, ajax } from './ajax.js';
+import { Ajax } from './ajax.js';
 import { AutoWireStorage, ControllerOfType, StateElement } from './autowire.js';
 import { CsvCalendar } from './csvcalendar.js';
 import { CalEvent, ChangeTZ } from './events.js';
