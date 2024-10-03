@@ -98,6 +98,13 @@
         padding: 0.3em 0 0.3em 0;
     }
 
+    #mode-options.show-profile #signed-in-controller.signed-in .options-drawer,
+    #mode-options.show-profile.show-user-profile #signed-in-controller.signed-in .user-profile,
+    #mode-options.show-profile.show-manage-calendars #signed-in-controller.signed-in .manage-calendars
+    {   
+        display: none;
+    }
+
     .basic-controls .first-day, .basic-controls .show-in-time-zone {
         display: inline-block;
         width: 42%;

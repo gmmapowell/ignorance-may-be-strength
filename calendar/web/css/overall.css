@@ -14,7 +14,6 @@ body {
     display: block;
 }
 
-
 .options-drawer {
     width: calc(100% - 1.6em);
     background-color: silver;
