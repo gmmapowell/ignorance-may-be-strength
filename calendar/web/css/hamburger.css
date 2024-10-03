@@ -11,7 +11,7 @@
 .hamburger-menu {
     border:1px solid black;
     /* min-height: 40px; */
-    margin: -0.4em 0.4em 0.4em;
+    margin: 0.4em 0.4em 0.4em;
 }
 
 .hamburger-menu input {

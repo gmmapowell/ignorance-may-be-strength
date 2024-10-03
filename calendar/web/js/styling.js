@@ -58,6 +58,8 @@ Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 }
 
 Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
+	if (pageSize.media != 'print')
+		console.log("laying out screen into", pageSize);
 	var rows = rowInfo.numRows;
 
 	var innerX = pageSize.x, innerY = pageSize.y;
@@ -110,11 +112,13 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	var divby = rows*13-1;
 	// console.log("divby = ", divby);
 	var yunit = ynoborder / divby;
-	// console.log("yunit = ", yunit);
+	if (pageSize.media != 'print')
+		console.log("yunit = ", yunit);
 
 	// the week itself consists of 12 units
 	var yweek = floor(pageSize.unitIn, yunit*12);
-	// console.log("yweek =", yweek);
+	if (pageSize.media != 'print')
+		console.log("yweek =", yweek);
 
 	// and the margin is half a unit, so two of them together is again a unit
 	var ymargin = yunit;
@@ -237,8 +241,13 @@ Styling.prototype.calculateSizeOfFeedbackDiv = function() {
 	var viewx = window.innerWidth;
 	var viewy = window.innerHeight;
 
+	console.log("inside window is", viewx, viewy);
+
 	var fbx = viewx - borderX * 2; // 16 for double body margin
+	console.log("y-subtract", marginHeight(this.controlPane), marginHeight(this.optionsDrawer), borderY*2);
 	var fby = viewy - marginHeight(this.controlPane) - marginHeight(this.optionsDrawer) - borderY * 2;
+
+	console.log("calculated area is", fbx, fby);
 
 	var sz = { media: "screen", margin: 0, x : fbx, y : fby, unitIn: "px", borderX, borderY };
 	return sz;
@@ -296,6 +305,7 @@ function floor(unit, quant) {
 
 function marginHeight(elm) {
 	var eh = elm.clientHeight;
+	console.log("elmh", elm, eh);
 	if (eh == 0) { // it's not visible ...
 		return 0;
 	}

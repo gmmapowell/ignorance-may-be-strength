@@ -7,17 +7,10 @@
 
 /* So, we want break at 900px with 96dpi, or 1530 at 170dpi or 2000 at 210dpi */
 @media (max-width: 900px) {
-    /*
-    body .control-panel {
-        display: none;
+    #feedback {
+        pointer-events: all;
     }
-    .controls .profile-button {
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-    */
-
+    
     .controls .hamburger-button {
         display: inline-block;
         position: absolute;
@@ -66,6 +59,21 @@
         display: block;
     }
 
+    #mode-controller.choose-dates .control-panel
+    {
+        left: 5%;
+        width: 90%;
+        font-size: 12px;
+    }
+
+    #mode-controller.standard-mode .controls {
+        display: none;
+    }
+
+    .controls .hamburger-button {
+        display: none;
+    }
+
     .hamburger-button .hamburger-text {
         position: absolute;
         text-align: center;
@@ -80,22 +88,35 @@
         display: none;
     }
 
-    .basic-controls .start-date, .basic-controls .end-date, .print-controls .shade-weekends, .print-controls .page-size, .print-controls .landscape  {
+    .basic-controls .start-date, .basic-controls .end-date,
+    .basic-controls .first-day, .basic-controls .show-in-time-zone,
+    .print-controls .shade-weekends, .print-controls .page-size, .print-controls .landscape
+    {
         display: none;
     }
 
     #mode-controller.choose-dates .controls .basic-controls .start-date,
     #mode-controller.choose-dates .controls .basic-controls .end-date,
     #mode-controller.choose-dates .basic-controls .first-day,
-    #mode-controller.choose-dates .basic-controls .first-day select,
     #mode-controller.choose-dates .basic-controls .show-in-time-zone, 
+    #mode-controller.choose-dates .print-controls .shade-weekends
+    {
+        display: block;
+        font-size: 16px;
+        padding: 0.3em 0 0.3em 0;
+        width: auto;
+    }
+
+    #mode-controller.choose-dates .basic-controls .start-date input,
+    #mode-controller.choose-dates .basic-controls .end-date input,
+    #mode-controller.choose-dates .basic-controls .first-day select,
     #mode-controller.choose-dates .basic-controls .show-in-time-zone select, 
-    #mode-controller.choose-dates .print-controls .shade-weekends,
     #mode-controller.choose-dates .print-controls .shade-weekends select
     {
         display: block;
-        font-size: 8pt;
+        font-size: 13px;
         padding: 0.3em 0 0.3em 0;
+        width: auto;
     }
 
     #mode-options.show-profile #signed-in-controller.signed-in .options-drawer,
@@ -105,6 +126,11 @@
         display: none;
     }
 
+    .controls input#hamburger-controls-apply-button {
+        font-size: 16px;
+    }
+
+    /*
     .basic-controls .first-day, .basic-controls .show-in-time-zone {
         display: inline-block;
         width: 42%;
@@ -124,7 +150,7 @@
         left: 12%;
         width: 85%;
     }
-
+*/
     .options-drawer .sign-in-panel {
         font-size: 50%;
     }

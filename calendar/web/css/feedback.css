@@ -1,5 +1,6 @@
 .feedback {
 	display: none;
+	pointer-events: none;
 }
 
 #mode-controller.standard-mode .feedback {

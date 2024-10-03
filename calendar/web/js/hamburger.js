@@ -2,12 +2,15 @@ import { ElementWithId, ControllerOfType } from "./autowire.js";
 import { ModeOptions } from "./modeOptions.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Profiles } from "./profiles.js";
+import { RedrawClz } from "./redraw.js";
 
 var Hamburger = function() {
     this.profiles = new ControllerOfType(Profiles);
     this.model = new ControllerOfType(ProfileModel);
+    this.redraw = new ControllerOfType(RedrawClz);
 
     this.button = new ElementWithId('hamburger-button');
+    this.feedback = new ElementWithId('feedback');
     this.menu = new ElementWithId('hamburger-menu');
     this.padding = new ElementWithId('hamburger-padding');
     this.modeController = new ElementWithId('mode-controller');
@@ -25,7 +28,7 @@ var Hamburger = function() {
 
 Hamburger.prototype.init = function() {
     var self = this;
-    this.button.addEventListener('click', () => self.toggleMe());
+    this.feedback.addEventListener('click', () => self.toggleMe());
     this.signInButton.addEventListener('click', () => { 
         self.showSignInPanel();
     });
@@ -33,12 +36,13 @@ Hamburger.prototype.init = function() {
         self.showChooseDatesPanel();
     });
     this.signOutButton.addEventListener('click', () => { 
-        profiles.signOutNow();
+        self.profiles.signOutNow();
         self.toggleMe(true);
     });
     this.apply.addEventListener('click', () => {
         self.modeController.className = 'standard-mode';
         self.modeOptions.hideHamburger();
+        self.redraw.redraw();
     });
 }
 
