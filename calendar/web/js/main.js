@@ -18,7 +18,7 @@ function init() {
     var profileModel = new ProfileModel();
     
     // then create all the actors
-    // TODO: REMOVE DIRECT REFERENCES TO STORAGE!!! (Use either StateElement or AutoWireStorage if you need the whole thing)
+    // TODO: DO NOT PASS IN REFERENCES TO STORAGE!!! (Use StateElement in the constructor instead -  or AutoWireStorage if you need the whole thing)
     var modelProvider = new ModelProvider(storage);
 	var styler = new Styling(storage);
     var redraw = new RedrawClz(storage);
@@ -52,7 +52,7 @@ function init() {
     // I think these should all go into "init"
     modelProvider.restoreState();
     profileModel.changeTimeZone(storage.currentState('core').showTz);
-    styler.restoreState();
+    // styler.restoreState();
 
     // ok, show what we've got - this shouldn't be necessary, but just in case ...
 	redraw.redraw();

@@ -12,8 +12,8 @@ function Styling(storage) {
 	this.styledDiv = new ElementWithId('feedback');
 	this.controlPane = new ElementWithId('controls');
 	this.optionsDrawer = new ElementWithId('options-drawer');
-	this.pageSizer = new ElementWithId('page-size');
-	this.isLandscape = new ElementWithId('landscape');
+	this.pageSizer = new ElementWithId('page-size', 'value').storedAs('print', 'size', 'A4');
+	this.isLandscape = new ElementWithId('landscape', 'checked').storedAs('print', 'landscape', false);
 
 	this.screenSheet = new CSSStyleSheet({ media: "screen" });
 	this.screenLayout = new SheetRules(this.screenSheet);
@@ -27,6 +27,7 @@ function Styling(storage) {
 	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
 }
 
+/*
 Styling.prototype.saveState = function() {
 	var print = { size: this.pageSizer.value, landscape: this.isLandscape.checked };
 	this.storage.storeState("print", print);
@@ -39,11 +40,12 @@ Styling.prototype.restoreState = function() {
 		this.isLandscape.checked = print.landscape;
 	}
 }
+*/
 
 Styling.prototype.reset = function() {
 	this.pageSizer.value = "A4";
 	this.isLandscape.checked = false;
-	this.saveState();
+	// this.saveState();
 }
 
 Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {

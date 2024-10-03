@@ -1,5 +1,14 @@
-var ElementWithId = function(label) {
+var ElementWithId = function(label, valueField) {
 	this.label = label;
+	this.valueField = valueField;
+}
+
+ElementWithId.prototype.storedAs = function(category, entry, defvalue) {
+	if (!this.valueField) {
+		throw new Error("must specify valueField in order to store");
+	}
+	this.storeAs = new StateElement(category, entry, defvalue);
+	return this;
 }
 
 var ControllerOfType = function(type) {
@@ -78,13 +87,16 @@ AutoWire.prototype.enableStorage = function(obj) {
 		if (obj[k] instanceof AutoWireStorage) {
 			obj[k] = this.storageProvider;
 		} else if (obj[k] instanceof StateElement) {
-			var se = obj[k];
-			if (!this.storageCategories[se.category]) {
-				this.storageCategories[se.category] = new SharedState(this.storageProvider, se.category);
-			}
-			obj[k].sharedstate = this.storageCategories[se.category];
+			this.attachStorageTo(obj[k]);
 		}
 	}
+}
+
+AutoWire.prototype.attachStorageTo = function(se) {
+	if (!this.storageCategories[se.category]) {
+		this.storageCategories[se.category] = new SharedState(this.storageProvider, se.category);
+	}
+	se.sharedstate = this.storageCategories[se.category];
 }
 
 AutoWire.prototype.interconnect = function(list, curr) {
@@ -115,9 +127,16 @@ AutoWire.prototype.attachElements = function(o) {
 }
 
 AutoWire.prototype.connectElement = function(obj, prop, ewi) {
-	obj[prop] = document.getElementById(ewi.label);
+	var elt = document.getElementById(ewi.label);
+	obj[prop] = elt;
+	if (ewi.storeAs) {
+		this.attachStorageTo(ewi.storeAs);
+		elt[ewi.valueField] = ewi.storeAs.value();
+		elt.addEventListener('change', ev => {
+			ewi.storeAs.set(ev.target[ewi.valueField]);
+		});
+	}
 }
-
 
 AutoWire.prototype.callWithElements = function(fn, ...elts) {
 	for (var e of elts) {
