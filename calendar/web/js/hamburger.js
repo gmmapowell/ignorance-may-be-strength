@@ -9,10 +9,8 @@ var Hamburger = function() {
     this.model = new ControllerOfType(ProfileModel);
     this.redraw = new ControllerOfType(RedrawClz);
 
-    this.button = new ElementWithId('hamburger-button');
     this.feedback = new ElementWithId('feedback');
     this.menu = new ElementWithId('hamburger-menu');
-    this.padding = new ElementWithId('hamburger-padding');
     this.modeController = new ElementWithId('mode-controller');
     this.feedback = new ElementWithId('feedback');
     this.narrowOptions = new ElementWithId('narrow-options');
@@ -70,7 +68,6 @@ Hamburger.prototype.init = function() {
 }
 
 Hamburger.prototype.toggleMe = function(explicit) {
-    console.log("show/hide hamburger");
     this.modeOptions.toggleHamburger();
 }
 

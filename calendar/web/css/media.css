@@ -29,7 +29,6 @@
         display: none;
     }
 
-    #mode-controller #mode-options.show-hamburger .hamburger-padding,
     #mode-controller #mode-options.show-hamburger .hamburger-menu {
         display: block;
     }
@@ -48,10 +47,6 @@
     
     #mode-controller #mode-options.show-hamburger #signed-in-controller.signed-in #hamburger-sign-out {
         display: block;
-    }
-
-    #mode-controller.choose-dates .hamburger-button {
-        display: none;
     }
 
     #mode-controller.choose-dates .controls,
@@ -90,8 +85,6 @@
     {
         display: none;
     }
-
-
 
     #mode-controller.choose-dates .control-panel
     {
