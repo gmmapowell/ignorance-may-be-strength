@@ -46,6 +46,9 @@ Hamburger.prototype.init = function() {
     this.feedback.addEventListener('touchmove', ev => self.startTouching(ev));
     this.feedback.addEventListener('touchend', ev => self.stopTouching(ev));
     this.feedback.addEventListener('touchcancel', ev => self.stopTouching(ev));
+    this.menu.addEventListener('click', () => {
+        self.modeOptions.hideHamburger();
+    });
     this.closeMenu.addEventListener('click', () => { 
         self.modeOptions.hideHamburger();
     });

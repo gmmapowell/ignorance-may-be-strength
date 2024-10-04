@@ -3,13 +3,16 @@
 }
 
 .hamburger-menu {
-    border:1px solid black;
+    /* border:1px solid black; */
     /* min-height: 40px; */
     margin: 0.4em 0.4em 0.4em;
+    padding-bottom: 4000px; /* to make it clickable */
 }
 
 .hamburger-menu input {
     display: block;
     width: calc(100% - 10px);
+    padding: 10px 0px;
     margin: 5px;
+    font-size: 20px;
 }
