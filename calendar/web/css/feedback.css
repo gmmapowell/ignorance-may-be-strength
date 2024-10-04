@@ -1,6 +1,16 @@
 .feedback {
 	display: none;
 	pointer-events: none;
+	touch-action: none;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.feedback * {
+	pointer-events: none;
+	touch-action: none;
+	user-select: none;
+	-webkit-user-select: none;
 }
 
 #mode-controller.standard-mode .feedback {

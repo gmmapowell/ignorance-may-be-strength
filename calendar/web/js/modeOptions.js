@@ -1,5 +1,5 @@
 import { ElementWithId } from "./autowire.js";
-import { ensureClass, removeClass, toggleClass } from "./utils.js";
+import { ensureClass, removeClass, toggleClass, hasClass } from "./utils.js";
 
 /** Apart from the obvious thing that they all share a single div that they want to control,
  * the main reason for having all these methods in a single class is that I want the "business logic"
@@ -67,6 +67,18 @@ ModeOptions.prototype.hideManageDetails = function() {
 ModeOptions.prototype.showManageDetails = function() {
 	this.showManage();
 	ensureClass('show-manage-detail', this.mydiv);
+}
+
+ModeOptions.prototype.showingOverlay = function() {
+	return hasClass(this.mydiv, 'show-overlay');
+}
+
+ModeOptions.prototype.showOverlay = function() {
+	ensureClass('show-overlay', this.mydiv);
+}
+
+ModeOptions.prototype.hideOverlay = function() {
+	removeClass('show-overlay', this.mydiv);
 }
 
 export { ModeOptions }

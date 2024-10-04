@@ -27,11 +27,17 @@ var Hamburger = function() {
     this.apply = new ElementWithId('hamburger-controls-apply-button');
 
     this.modeOptions = new ControllerOfType(ModeOptions);
+
+    this.touchTimer = null;
 }
 
 Hamburger.prototype.init = function() {
     var self = this;
-    this.feedback.addEventListener('click', () => self.toggleMe());
+    // this.feedback.addEventListener('click', () => self.toggleMe());
+    this.feedback.addEventListener('touchstart', ev => self.startTouching(ev));
+    this.feedback.addEventListener('touchmove', ev => self.startTouching(ev));
+    this.feedback.addEventListener('touchend', ev => self.stopTouching(ev));
+    this.feedback.addEventListener('touchcancel', ev => self.stopTouching(ev));
     this.closeMenu.addEventListener('click', () => { 
         self.modeOptions.hideHamburger();
     });
@@ -67,8 +73,51 @@ Hamburger.prototype.init = function() {
     });
 }
 
-Hamburger.prototype.toggleMe = function(explicit) {
+Hamburger.prototype.toggleMe = function() {
     this.modeOptions.toggleHamburger();
+}
+
+Hamburger.prototype.startTouching = function(ev) {
+    ev.preventDefault();
+    var self = this;
+    msg("touch");
+    console.log("state", this.touchTimer, this.modeOptions.showingOverlay());
+    if (this.touchTimer != null)
+        return;
+
+    if (this.modeOptions.showingOverlay())
+        return;
+
+    this.touchTimer = setTimeout(() => { 
+        msg("showing overlay on timeout");
+        self.modeOptions.showOverlay();
+        self.touchTimer = null;
+    }, 500);
+}
+
+Hamburger.prototype.stopTouching = function(ev) {
+    ev.preventDefault();
+    msg("no-touch");
+
+    console.log("timer", this.touchTimer);
+
+    if (this.touchTimer) {
+        // if it is a "click", clear the timer and show the hamburger menu
+        msg("launching menu");
+        clearTimeout(this.touchTimer);
+        this.touchTimer = null;
+        this.toggleMe();
+    } else if (this.modeOptions.showingOverlay()) {
+        // if the timer went off, we showed the overlay, so hide it now
+        msg("hiding overlay")
+        this.modeOptions.hideOverlay();
+    }
+}
+
+var msg = function(tx) {
+    var d = new Date();
+    var ts = d.getSeconds().toString().padStart(2, '0') + "." + d.getMilliseconds().toString().padStart(3, '0');
+    console.log(ts + " " + tx);
 }
 
 Hamburger.prototype.showSignInPanel = function() {

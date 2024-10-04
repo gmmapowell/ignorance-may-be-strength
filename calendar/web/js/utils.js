@@ -4,7 +4,7 @@ function setMode(elt, mode) {
 }
 
 function hasClass(elt, clz) {
-    return !elt.classList.contains(clz);
+    return elt.classList.contains(clz);
 }
 
 function toggleClass(clz, ...elts) {
