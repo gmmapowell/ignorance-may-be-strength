@@ -24,6 +24,8 @@ function Styling() {
 	this.metricFontSize = 10;
 	this.screenWatermarks = {};
 	document.adoptedStyleSheets = [this.screenSheet, this.printSheet];
+
+	this.pageInfo = null;
 }
 
 Styling.prototype.reset = function() {
@@ -36,7 +38,7 @@ Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 
 	// We need to go through and calculate the layout of everything based on its apparent size on the screen
 	// For the screen itself, this is easy ... we just say "what is the size of the screen" and go to it
-	this.pageLayout(this.screenLayout, rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
+	this.pageInfo = this.pageLayout(this.screenLayout, rowInfo, monthdivs, this.calculateSizeOfFeedbackDiv());
 
 	// The problem is that for the printer, we don't get any immediate feedback from the "@media 'print'" sheet,
 	// because it doesn't apply.  So I created a "printMeasureSheet" which has *the same dimensions* as the piece of
@@ -58,6 +60,9 @@ Styling.prototype.fitToPageSize = function(rowInfo, monthdivs) {
 }
 
 Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
+	var rowPosns = [];
+	var colPosns = [];
+
 	// if (pageSize.media != 'print')
 	// 	console.log("laying out screen into", pageSize);
 	var rows = rowInfo.numRows;
@@ -96,6 +101,14 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	var xmargin = floor(pageSize.unitIn, xunit);
 	// console.log("x =", 7*xday+6*xmargin + bx);
 
+	// record for inversion
+	var xp = 0;
+	for (var xi=0;xi<7;xi++) {
+		var end = xp + 2 * pageSize.borderX + xday;
+		colPosns.push({ from: xp, to: end });
+		xp = end + xmargin;
+	}
+
 	// vertically, we have #rows rows and (#rows-1) gaps
 	// the height of each week is 13 units, 12 internally and 1 making up the margins.
 	// thus there are a total of 13*#rows-1 units
@@ -119,6 +132,14 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	// and the margin is half a unit, so two of them together is again a unit
 	var ymargin = yunit;
 	
+	// record for inversion
+	var yp = 0;
+	for (var yi=0;yi<rows;yi++) {
+		var end = yp + 2 * pageSize.borderY + yweek;
+		rowPosns.push({ from: yp, to: end });
+		yp = end + ymargin;
+	}
+
 	var dateSize = Math.min(xunit, yunit);
 
 	// generate new rules
@@ -163,6 +184,8 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	for (var i=0;i<rowInfo.months.length;i++) {
 		this.handleWatermarks(sr, pageSize.media == "screen", i, monthdivs[i]);
 	}
+
+	return { rowPosns, colPosns };
 }
 
 Styling.prototype.handleWatermarks = function(sr, forScreen, idx, monthdiv) {
@@ -279,7 +302,23 @@ Styling.prototype.resetVirtualScaleOnMobile = function() {
 }
 
 Styling.prototype.invert = function(feedbackX, feedbackY) {
-	debugger;
+	// console.log("finding", feedbackX, feedbackY, "in", this.pageInfo);
+	var xf = -1, yf = -1;
+	for (var xi=0;xi<7;xi++) {
+		var xp = this.pageInfo.colPosns[xi];
+		if (feedbackX >= xp.from && feedbackX <= xp.to) {
+			xf = xi;
+		}
+	}
+	for (var yi=0;yi<this.pageInfo.rowPosns.length;yi++) {
+		var yp = this.pageInfo.rowPosns[yi];
+		if (feedbackY >= yp.from && feedbackY <= yp.to) {
+			yf = yi;
+		}
+	}
+	if (xf >= 0 && yf >= 0) {
+		return { x: xf, y: yf };
+	}
 }
 
 function floor(unit, quant) {

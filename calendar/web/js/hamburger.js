@@ -3,11 +3,13 @@ import { ModeOptions } from "./modeOptions.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Profiles } from "./profiles.js";
 import { RedrawClz } from "./redraw.js";
+import { Styling } from "./styling.js";
 
 var Hamburger = function() {
     this.profiles = new ControllerOfType(Profiles);
     this.model = new ControllerOfType(ProfileModel);
     this.redraw = new ControllerOfType(RedrawClz);
+    this.styling = new ControllerOfType(Styling);
 
     this.feedback = new ElementWithId('feedback');
     this.menu = new ElementWithId('hamburger-menu');
@@ -29,6 +31,7 @@ var Hamburger = function() {
     this.modeOptions = new ControllerOfType(ModeOptions);
 
     this.touchTimer = null;
+    this.touchedAt = null;
 }
 
 Hamburger.prototype.init = function() {
@@ -80,36 +83,44 @@ Hamburger.prototype.toggleMe = function() {
 Hamburger.prototype.startTouching = function(ev) {
     ev.preventDefault();
     var self = this;
-    msg("touch");
-    console.log("state", this.touchTimer, this.modeOptions.showingOverlay());
+    if (ev.targetTouches && ev.targetTouches[0]) {
+        var tt = ev.targetTouches[0];
+        this.touchedAt = this.styling.invert(tt.clientX, tt.clientY);
+        // console.log("pos", this.touchedAt);
+    }
+    // msg("touch");
+    // console.log("state", this.touchTimer, this.modeOptions.showingOverlay());
     if (this.touchTimer != null)
         return;
 
-    if (this.modeOptions.showingOverlay())
+    if (this.modeOptions.showingOverlay()) {
+        // may need to update the contents
         return;
+    }
 
     this.touchTimer = setTimeout(() => { 
-        msg("showing overlay on timeout");
+        // msg("showing overlay on timeout");
         self.modeOptions.showOverlay();
+        console.log("contents for", self.touchedAt);
         self.touchTimer = null;
     }, 500);
 }
 
 Hamburger.prototype.stopTouching = function(ev) {
     ev.preventDefault();
-    msg("no-touch");
+    // msg("no-touch");
 
-    console.log("timer", this.touchTimer);
+    // console.log("timer", this.touchTimer);
 
     if (this.touchTimer) {
         // if it is a "click", clear the timer and show the hamburger menu
-        msg("launching menu");
+        // msg("launching menu");
         clearTimeout(this.touchTimer);
         this.touchTimer = null;
         this.toggleMe();
     } else if (this.modeOptions.showingOverlay()) {
         // if the timer went off, we showed the overlay, so hide it now
-        msg("hiding overlay")
+        // msg("hiding overlay")
         this.modeOptions.hideOverlay();
     }
 }
