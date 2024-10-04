@@ -1,4 +1,8 @@
-.profile-button, .open-profile, .sign-in, .sign-in-panel, .create-user-panel, .user-profile, .manage-calendars {
+.profile-button, .open-profile{
+    display: block;
+}
+
+.sign-in, .sign-in-panel, .create-user-panel, .user-profile, .manage-calendars {
     display: none;
 }
 
@@ -12,6 +16,10 @@
 
 #mode-controller.standard-mode #signed-in-controller.signed-out .sign-in {
     display: block;
+}
+
+#mode-controller.standard-mode #signed-in-controller.signed-out .open-profile {
+    display: none;
 }
 
 #mode-controller.signing-in .options-drawer,
@@ -48,10 +56,6 @@
     display: inline-block;
     left: 40%;
     text-align: left;
-}
-
-.hamburger-button {
-    display: none;
 }
 
 .create-user-panel {

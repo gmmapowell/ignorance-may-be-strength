@@ -1,5 +1,4 @@
 .feedback {
-	display: none;
 	pointer-events: none;
 	touch-action: none;
 	user-select: none;

@@ -16,3 +16,7 @@
     margin: 5px;
     font-size: 20px;
 }
+
+.hamburger-done-selecting {
+    display: none;
+}

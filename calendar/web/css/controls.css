@@ -1,11 +1,11 @@
 .controls {
-    display: none;
-}
-
-#mode-controller.standard-mode .controls
-{
     display: block;
 }
+
+/* #mode-controller.standard-mode .controls
+{
+    display: block;
+} */
 
 #mode-controller.standard-mode .profile-button {
     display: inline-block;
@@ -24,7 +24,7 @@
     position: absolute;
 }
 
-.profile-button, .hamburger-button {
+.profile-button {
     vertical-align: top;
     width: 10%;
     top: 0;

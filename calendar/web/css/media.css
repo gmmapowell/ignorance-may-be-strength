@@ -11,17 +11,23 @@
         pointer-events: all;
     }
 
-    .controls .hamburger-button {
-        display: inline-block;
-        position: absolute;
-        width: 5%;
-        top: 0;
-        bottom: 0;
-        padding: 0 0.2em;
+    #mode-controller.standard-mode .controls .profile-button,
+    #mode-controller.choose-dates .controls .profile-button
+    {
+        display: none;
     }
 
-    #mode-controller.standard-mode .controls .profile-button {
+    #mode-controller.choose-dates .feedback,
+    #mode-controller.select-calendars .feedback,
+    #mode-controller.configure-categories .feedback
+    {
         display: none;
+    }
+
+    #mode-controller.select-calendars .hamburger-done-selecting,
+    #mode-controller.configure-categories .hamburger-done-selecting
+    {
+        display: block;
     }
 
     #mode-controller #mode-options.show-hamburger .control-panel,
@@ -33,6 +39,12 @@
         display: block;
     }
 
+    #mode-controller.signing-in #signed-in-controller.signed-out .profile-button,
+    #mode-controller.signing-in #signed-in-controller.signed-out .control-panel
+     {
+        display: none;
+    }
+        
     #mode-controller #mode-options.show-hamburger #signed-in-controller.signed-out #hamburger-sign-in {
         display: block;
     }
@@ -57,8 +69,10 @@
     #mode-controller.select-calendars .controls,
     #mode-controller.select-calendars .options-drawer,
     #mode-controller.select-calendars .user-profile,
-    #mode-controller.select-calendars .available-calendars
-    {
+    #mode-controller.select-calendars .available-calendars,
+    #mode-controller.select-calendars #mode-options.show-profile.show-user-profile #signed-in-controller.signed-in .user-profile,
+    #mode-controller.select-calendars #mode-options.show-profile #signed-in-controller.signed-in .options-drawer
+   {
         display: block;
     }
 
@@ -73,7 +87,9 @@
     #mode-controller.configure-categories .controls,
     #mode-controller.configure-categories .options-drawer,
     #mode-controller.configure-categories .user-profile,
-    #mode-controller.configure-categories .calendar-categories
+    #mode-controller.configure-categories .calendar-categories,
+    #mode-controller.configure-categories #mode-options.show-profile.show-user-profile #signed-in-controller.signed-in .user-profile,
+    #mode-controller.configure-categories #mode-options.show-profile #signed-in-controller.signed-in .options-drawer
     {
         display: block;
     }
@@ -95,20 +111,6 @@
 
     #mode-controller.standard-mode .controls {
         display: none;
-    }
-
-    .controls .hamburger-button {
-        display: none;
-    }
-
-    .hamburger-button .hamburger-text {
-        position: absolute;
-        text-align: center;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        padding-top: calc(100% - 1em);
     }
 
     .hide-options-in-general-on-narrow {
@@ -138,7 +140,8 @@
     #mode-controller.choose-dates .basic-controls .end-date input,
     #mode-controller.choose-dates .basic-controls .first-day select,
     #mode-controller.choose-dates .basic-controls .show-in-time-zone select, 
-    #mode-controller.choose-dates .print-controls .shade-weekends select
+    #mode-controller.choose-dates .print-controls .shade-weekends select,
+    #mode-controller.choose-dates #mode-options.show-profile.show-user-profile #signed-in-controller.signed-in .user-profile
     {
         display: block;
         font-size: 13px;
