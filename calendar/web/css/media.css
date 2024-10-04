@@ -12,14 +12,16 @@
     }
 
     #mode-controller.standard-mode .controls .profile-button,
-    #mode-controller.choose-dates .controls .profile-button
+    #mode-controller.choose-dates .controls .profile-button,
+    #mode-controller.add-appointment .controls .profile-button
     {
         display: none;
     }
 
     #mode-controller.choose-dates .feedback,
     #mode-controller.select-calendars .feedback,
-    #mode-controller.configure-categories .feedback
+    #mode-controller.configure-categories .feedback,
+    #mode-controller.add-appointment .feedback
     {
         display: none;
     }
@@ -102,6 +104,26 @@
         display: none;
     }
 
+    #mode-controller.add-appointment .controls,
+    #mode-controller.add-appointment .options-drawer,
+    #mode-controller.add-appointment .user-profile,
+    #mode-controller.add-appointment .new-appointment-panel,
+    #mode-controller.add-appointment #mode-options.show-profile.show-user-profile #signed-in-controller.signed-in .user-profile,
+    #mode-controller.add-appointment #mode-options.show-profile #signed-in-controller.signed-in .options-drawer
+    {
+        display: block;
+    }
+
+    #mode-controller.add-appointment .user-profile-buttons,
+    #mode-controller.add-appointment .available-calendars,
+    #mode-controller.add-appointment .saved-plans,
+    #mode-controller.add-appointment .calendar-categories,
+    #mode-controller.add-appointment .controls,
+    #mode-controller.add-appointment .hamburger-done-selecting
+    {
+        display: none;
+    }
+
     #mode-controller.choose-dates .control-panel
     {
         left: 5%;
@@ -154,6 +176,27 @@
     #mode-options.show-profile.show-manage-calendars #signed-in-controller.signed-in .manage-calendars
     {   
         display: none;
+    }
+
+    .new-appointment-title {
+        text-align: center;
+        font-size: larger;
+        font-weight: bold;
+        margin-bottom: 1em;
+    }
+    
+    .new-appointment-line {
+        min-height: 1.3em;
+    }
+    
+    .new-appointment-input {
+        position: absolute;
+        left: 25%;
+    }
+    
+    .new-appointment-create {
+        margin-top: 1em;
+        text-align: center;
     }
 
     .controls input#hamburger-controls-apply-button {

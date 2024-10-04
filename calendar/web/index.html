@@ -8,12 +8,14 @@
 		<link rel="stylesheet" href="css/feedback.css">
 		<link rel="stylesheet" href="css/hamburger.css">
 		<link rel="stylesheet" href="css/manage-calendars.css">
+		<link rel="stylesheet" href="css/new-appointment.css">
 		<link rel="stylesheet" href="css/overlay.css">
 		<link rel="stylesheet" href="css/profiles.css">
 		<link rel="stylesheet" href="css/watermark.css">
 
 		<link rel="stylesheet" href="css/media.css">
 		<link rel="stylesheet" href="css/printing.css" media="print">
+		
 		<script src="js/autowire.js" type="module"></script>
 		<script src="js/ajax.js" type="module"></script>
 		<script src="js/utils.js" type="module"></script>
@@ -104,6 +106,7 @@
 						<input type='button' id="hamburger-choose-dates" value="Choose Dates">
 						<input type='button' id="hamburger-select-calendars" value="Select Calendars">
 						<input type='button' id="hamburger-configure-categories" value="Configure Categories">
+						<input type='button' id="hamburger-add-appointment" value="New Appointment">
 						<input type='button' id="hamburger-reset" value="Reset">
 						<input type='button' id="hamburger-sign-out" value="Sign Out">
 					</div>
@@ -147,6 +150,30 @@
 							<div id="available-calendars" class="available-calendars"></div>
 							<div id="calendar-categories" class="calendar-categories"></div>
 							<div id="saved-plans" class="saved-plans"></div>
+							<div id="add-new-appointment" class="new-appointment-panel">
+								<div class="new-appointment-title">New Appointment</div>
+								<div class="new-appointment-line">
+									<label for="new-appointment-date">Date:</label>
+									<input type="text" id='new-appointment-date' placeholder="yyyy-mm-dd" class="new-appointment-input">
+								</div>
+								<div class="new-appointment-line">
+									<label for="new-appointment-time">Time:</label>
+									<span class="new-appointment-input">
+										<input type="text" id="new-appointment-time" placeholder="hhmm">
+										<select id='new-appointment-tz'>
+											<option>BST</option>
+											<option>EDT</option>	
+										</select>
+									</span>
+								</div>
+								<div class="new-appointment-line">
+									<label for="new-appointment-description">Description:</label>
+									<input type="text" id='new-appointment-description' placeholder="description" class="new-appointment-input">
+								</div>
+								<div class="new-appointment-create">
+									<input type="button" id="add-new-appointment-button" value="Create">
+								</div>
+							</div>
 							<div class="hamburger-done-selecting">
 								<input id='hamburger-done-selecting-button' type="button" value="Select">
 							</div>

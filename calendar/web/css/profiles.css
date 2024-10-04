@@ -1,4 +1,4 @@
-.profile-button, .open-profile{
+.profile-button, .open-profile {
     display: block;
 }
 
@@ -94,7 +94,7 @@
     height: 5em;
 }
   
-.available-calendars, .calendar-categories, .saved-plans {
+.available-calendars, .calendar-categories, .saved-plans, .new-appointment-panel {
     display: inline-block;
     vertical-align: top;
     border: 1px solid black;

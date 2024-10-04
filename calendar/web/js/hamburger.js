@@ -23,6 +23,7 @@ var Hamburger = function() {
     this.chooseDatesButton = new ElementWithId('hamburger-choose-dates');
     this.selectCalendars = new ElementWithId('hamburger-select-calendars');
     this.configureCategories = new ElementWithId('hamburger-configure-categories');
+    this.newAppt = new ElementWithId('hamburger-add-appointment');
     this.doneSelecting = new ElementWithId('hamburger-done-selecting-button');
     this.resetAll = new ElementWithId('hamburger-reset');
     this.signOutButton = new ElementWithId('hamburger-sign-out');
@@ -63,6 +64,9 @@ Hamburger.prototype.init = function() {
     });
     this.configureCategories.addEventListener('click', () => { 
         self.showCategoriesPanel();
+    });
+    this.newAppt.addEventListener('click', () => { 
+        self.showAddAppointmentPanel();
     });
     this.doneSelecting.addEventListener('click', () => {
         self.modeController.className = 'standard-mode';
@@ -186,6 +190,11 @@ Hamburger.prototype.showCalendarsPanel = function() {
 
 Hamburger.prototype.showCategoriesPanel = function() {
     this.modeController.className = 'configure-categories';
+    this.modeOptions.hideHamburger();
+}
+
+Hamburger.prototype.showAddAppointmentPanel = function() {
+    this.modeController.className = 'add-appointment';
     this.modeOptions.hideHamburger();
 }
 
