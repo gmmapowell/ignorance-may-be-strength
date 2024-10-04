@@ -23,3 +23,23 @@
 #mode-options.show-overlay .enlarged-overlay {
 	display: block;
 }
+
+.overlay-date {
+	font-weight: bold;
+	font-size: larger;
+	text-align: center;
+	margin-bottom: 1em;
+}
+
+.overlay-appt {
+	margin: 0.2em 1em;
+}
+
+.overlay-appt-time {
+	font-weight: bold;
+	margin-right: 0.5em;
+}
+
+.overlay-appt-description {
+	text-wrap: none;
+}

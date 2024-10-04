@@ -149,7 +149,14 @@ Hamburger.prototype.showOverlayContents = function() {
         if (s.color) {
             div.classList.add("body-day-color-" + s.color);
         }
-        div.innerText = s.starttime + " " + s.description;
+        var s1 = document.createElement("span");
+        s1.className = "overlay-appt-time";
+        s1.innerText = s.starttime;
+        div.appendChild(s1);
+        var s2 = document.createElement("span");
+        s2.className = "overlay-appt-description";
+        s2.innerText = s.description;
+        div.appendChild(s2);
     }
 }
 
