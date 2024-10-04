@@ -1,4 +1,5 @@
 import { ElementWithId, ControllerOfType } from "./autowire.js";
+import { ModelProvider } from "./model.js";
 import { ModeOptions } from "./modeOptions.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Profiles } from "./profiles.js";
@@ -8,6 +9,7 @@ import { Styling } from "./styling.js";
 var Hamburger = function() {
     this.profiles = new ControllerOfType(Profiles);
     this.model = new ControllerOfType(ProfileModel);
+    this.modelProvider = new ControllerOfType(ModelProvider);
     this.redraw = new ControllerOfType(RedrawClz);
     this.styling = new ControllerOfType(Styling);
 
@@ -29,6 +31,9 @@ var Hamburger = function() {
     this.apply = new ElementWithId('hamburger-controls-apply-button');
 
     this.modeOptions = new ControllerOfType(ModeOptions);
+
+    this.overlayDate = new ElementWithId('overlay-date');
+    this.overlayAppts = new ElementWithId('overlay-appts');
 
     this.touchTimer = null;
     this.touchedAt = null;
@@ -81,6 +86,7 @@ Hamburger.prototype.toggleMe = function() {
 }
 
 Hamburger.prototype.startTouching = function(ev) {
+    // msg("touch");
     ev.preventDefault();
     var self = this;
     if (ev.targetTouches && ev.targetTouches[0]) {
@@ -88,13 +94,12 @@ Hamburger.prototype.startTouching = function(ev) {
         this.touchedAt = this.styling.invert(tt.clientX, tt.clientY);
         // console.log("pos", this.touchedAt);
     }
-    // msg("touch");
     // console.log("state", this.touchTimer, this.modeOptions.showingOverlay());
     if (this.touchTimer != null)
         return;
 
     if (this.modeOptions.showingOverlay()) {
-        // may need to update the contents
+        this.showOverlayContents();
         return;
     }
 
@@ -102,8 +107,9 @@ Hamburger.prototype.startTouching = function(ev) {
         // msg("showing overlay on timeout");
         self.modeOptions.showOverlay();
         console.log("contents for", self.touchedAt);
+        self.showOverlayContents();
         self.touchTimer = null;
-    }, 500);
+    }, 250);
 }
 
 Hamburger.prototype.stopTouching = function(ev) {
@@ -122,6 +128,28 @@ Hamburger.prototype.stopTouching = function(ev) {
         // if the timer went off, we showed the overlay, so hide it now
         // msg("hiding overlay")
         this.modeOptions.hideOverlay();
+    }
+}
+
+Hamburger.prototype.showOverlayContents = function() {
+    if (!this.touchedAt) {
+        // nothing to show
+        return;
+    }
+    var model = this.modelProvider.calculate();
+    var day = model.weeks[this.touchedAt.y].days[this.touchedAt.x];
+    console.log("day", day);
+    this.overlayDate.innerText = day.calDate;
+    this.overlayAppts.innerHTML = '';
+    for (var i=0;i<day.toShow.length;i++) {
+        var s = day.toShow[i];
+        var div = document.createElement("div");
+        this.overlayAppts.appendChild(div);
+        div.className = 'overlay-appt';
+        if (s.color) {
+            div.classList.add("body-day-color-" + s.color);
+        }
+        div.innerText = s.starttime + " " + s.description;
     }
 }
 
