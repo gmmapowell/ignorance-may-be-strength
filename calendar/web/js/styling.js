@@ -71,10 +71,6 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 		pr.property("size", pageSize.x + pageSize.unitIn, pageSize.y + pageSize.unitIn, pageSize.orientation);
 		// margin doesn't seem to work, but maybe because I've turned it off in the print dialog
 		pr.property("margin", "0mm");
-		// pr.property("margin-left", pageSize.margin + pageSize.unitIn);
-		// pr.property("margin-right", pageSize.margin + pageSize.unitIn);
-		// pr.property("margin-top", pageSize.margin + pageSize.unitIn);
-		// pr.property("margin-bottom", pageSize.margin + pageSize.unitIn);
 
 		innerX -= 2 * pageSize.margin;
 		innerY -= 2 * pageSize.margin;
@@ -162,27 +158,18 @@ Styling.prototype.pageLayout = function(sr, rowInfo, monthdivs, pageSize) {
 	var bde = sr.rule(".body-day-event");
 	bde.property("width", xday + pageSize.unitIn);
 
-	// var bdec = sr.rule(".body-day-events-container");
-	// bdec.property("top", eventsContainerY + pageSize.unitIn);
-	// bdec.property("font-size", dateSize + pageSize.unitIn);
-
 	sr.apply();
 
 	for (var i=0;i<rowInfo.months.length;i++) {
-		this.handleWatermarks(sr, pageSize.media == "screen", i, rowInfo.months[i], monthdivs[i]);
+		this.handleWatermarks(sr, pageSize.media == "screen", i, monthdivs[i]);
 	}
-
-	// console.log(sr);
-	return sr;
 }
 
-Styling.prototype.handleWatermarks = function(sr, forScreen, idx, rowInfo, monthdiv) {
+Styling.prototype.handleWatermarks = function(sr, forScreen, idx, monthdiv) {
 	var availx, availy;
 	var usedx, usedy, scale, fontSize;
-	var sheet;
 
 	if (forScreen) {
-		sheet = this.screenSheet;
 		availx = monthdiv.clientWidth;
 		availy = monthdiv.clientHeight;
 
@@ -210,7 +197,6 @@ Styling.prototype.handleWatermarks = function(sr, forScreen, idx, rowInfo, month
 		this.screenWatermarks[idx] = { scale, width, height };
 		wm2.removeFrom(this.screenSheet);
 	} else {
-		sheet = this.printSheet;
 		availx = monthdiv.clientWidth;
 		availy = monthdiv.clientHeight;
 		var sw = this.screenWatermarks[idx];
@@ -282,6 +268,7 @@ Styling.prototype.calculatePaperSize = function() {
 		var tmp = ret.borderX;
 		ret.borderX = ret.borderY;
 		ret.borderY = tmp;
+		ret.orientation = 'landscape';
 	}
 	return ret;
 }
@@ -289,6 +276,10 @@ Styling.prototype.calculatePaperSize = function() {
 Styling.prototype.resetVirtualScaleOnMobile = function() {
 	let viewportmeta = document.querySelector('meta[name="viewport"]');
 	viewportmeta.setAttribute("content", "width=device-width, height=device-height, initial-scale=1, minimum-scale=1");
+}
+
+Styling.prototype.invert = function(feedbackX, feedbackY) {
+	debugger;
 }
 
 function floor(unit, quant) {
