@@ -193,12 +193,11 @@
         position: absolute;
         left: 25%;
     }
-    
-    .new-appointment-create {
-        margin-top: 1em;
-        text-align: center;
-    }
 
+    .cancel-new-appointment {
+        display: inline-block;
+    }
+    
     .controls input#hamburger-controls-apply-button {
         font-size: 16px;
     }

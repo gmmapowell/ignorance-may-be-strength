@@ -9,6 +9,7 @@ import { RedrawClz } from "./redraw.js";
 import { Profiles } from "./profiles.js";
 import { ProfileModel } from "./profilemodel.js";
 import { Hamburger } from "./hamburger.js";
+import { Appointments } from "./appointments.js";
 
 function init() {
     // create a wrapper around localStorage
@@ -26,6 +27,7 @@ function init() {
     var profiles = new Profiles();
     var modeOptions = new ModeOptions();
     var hamburger = new Hamburger();
+    var appts = new Appointments();
 
     // the reset function refers to many of these but is called in AutoWire
     var doReset = function() {
@@ -38,7 +40,7 @@ function init() {
 
     // then get everything wired together
     new AutoWire(document, storage)
-        .wireUp(ajax, profileModel, modelProvider, modeOptions, profiles, redraw, styler, hamburger, manageCalendars)
+        .wireUp(ajax, profileModel, modelProvider, modeOptions, profiles, redraw, styler, hamburger, appts, manageCalendars)
         .elementListener('change', ev => redraw.redraw(), 'start-date', 'end-date', 'first-day', 'shade-weekends', 'page-size', 'landscape')
         .elementListener('change', ev => profileModel.changeTimeZone(ev.target.selectedOptions[0].value), 'calendar-time-zone')
         .elementListener('click', ev => profiles.buttonClicked(), 'profile-button')

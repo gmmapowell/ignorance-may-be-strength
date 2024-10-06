@@ -19,6 +19,7 @@
 		<script src="js/autowire.js" type="module"></script>
 		<script src="js/ajax.js" type="module"></script>
 		<script src="js/utils.js" type="module"></script>
+		<script src="js/appointments.js" type="module"></script>
 		<script src="js/csv.js" type="module"></script>
 		<script src="js/styling.js" type="module"></script>
 		<script src="js/ics.js" type="module"></script>
@@ -170,8 +171,10 @@
 									<label for="new-appointment-description">Description:</label>
 									<input type="text" id='new-appointment-description' placeholder="description" class="new-appointment-input">
 								</div>
-								<div class="new-appointment-create">
+								<div id='new-appointment-error' class="new-appointment-error">Incorrect Date Format</div>
+								<div class="new-appointment-buttons">
 									<input type="button" id="add-new-appointment-button" value="Create">
+									<input type="button" id="cancel-new-appointment-button" value="Cancel" class="cancel-new-appointment">
 								</div>
 							</div>
 							<div class="hamburger-done-selecting">

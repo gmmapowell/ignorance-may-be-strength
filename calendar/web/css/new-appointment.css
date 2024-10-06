@@ -1,0 +1,23 @@
+.new-appointment-title {
+	text-align: center;
+}
+
+.new-appointment-buttons {
+	margin-top: 1em;
+	text-align: center;
+}
+
+.cancel-new-appointment {
+	display: none;
+}
+
+.new-appointment-error {
+	display: none;
+	margin-top: 1em;
+	color: red;
+	text-align: center;
+}
+
+.new-appointment-error.error-shown {
+	display: block;
+}

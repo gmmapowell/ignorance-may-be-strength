@@ -1,3 +1,4 @@
+import { Appointments } from "./appointments.js";
 import { ElementWithId, ControllerOfType } from "./autowire.js";
 import { ModelProvider } from "./model.js";
 import { ModeOptions } from "./modeOptions.js";
@@ -12,6 +13,7 @@ var Hamburger = function() {
     this.modelProvider = new ControllerOfType(ModelProvider);
     this.redraw = new ControllerOfType(RedrawClz);
     this.styling = new ControllerOfType(Styling);
+    this.appt = new ControllerOfType(Appointments);
 
     this.feedback = new ElementWithId('feedback');
     this.menu = new ElementWithId('hamburger-menu');
@@ -24,6 +26,7 @@ var Hamburger = function() {
     this.selectCalendars = new ElementWithId('hamburger-select-calendars');
     this.configureCategories = new ElementWithId('hamburger-configure-categories');
     this.newAppt = new ElementWithId('hamburger-add-appointment');
+
     this.doneSelecting = new ElementWithId('hamburger-done-selecting-button');
     this.resetAll = new ElementWithId('hamburger-reset');
     this.signOutButton = new ElementWithId('hamburger-sign-out');
@@ -65,7 +68,8 @@ Hamburger.prototype.init = function() {
     this.configureCategories.addEventListener('click', () => { 
         self.showCategoriesPanel();
     });
-    this.newAppt.addEventListener('click', () => { 
+    this.newAppt.addEventListener('click', () => {
+        this.appt.reset();
         self.showAddAppointmentPanel();
     });
     this.doneSelecting.addEventListener('click', () => {
