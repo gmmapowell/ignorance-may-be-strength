@@ -145,6 +145,11 @@ class ProfileHandler {
         unlink($cuser['dir'] . '/' . $called);
     }
 
+    function new_appointment($when, $tz, $desc) {
+        $cuser = $this->current_user();
+        error_log("ok");
+    }
+    
     function generate_token_for(string $userdir) : string {
         for (;;) {
             $token = $this->make_token();

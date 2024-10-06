@@ -38,15 +38,16 @@ Appointments.prototype.createNewAppointment = function() {
 	var dateStr = this.date.value;
 	var timeStr = this.time.value;
 	var tz = this.tz.value;
-	console.log("date", dateStr, timeStr, tz);
 	try {
 		var dd = CalDateTime.standard(tz, dateStr + ":" + timeStr.substring(0, 2) + ":" + timeStr.substring(2));
-		console.log(dd.toISOString());
 		this.ajax.secureUri("/ajax/new-appointment.php")
+			.header('x-event-when', dd.toISOString())
+			.header('x-event-tz', tz)
+			.header('x-event-desc', this.description.value)
 			.invoke((stat, msg) => self.appointmentCreated(stat, msg));
 	} catch (e) {
 		console.log(e);
-		this.newApptError.innerText = "An Error";
+		this.newApptError.innerText = e.value;
 		this.newApptError.classList.add("error-shown");
 	}
 }
@@ -55,6 +56,8 @@ Appointments.prototype.appointmentCreated = function(stat, msg) {
 	if (stat / 100 != 2) { // it's an error
 		if (stat == 404) {
 			msg = "404 - cannot create appointment";
+		} else if (!msg) {
+			msg = "Error " + stat;
 		}
 		this.newApptError.innerText = msg;
 		this.newApptError.classList.add("error-shown");
