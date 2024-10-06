@@ -8,10 +8,6 @@ function CalDateTime(origtz, jsd) {
 
 CalDateTime.tzjs = function(tz, jsd) {
     var ret = new CalDateTime(tz, jsd);
-    // console.log("processing " + jsd + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
-    // console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
-    // console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
-    // console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
     return ret;
 }
 
@@ -23,10 +19,6 @@ CalDateTime.icsDate = function(tz, ics) {
         tz = tzp.replace("TZID=", "");
     }
     var ret = CalDateTime.standard(tz, toStandard(ics));
-    // console.log("processing " + ics + " => " + ret.dateString() + " : " + ret.timeString() + " / " + tz);
-    // console.log("        is " + ret.dateString("EDT") + " : " + ret.timeString("EDT") + " / EDT");
-    // console.log("        is " + ret.dateString("BST") + " : " + ret.timeString("BST") + " / BST");
-    // console.log("        is " + ret.dateString("NZT") + " : " + ret.timeString("NZT") + " / NZT");
     return ret;
 }
 
@@ -78,6 +70,10 @@ CalDateTime.prototype.tzToUse = function(intz) {
         return findTZ(this.origtz);
     else
         return findTZ(intz);
+}
+
+CalDateTime.prototype.toISOString = function() {
+    return this.jsd.toISOString();
 }
 
 function findTZ(tz) {
