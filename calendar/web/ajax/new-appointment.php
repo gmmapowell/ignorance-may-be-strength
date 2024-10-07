@@ -2,10 +2,11 @@
 
 require_once("../php/calendar.php");
 error_log("add new appointment");
-$when = $config->get_header('x-event-when');
+$date = $config->get_header('x-event-date');
+$time = $config->get_header('x-event-time');
 $tz = $config->get_header('x-event-tz');
 $desc = $config->get_header('x-event-desc');
-error_log("add new appointment: " . $when . $tz . ": " .$desc);
+error_log("add new appointment: " . $date . " " . $time . $tz . ": " .$desc);
 
-$resp = $profiles->new_appointment($when, $tz, $desc);
+$resp = $profiles->new_appointment($date, $time, $tz, $desc);
 ?>

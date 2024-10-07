@@ -105,12 +105,12 @@ ProfileModel.prototype.drawerOpen = function(isOpen) {
     this.drawerState.set(isOpen);
 }
 
-ProfileModel.prototype.loadAvailableCalendars = function() {
+ProfileModel.prototype.loadAvailableCalendars = function(andThen) {
     this.ajax.secureUri("/ajax/load-calendars.php")
-        .invoke((stat, msg) => this.calendarsLoaded(stat, msg));
+        .invoke((stat, msg) => this.calendarsLoaded(stat, msg, andThen));
 }
 
-ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
+ProfileModel.prototype.calendarsLoaded = function(stat, msg, andThen) {
     if (stat == 200) {
         var info = JSON.parse(msg);
         this.savedPlans = [];
@@ -132,6 +132,9 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg) {
         this.availableCalendars.set(acs);
         this.savedPlans.sort();
         this.vis.modelChanged();
+    }
+    if (andThen) {
+        andThen(stat, msg);
     }
 }
 
@@ -190,7 +193,7 @@ ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
     var ptz = props && props.tz;
     if (label.endsWith(".ics")) {
         events = Ics.parse(msg, ptz, this.modelProvider.showTz.value);
-    } else if (label.endsWith(".csv")) {
+    } else if (label.endsWith(".csv") || "internal-calendar" == label) {
         var pair = CsvCalendar.parse(msg, ptz, this.modelProvider.showTz.value);
         events = pair.events;
         timezones = pair.timezones;

@@ -1,9 +1,11 @@
 import { ControllerOfType, ElementWithId } from "./autowire.js";
 import { CalDateTime } from "./events.js";
 import { Ajax } from "./ajax.js";
+import { ProfileModel } from "./profilemodel.js";
 
 var Appointments = function() {
 	this.ajax = new ControllerOfType(Ajax);
+	this.profiles = new ControllerOfType(ProfileModel);
 
     this.newApptError = new ElementWithId('new-appointment-error');
 	this.date = new ElementWithId('new-appointment-date');
@@ -41,7 +43,8 @@ Appointments.prototype.createNewAppointment = function() {
 	try {
 		var dd = CalDateTime.standard(tz, dateStr + ":" + timeStr.substring(0, 2) + ":" + timeStr.substring(2));
 		this.ajax.secureUri("/ajax/new-appointment.php")
-			.header('x-event-when', dd.toISOString())
+			.header('x-event-date', dateStr)
+			.header('x-event-time', timeStr)
 			.header('x-event-tz', tz)
 			.header('x-event-desc', this.description.value)
 			.invoke((stat, msg) => self.appointmentCreated(stat, msg));
@@ -53,6 +56,7 @@ Appointments.prototype.createNewAppointment = function() {
 }
 
 Appointments.prototype.appointmentCreated = function(stat, msg) {
+	var self = this;
 	if (stat / 100 != 2) { // it's an error
 		if (stat == 404) {
 			msg = "404 - cannot create appointment";
@@ -61,7 +65,18 @@ Appointments.prototype.appointmentCreated = function(stat, msg) {
 		}
 		this.newApptError.innerText = msg;
 		this.newApptError.classList.add("error-shown");
+	} else {
+		if (this.profiles.activeCalendars['internal-calendar']) {
+			this.modeController.className = 'standard-mode';
+		} else {
+			this.profiles.loadAvailableCalendars(() => self.chooseInternalCalendar());
+		}
 	}
+}
+
+Appointments.prototype.chooseInternalCalendar = function() {
+	this.profiles.selectCalendarAction('internal-calendar', true);
+	this.modeController.className = 'standard-mode';
 }
 
 export { Appointments };

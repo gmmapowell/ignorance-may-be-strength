@@ -81,6 +81,7 @@
     #mode-controller.select-calendars .user-profile-buttons,
     #mode-controller.select-calendars .calendar-categories,
     #mode-controller.select-calendars .saved-plans,
+    #mode-controller.select-calendars .new-appointment-panel,
     #mode-controller.select-calendars .controls
     {
         display: none;
@@ -99,6 +100,7 @@
     #mode-controller.configure-categories .user-profile-buttons,
     #mode-controller.configure-categories .available-calendars,
     #mode-controller.configure-categories .saved-plans,
+    #mode-controller.configure-categories .new-appointment-panel,
     #mode-controller.configure-categories .controls
     {
         display: none;

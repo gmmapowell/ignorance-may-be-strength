@@ -145,11 +145,17 @@ class ProfileHandler {
         unlink($cuser['dir'] . '/' . $called);
     }
 
-    function new_appointment($when, $tz, $desc) {
+    function new_appointment($date, $time, $tz, $desc) {
         $cuser = $this->current_user();
-        error_log("ok");
+        $internal = $cuser['dir'] . '/' . 'internal-calendar';
+
+        error_log("$internal");
+        if (!file_exists($internal)) {
+            file_put_contents($internal, '"TZ","Date","Time","Description","Until","Ends","Category","NewTZ"' . "\r\n");
+        }
+        file_put_contents($internal, '"' . "$tz" . '","' . "$date" . '","' . "$time" . '","' . "$desc" . '"' . "\r\n", FILE_APPEND | LOCK_EX);
     }
-    
+
     function generate_token_for(string $userdir) : string {
         for (;;) {
             $token = $this->make_token();
