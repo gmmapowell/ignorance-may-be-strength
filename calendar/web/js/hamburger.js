@@ -117,7 +117,7 @@ Hamburger.prototype.startTouching = function(ev) {
     this.touchTimer = setTimeout(() => { 
         // msg("showing overlay on timeout");
         self.modeOptions.showOverlay();
-        console.log("contents for", self.touchedAt);
+        // console.log("contents for", self.touchedAt);
         self.showOverlayContents();
         self.touchTimer = null;
     }, 250);
@@ -149,7 +149,7 @@ Hamburger.prototype.showOverlayContents = function() {
     }
     var model = this.modelProvider.calculate();
     var day = model.weeks[this.touchedAt.y].days[this.touchedAt.x];
-    console.log("day", day);
+    // console.log("day", day);
     this.overlayDate.innerText = day.calDate;
     this.overlayAppts.innerHTML = '';
     for (var i=0;i<day.toShow.length;i++) {

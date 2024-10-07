@@ -40,17 +40,27 @@ Appointments.prototype.createNewAppointment = function() {
 	var dateStr = this.date.value;
 	var timeStr = this.time.value;
 	var tz = this.tz.value;
+
 	try {
-		var dd = CalDateTime.standard(tz, dateStr + ":" + timeStr.substring(0, 2) + ":" + timeStr.substring(2));
+		if (!dateStr || dateStr.length != 10) {
+			throw new Error("invalid date");
+		}
+		if (timeStr && timeStr.length != 4) {
+			throw new Error("invalid time");
+		}
+		if (!this.description.value) {
+			throw new Error("no description provided");
+		}
 		this.ajax.secureUri("/ajax/new-appointment.php")
 			.header('x-event-date', dateStr)
 			.header('x-event-time', timeStr)
 			.header('x-event-tz', tz)
 			.header('x-event-desc', this.description.value)
 			.invoke((stat, msg) => self.appointmentCreated(stat, msg));
+		this.newApptError.classList.remove("error-shown");
 	} catch (e) {
 		console.log(e);
-		this.newApptError.innerText = e.value;
+		this.newApptError.innerText = e.message;
 		this.newApptError.classList.add("error-shown");
 	}
 }
