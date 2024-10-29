@@ -271,10 +271,10 @@ Styling.prototype.calculatePaperSize = function() {
 	var ret;
 	switch (currentSize) {
 		case "letter":
-			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 8.5, y : 11, unitIn: "in", borderX: 0.01, borderY: 0.01 };
+			ret = { media: "print", margin: 18, orientation: "portrait", x : 8.5 * 72, y : 11 * 72, unitIn: "pt", borderX: 1, borderY: 1 };
 			break;
 		case "tabloid":
-			ret = { media: "print", margin: 0.25, orientation: "portrait", x : 11, y : 17, unitIn: "in", borderX: 0.01, borderY: 0.01 };
+			ret = { media: "print", margin: 18, orientation: "portrait", x : 11 * 72, y : 17 * 72, unitIn: "pt", borderX: 1, borderY: 1 };
 			break;
 		case "a3":
 			ret = { media: "print", margin: 13, orientation: "portrait", x : 297, y : 420, unitIn: "mm", borderX: 0.1, borderY: 0.1 };
@@ -324,9 +324,13 @@ Styling.prototype.invert = function(feedbackX, feedbackY) {
 function floor(unit, quant) {
 	if (unit == 'px')
 		return Math.floor(quant);
-	else if (unit == 'mm' || unit == 'in')
+	else if (unit == 'mm' || unit == 'pt')
 		return Math.floor(quant*10)/10.0;
-	else
+	else if (unit == 'in') {
+		var ret = Math.floor(quant*100)/100.0;
+		console.log('ret =', ret, unit);
+		return ret;
+	} else
 		console.log("what is unit " + unit);
 }
 

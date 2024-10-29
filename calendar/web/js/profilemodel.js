@@ -12,7 +12,8 @@ function ProfileModel() {
     this.modelProvider = new ControllerOfType(ModelProvider);
     this.vis = new ControllerOfType(Profiles);
     this.drawerState = new StateElement("profile", "drawerState", false);
-    this.availableCalendars = new StateElement("profile", "selectedCalendars", {});
+    this.availableCalendars = {};
+    this.selectedCalendars = new StateElement("profile", "selectedCalendars", {});
     this.activeCalendars = {};
     this.calprops = new StateElement("profile", "calendarProps", {});
     this.calendarCategories = {};
@@ -28,40 +29,8 @@ ProfileModel.prototype.init = function() {
     if (this.amSignedIn()) {
         this.loadAvailableCalendars();
     }
-    /*
-    var state = this.storage.currentState("profile");
-    if (state) {
-        if (state.drawerState) {
-            this.drawerState = true;
-        }
-        if (state.configs) {
-            this.categoryConfigs = state.configs;
-        }
-        if (state.calendarProps) {
-            this.calprops = state.calendarProps;
-        }
-        if (state.showtz) {
-            this.showtz = state.showtz;
-        }
-
-        if (state.selectedCalendars) {
-            for (var c of state.selectedCalendars) {
-                this.includeCalendar(c, true);
-            };
-        }
-    }
-    */
     if (this.drawerState.value()) {
         this.vis.openDrawer();
-    }
-    var acs = this.availableCalendars.value();
-    if (acs) {
-        var keys = Object.keys(acs);
-        for (var k of keys) {
-            if (acs[k]) {
-                this.includeCalendar(k, true);
-            }
-        };
     }
     this.changeTimeZone(this.modelProvider.showTz.value);
     this.vis.modelChanged();
@@ -69,7 +38,7 @@ ProfileModel.prototype.init = function() {
 
 ProfileModel.prototype.reset = function() {
     this.drawerState.set(false);
-    var acs = this.availableCalendars.value();
+    var acs = this.selectedCalendars.value();
     for (var c of Object.keys(acs)) {
         acs[c] = false;
     }
@@ -82,7 +51,8 @@ ProfileModel.prototype.amSignedIn = function() {
 }
 
 ProfileModel.prototype.signedIn = function() {
-    this.availableCalendars.set({});
+    this.selectedCalendars.set({});
+    this.availableCalendars = {};
     this.activeCalendars = {};
     this.calendarCategories = {};
     this.categoryConfigs.set({});
@@ -92,7 +62,8 @@ ProfileModel.prototype.signedIn = function() {
 
 ProfileModel.prototype.signedOut = function() {
     this.drawerState.set(false);
-    this.availableCalendars.set({});
+    this.availableCalendars = {};
+    this.selectedCalendars.set({});
     this.activeCalendars = {};
     this.calendarCategories = {};
     this.categoryConfigs.set({});
@@ -114,7 +85,7 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg, andThen) {
     if (stat == 200) {
         var info = JSON.parse(msg);
         this.savedPlans = [];
-        var acs = this.availableCalendars.value();
+        var acs = this.selectedCalendars.value();
         var ks = Object.keys(acs);
         for (var k of ks) {
             if (!info.calendars.includes(k))
@@ -126,10 +97,13 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg, andThen) {
             } else {
                 if (!ks.includes(c)) {
                     acs[c] = false;
+                } else if (acs[c]) {
+                    this.includeCalendar(c, true);
                 }
+    
             }
         }
-        this.availableCalendars.set(acs);
+        this.selectedCalendars.set(acs);
         this.savedPlans.sort();
         this.vis.modelChanged();
     }
@@ -139,8 +113,8 @@ ProfileModel.prototype.calendarsLoaded = function(stat, msg, andThen) {
 }
 
 ProfileModel.prototype.selectCalendarAction = function(label, selected) {
-    this.availableCalendars.value()[label] = selected;
-    this.availableCalendars.store();
+    this.selectedCalendars.value()[label] = selected;
+    this.selectedCalendars.store();
     
     if (selected)
         this.includeCalendar(label);
@@ -177,7 +151,7 @@ ProfileModel.prototype.changeTimeZone = function(tz, donotNotify) {
 }
 
 ProfileModel.prototype.parseCalendar = function(label, stat, msg) {
-    if (!this.availableCalendars.value()[label]) {
+    if (!this.selectedCalendars.value()[label]) {
         // I am considering this a race condition where the checkbox has been toggled on and off again before we can retrieve the calendar by ajax
         // so we want to ignore this "belated" response
         return;
