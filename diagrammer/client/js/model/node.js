@@ -15,4 +15,10 @@ class NodeLabel {
 	}
 }
 
-export { Node, NodeLabel };
+class NodeShape {
+	constructor(shape) {
+		this.shape = shape;
+	}
+}
+
+export { Node, NodeLabel, NodeShape };

@@ -1,4 +1,4 @@
-import { NodeLabel } from "./model/node.js";
+import { NodeLabel, NodeShape } from "./model/node.js";
 
 class NodeConfigParser {
 	constructor(model, errors) {
@@ -22,6 +22,24 @@ class NodeConfigParser {
 					}
 					default: {
 						this.errors.raise("label: too many arguments");
+						break;
+					}
+				}
+				break;
+			}
+			case "shape": {
+				switch (l.tokens.length) {
+					case 1: {
+						this.errors.raise("shape property requires a shape");
+						break;
+					}
+					case 2: {
+						var shape = new NodeShape(l.tokens[1]);
+						this.model.add(shape);
+						break;
+					}
+					default: {
+						this.errors.raise("shape: too many arguments");
 						break;
 					}
 				}

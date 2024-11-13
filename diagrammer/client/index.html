@@ -17,7 +17,41 @@
 				<div class="tab-display">
 					<div class="input-tab tab-body selected-tab">
 						<div>
-							<textarea class="text-input"></textarea>
+							<textarea class="text-input">
+							node cpu
+								label "CPU"
+							node memory
+								label "Memory"
+							node io
+								label "Input/Output"
+							node clock
+								label "Clock"
+								shape circle
+							edge
+								compass S
+								from cpu
+								to memory
+									cap arrow
+							edge
+								compass S
+								from cpu
+								to memory
+									cap arrow
+							edge
+								compass N
+								from memory
+								to cpu
+									cap arrow
+							edge
+								from cpu
+								to io
+									cap arrow
+							edge
+								compass E
+								from clock
+								to cpu
+									cap arrow
+														</textarea>
 						</div>
 					</div>
 					<div class="error-tab tab-body hidden">

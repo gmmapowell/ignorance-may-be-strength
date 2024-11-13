@@ -16,6 +16,10 @@ class CanvasAbstraction {
 		this.cxt.lineTo(x, y);
 	}
 
+	ellipse(x, y, w, h) {
+		this.cxt.arc(x+w/2, y+h/2, (w+h)/2/2, 0, 2*Math.PI);
+	}
+
 	close() {
 		this.cxt.closePath();
 	}
@@ -37,6 +41,11 @@ class CanvasAbstraction {
 		ah *= scale;
 		aw *= scale;
 		this.cxt.fillText(s, cx-aw/2, cy+ah/2);
+	}
+
+	resizeTo(w, h) {
+		this.canvas.width = w;
+		this.canvas.height = h;
 	}
 }
 

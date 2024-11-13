@@ -39,7 +39,9 @@ class RenderInto {
 	}
 
 	done() {
+		debugger;
 		this.figureGrid();
+		this.drawto.resizeTo(this.totalWidth, this.totalHeight);
 
 		// draw all the shapes
 		for (var i=0;i<this.shapes.length;i++) {
@@ -52,6 +54,7 @@ class RenderInto {
 			var pts = this.connectors[i];
 			this.drawConnector(pts);
 		}
+
 	}
 
 	figureGrid() {

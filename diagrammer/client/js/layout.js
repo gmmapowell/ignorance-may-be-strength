@@ -1,6 +1,8 @@
 import { ShapeEdge } from "./model/shape.js";
-import Shape from "./shapes/shape.js";
-import BoxShape from "./shapes/box.js";
+import { Shape } from "./shapes/shape.js";
+import { BoxShape } from "./shapes/box.js";
+import { CircleShape } from "./shapes/circle.js";
+import { NodeShape } from "./model/node.js";
 
 class LayoutAlgorithm {
 	constructor(errors, nodes, nameMap, edges) {
@@ -21,7 +23,7 @@ class LayoutAlgorithm {
 
 	placeNodes() {
 		// The frontier model is designed to provide us with the nodes in a "most connected" order
-		var frontier = new PushFrontier(this.nodes, this.edges);
+		var frontier = new PushFrontier(this.errors, this.nodes, this.edges);
 
 		// First place the most connected node
 		var name = frontier.first();
@@ -29,20 +31,29 @@ class LayoutAlgorithm {
 
 		// Now, iteratively consider all the remaining nodes
 		// Each node we receive will be connected to one or more (preferably more) nodes already in the diagram
+		// var currDirect = [];
 		while (frontier.push(name)) {
-			name = frontier.next();
+			var first;
+			var placeAt;
+			if (first = frontier.nextDirect()) {
+				// figure out the location based on compass point
+				// var first = currDirect.shift();
+				var placedAt = this.placement.isPlaced(first.relativeTo);
+				placeAt = first.dir.relativeTo(placedAt.x, placedAt.y);
+				name = first.name;
+			} else {
+				// try and figure out where it's near ...
+				name = frontier.next();
+				placeAt = this.findNear(frontier, name);
+			}
 
-			// try and figure out where it's near ...
-			var avgpos = this.findNear(frontier, name);
-
-			// noew place it somewhere near there that isn't occupied
-			this.placement.place(avgpos.x, avgpos.y, this.nameMap[name]);
+			// now place it somewhere near there that isn't occupied
+			this.placement.place(placeAt.x, placeAt.y, this.nameMap[name]);
 		}
 	}
 
 	connectNodes() {
-		for (var i=0;i<this.edges.length;i++) {
-			var e = this.edges[i];
+		for (var e of this.edges) {
 			if (e.ends.length != 2) {
 				this.errors.raise("cannot handle this case yet");
 				continue;
@@ -61,9 +72,8 @@ class LayoutAlgorithm {
 	findNear(frontier, name) {
 		var sx = 0, sy = 0, cnt = 0;
 		var conns = frontier.connectedTo(name);
-		for (var i=0;i<conns.length;i++) {
-			var c = conns[i];
-			var pl = this.placement.isPlaced(c);
+		for (var c of conns) {
+			var pl = this.placement.isPlaced(c.name);
 			if (pl) {
 				sx += pl.x;
 				sy += pl.y;
@@ -76,7 +86,8 @@ class LayoutAlgorithm {
 	// Once we've done all the hard work, rendering them should be easy ...
 	render(renderInto) {
 		this.placement.eachNode( item => {
-			renderInto.shape(item.x, item.y, new Shape(new BoxShape(), item.node));
+			var sr = this.figureShape(item.node.props);
+			renderInto.shape(item.x, item.y, new Shape(sr, item.node));
 		});
 
 		this.placement.eachConnector( pts => {
@@ -85,18 +96,37 @@ class LayoutAlgorithm {
 
 		renderInto.done();
 	}
+
+	figureShape(props) {
+		for (var p of props) {
+			if (p instanceof NodeShape) {
+				switch (p.shape) {
+				case "circle":
+						return new CircleShape();
+				case "box":
+				default:
+						return new BoxShape();
+				}
+			}
+		}
+
+		// if there isn't a NodeShape property, it's a box
+		return new BoxShape();
+	}
 }
 
 /* The PushFrontier model is designed to deliver all of the nodes in a "most connected" way.
  * That is, we want to first place the node with the most connections, then the node with the most connections to nodes in the graph, etc.
  */
 class PushFrontier {
-	constructor(nodes, edges) {
+	constructor(errors, nodes, edges) {
+		this.errors = errors;
 		this.conns = this.groupByConnections(nodes, edges);
 		this.sorted = this.sortConnections(this.conns);
 		this.radices = this.gatherRadices(this.sorted);
 		this.done = [];
 		this.frontier = [];
+		this.currentDirect = [];
 	}
 
 	// finding the first node is easy - its the first one in the list with the most connections
@@ -109,13 +139,62 @@ class PushFrontier {
 	// when we have used a node, we need to be careful not to use it again, but then to bring all the connected nodes into the frontier
 	// they are now available for selection
 	push(node) {
+		console.log("pushing " + node);
+		if (this.done.includes(node))
+			throw new Error("already done " + node);
 		this.done.push(node);
 		var add = this.conns[node];
 		for (var i=0;i<add.length;i++) {
-			if (!this.done.includes(add[i]))
-			this.frontier.push(add[i]);
+			if (!this.done.includes(add[i].name))
+				this.frontier.push(add[i]);
 		}
-		return this.frontier.length > 0;
+		
+		var direct = this.explicitlyConnected(node);
+		for (var d of direct) {
+			if (!this.done.includes(d.name))
+				this.currentDirect.push(d);
+		}
+
+		for (var i=0;i<this.currentDirect.length;i++) {
+			if (this.currentDirect[i].name == node) {
+				this.currentDirect.splice(i, 1);
+				i--;
+			}
+		}
+
+		for (var i=0;i<this.frontier.length;i++) {
+			if (this.frontier[i].name == node) {
+				this.frontier.splice(i, 1);
+				i--;
+			}
+		}
+		return this.currentDirect.length > 0 || this.frontier.length > 0;
+	}
+
+	nextDirect() {
+		if (this.currentDirect.length > 0) {
+			return this.currentDirect.shift();
+		} else {
+			return;
+		}
+	}
+
+	// in order to make layout-by-direction easier, let's first look at the nodes that have an explicit connection
+	// to the node that was just added
+	explicitlyConnected(justAdded) {
+		var ret = [];
+		for (var n of this.conns[justAdded]) {
+			if (n.dir && !this.done.includes(n.name)) {
+				ret.push({ name: n.name, dir: n.dir, relativeTo: justAdded });
+				for (var ik=0;ik<this.frontier.length;ik++) {
+					if (this.frontier[ik].name == n.name) {
+						this.frontier.splice(ik, 1);
+						ik--;
+					}
+				}
+			}
+		}
+		return ret;
 	}
 
 	// for all subsequent nodes, we want to select the node with the most connections in the graph, or the most connections, or the earliest alphabetical name
@@ -124,10 +203,13 @@ class PushFrontier {
 		var mostTotal = -1;
 		var ret = null;
 		var pos = -1;
-		for (var i=0;i<this.frontier.length;i++) {
-			var node = this.frontier[i];
-			var total = this.conns[node].length;
-			var inGraph = this.chooseDone(this.conns[node]);
+		var i=0;
+		for (var node of this.frontier) {
+			if (this.done.includes(node.name)) {
+				continue;
+			}
+			var total = this.conns[node.name].length;
+			var inGraph = this.chooseDone(this.conns[node.name]);
 			var chooseMe = false;
 			if (inGraph > mostInGraph) { // it is connected to the most already in the graph
 				chooseMe = true;
@@ -139,11 +221,15 @@ class PushFrontier {
 			if (chooseMe) {
 				mostInGraph = inGraph;
 				mostTotal = total;
-				ret = node;
+				ret = node.name;
 				pos = i;
 			}
+			i++;
 		}
-		this.frontier.splice(pos, 1);
+		if (pos != -1) {
+			this.frontier.splice(pos, 1);
+			// this.traversed.push(ret);
+		}
 		return ret;
 	}
 
@@ -170,19 +256,28 @@ class PushFrontier {
 			var n = nodes[i];
 			conns[n.name] = [];
 		}
-		for (var i=0;i<edges.length;i++) {
-			var e = edges[i];
-			for (var j=0;j<e.ends.length;j++) {
-				var end = e.ends[j];
-				for (var k=0;k<e.ends.length;k++) {
-					var ke = e.ends[k];
-					if (ke.name != end.name && !conns[end.name].includes(ke.name)) {
-						conns[end.name].push(ke.name);
+		for (var e of edges) {
+			for (var end of e.ends) {
+				var c = conns[end.name];
+				for (var ke of e.ends) {
+					if (ke.name != end.name && !c.includes(ke.name)) {
+						var dir = this.figureDir(e.dir, ke.dir);
+						conns[end.name].push({ name: ke.name, dir });
 					}
 				}
 			}
 		}
 		return conns;
+	}
+
+	figureDir(compass, endFacing) {
+		if (!compass)
+			return null;
+
+		if (endFacing == 'to')
+			return compass;
+		else
+			return compass.invert();
 	}
 
 	// Sort the nodes by number of connections.  Use a radix sort for speed and fit.
@@ -217,8 +312,8 @@ class Placement {
 	// if that position is above or to the left of the grid, move everything down/across to make room for it
 	place(x, y, node) {
 		var xy = this.findSlot(x, y);
-		if (xy.x < 0) xy = this.moveRight(xy); // not yet implemented :-)
-		if (xy.y < 0) xy = this.moveDown(xy);
+		if (xy.x < 0) xy = this.moveRight(xy, -xy.x);
+		if (xy.y < 0) xy = this.moveDown(xy, -xy.y);
 		var p = { x: xy.x, y: xy.y, node };
 		this.placed.push(p);
 		this.placement[node.name] = p;
@@ -269,6 +364,20 @@ class Placement {
 		for (var i=0;i<this.connectors.length;i++) {
 			f(this.connectors[i]);
 		}
+	}
+
+	moveRight(xy, rightCount) {
+		for (var p of this.placed) {
+			p.x += rightCount;
+		}
+		return { x: xy.x + rightCount, y: xy.y };
+	}
+
+	moveDown(xy, downCount) {
+		for (var p of this.placed) {
+			p.y += downCount;
+		}
+		return { x: xy.x, y: xy.y + downCount };
 	}
 }
 

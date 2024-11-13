@@ -10,4 +10,4 @@ class BoxShape {
 	}
 }
 
-export default BoxShape;
+export { BoxShape };
