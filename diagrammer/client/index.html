@@ -18,40 +18,45 @@
 					<div class="input-tab tab-body selected-tab">
 						<div>
 							<textarea class="text-input">
-							node cpu
-								label "CPU"
-							node memory
-								label "Memory"
-							node io
-								label "Input/Output"
-							node clock
-								label "Clock"
-								shape circle
-							edge
-								compass S
-								from cpu
-								to memory
-									cap arrow
-							edge
-								compass S
-								from cpu
-								to memory
-									cap arrow
-							edge
-								compass N
-								from memory
-								to cpu
-									cap arrow
-							edge
-								from cpu
-								to io
-									cap arrow
-							edge
-								compass E
-								from clock
-								to cpu
-									cap arrow
-														</textarea>
+node alu
+    label "ALU"
+node cu
+    label "CU"
+node ir
+    label "IR"
+node pc
+    label "PC"
+node immed
+    label "Immed"
+node regs
+    label "Registers"
+node bus
+    label "BUS"
+//	height 3
+edge
+    compass E
+    from regs
+	to alu
+edge
+    compass SE
+    from immed
+	to alu
+edge
+    compass E
+    from ir
+	to cu
+edge
+    compass N
+    from cu
+	to alu
+edge
+//    compass W
+	from pc
+	to bus
+edge
+    from regs
+	to bus
+							</textarea>
 						</div>
 					</div>
 					<div class="error-tab tab-body hidden">

@@ -36,8 +36,10 @@ class Portfolio {
 			this.tabs[d.named] = t;
 		}
 		var keys = Object.keys(toRemove);
-		for (var i=0;i<keys.length;i++) {
-			tabrow.removeChild(toRemove[keys[i]]);
+		for (var k of keys) {
+			var r = toRemove[k];
+			tabrow.removeChild(r.title);
+			tabdisplay.removeChild(r.body);
 		}
 	}
 

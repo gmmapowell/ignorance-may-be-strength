@@ -10,7 +10,7 @@ class LayoutAlgorithm {
 		this.nodes = nodes;
 		this.nameMap = nameMap;
 		this.edges = edges;
-		this.placement = new Placement();
+		this.placement = new Placement(errors);
 	}
 
 	layout() {
@@ -63,7 +63,9 @@ class LayoutAlgorithm {
 			var fn = this.placement.isPlaced(f.name);
 			var tn = this.placement.isPlaced(t.name);
 			// This is nothing like sophisticated enough for 90% of cases.  But it passes all current unit tests
-			this.placement.connect([ new ShapeEdge(fn.x, fn.y, tn.x-fn.x, tn.y - fn.y, 0), new ShapeEdge(tn.x, tn.y, fn.x - tn.x, fn.y - tn.y, 0) ]);
+			if (fn && tn) {
+				this.placement.connect([ new ShapeEdge(fn.x, fn.y, tn.x-fn.x, tn.y - fn.y, 0), new ShapeEdge(tn.x, tn.y, fn.x - tn.x, fn.y - tn.y, 0) ]);
+			}
 		}
 	}
 
@@ -312,6 +314,8 @@ class Placement {
 	// if that position is above or to the left of the grid, move everything down/across to make room for it
 	place(x, y, node) {
 		var xy = this.findSlot(x, y);
+		if (!xy)
+			return; // we could not find a slot
 		if (xy.x < 0) xy = this.moveRight(xy, -xy.x);
 		if (xy.y < 0) xy = this.moveDown(xy, -xy.y);
 		var p = { x: xy.x, y: xy.y, node };

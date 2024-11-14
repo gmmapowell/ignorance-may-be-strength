@@ -39,7 +39,6 @@ class RenderInto {
 	}
 
 	done() {
-		debugger;
 		this.figureGrid();
 		this.drawto.resizeTo(this.totalWidth, this.totalHeight);
 

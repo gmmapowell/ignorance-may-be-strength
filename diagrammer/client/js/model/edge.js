@@ -44,6 +44,8 @@ class EdgeCompass {
 			case 'W': return { x: x-1, y };
 			case 'N': return { x, y: y-1 };
 			case 'S': return { x, y: y+1 };
+			case 'NW': return { x: x-1, y: y-1 };
+			case 'SE': return { x: x+1, y: y+1 };
 			default: throw new Error("not handled: relative to " + this.dir);
 		}
 	}
