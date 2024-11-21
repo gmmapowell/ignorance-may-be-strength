@@ -1,4 +1,4 @@
-import { NodeLabel, NodeShape } from "./model/node.js";
+import { NodeHeight, NodeLabel, NodeShape } from "./model/node.js";
 
 class NodeConfigParser {
 	constructor(model, errors) {
@@ -9,6 +9,24 @@ class NodeConfigParser {
 	line(l) {
 		var cmd = l.tokens[0];
 		switch (cmd) {
+			case "height": {
+				switch (l.tokens.length) {
+					case 1: {
+						this.errors.raise("height property requires a value");
+						break;
+					}
+					case 2: {
+						var ht = new NodeHeight(parseInt(l.tokens[1]));
+						this.model.add(ht);
+						break;
+					}
+					default: {
+						this.errors.raise("height: too many arguments");
+						break;
+					}
+				}
+				break;
+			}
 			case "label": {
 				switch (l.tokens.length) {
 					case 1: {

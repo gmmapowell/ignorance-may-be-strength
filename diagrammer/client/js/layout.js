@@ -38,9 +38,11 @@ class LayoutAlgorithm {
 			if (first = frontier.nextDirect()) {
 				// figure out the location based on compass point
 				// var first = currDirect.shift();
-				var placedAt = this.placement.isPlaced(first.relativeTo);
-				placeAt = first.dir.relativeTo(placedAt.x, placedAt.y);
 				name = first.name;
+				var placedAt = this.placement.isPlaced(first.relativeTo);
+				if (!placedAt)
+					continue;
+				placeAt = first.dir.relativeTo(placedAt.x, placedAt.y);
 			} else {
 				// try and figure out where it's near ...
 				name = frontier.next();
@@ -64,7 +66,11 @@ class LayoutAlgorithm {
 			var tn = this.placement.isPlaced(t.name);
 			// This is nothing like sophisticated enough for 90% of cases.  But it passes all current unit tests
 			if (fn && tn) {
-				this.placement.connect([ new ShapeEdge(fn.x, fn.y, tn.x-fn.x, tn.y - fn.y, 0), new ShapeEdge(tn.x, tn.y, fn.x - tn.x, fn.y - tn.y, 0) ]);
+				var mfx = fn.x + (fn.w - 1)/2;
+				var mfy = fn.y + (fn.h - 1)/2;
+				var mtx = tn.x + (tn.w - 1)/2;
+				var mty = tn.y + (tn.h - 1)/2;
+				this.placement.connect([ new ShapeEdge(mfx, mfy, mtx-mfx, mty - mfy, 0), new ShapeEdge(mtx, mty, mfx - mtx, mfy - mty, 0) ]);
 			}
 		}
 	}
@@ -76,12 +82,16 @@ class LayoutAlgorithm {
 		var conns = frontier.connectedTo(name);
 		for (var c of conns) {
 			var pl = this.placement.isPlaced(c.name);
+			if (!pl)
+				continue;
 			if (pl) {
 				sx += pl.x;
 				sy += pl.y;
 				cnt++;
 			}
 		}
+		if (cnt == 0)
+			cnt = 1;
 		return { x: sx/cnt, y: sy/cnt };
 	}
 
@@ -89,7 +99,7 @@ class LayoutAlgorithm {
 	render(renderInto) {
 		this.placement.eachNode( item => {
 			var sr = this.figureShape(item.node.props);
-			renderInto.shape(item.x, item.y, new Shape(sr, item.node));
+			renderInto.shape(item.x, item.y, item.w, item.h, new Shape(sr, item.node));
 		});
 
 		this.placement.eachConnector( pts => {
@@ -141,7 +151,6 @@ class PushFrontier {
 	// when we have used a node, we need to be careful not to use it again, but then to bring all the connected nodes into the frontier
 	// they are now available for selection
 	push(node) {
-		console.log("pushing " + node);
 		if (this.done.includes(node))
 			throw new Error("already done " + node);
 		this.done.push(node);
@@ -313,12 +322,14 @@ class Placement {
 	// if that position is occupied, try and find somewhere else for it to go
 	// if that position is above or to the left of the grid, move everything down/across to make room for it
 	place(x, y, node) {
-		var xy = this.findSlot(x, y);
-		if (!xy)
+		var xy = this.findSlot(x, y, node.size());
+		if (!xy) {
+			console.log("could not find a slot for " + node.name);
 			return; // we could not find a slot
+		}
 		if (xy.x < 0) xy = this.moveRight(xy, -xy.x);
 		if (xy.y < 0) xy = this.moveDown(xy, -xy.y);
-		var p = { x: xy.x, y: xy.y, node };
+		var p = new PlacedAt(xy.x, xy.y, node.size().width, node.size().height, node);
 		this.placed.push(p);
 		this.placement[node.name] = p;
 	}
@@ -328,27 +339,27 @@ class Placement {
 	}
 
 	// find a slot for the node to go in, ideally the one it asked for
-	findSlot(x, y) {
+	findSlot(x, y, size) {
 		// rounding is good from the perspective of trying something, but we possibly should try "all 4" (if not an integer) before trying neighbouring squares.
-		x = Math.round(x);
-		y = Math.round(y);
+		x = Math.round(x - (size.width-1)/2);
+		y = Math.round(y - (size.height-1)/2);
 
 		// if that slot is free, go for it!
-		if (!this.haveNodeAt(x, y))	return { x, y };
+		if (!this.haveNodeAt(x, y, size))	return { x, y };
 
 		// first try the four cardinal points
-		if (!this.haveNodeAt(x+1, y))	return { x: x+1, y: y };
-		if (!this.haveNodeAt(x, y+1))	return { x: x,   y: y+1 };
-		if (!this.haveNodeAt(x-1, y))	return { x: x-1, y: y };
-		if (!this.haveNodeAt(x, y-1))	return { x: x,   y: y-1 };
+		if (!this.haveNodeAt(x+1, y, size))	return { x: x+1, y: y };
+		if (!this.haveNodeAt(x, y+1, size))	return { x: x,   y: y+1 };
+		if (!this.haveNodeAt(x-1, y, size))	return { x: x-1, y: y };
+		if (!this.haveNodeAt(x, y-1, size))	return { x: x,   y: y-1 };
 
-		this.errors.raise("can't handle this case in layout");
+		this.errors.raise("cannot find free slot C, E, S, W or N");
 	}
 
-	haveNodeAt(x, y) {
+	haveNodeAt(x, y, size) {
 		for (var i=0;i<this.placed.length;i++) {
 			var p = this.placed[i];
-			if (p.x == x && p.y == y)
+			if (p.overlaps(x, y, size))
 				return true;
 		}
 		return false;
@@ -385,4 +396,29 @@ class Placement {
 	}
 }
 
+class PlacedAt {
+	constructor(x, y, w, h, node) {
+		this.x = x;
+		this.y = y;
+		this.w = w;
+		this.h = h;
+		this.node = node;
+	}
+
+	overlaps(x, y, size) {
+		var ovx = false;
+		if (this.x <= x && this.x + this.w > x)
+			ovx = true;
+		if (x <= this.x && x + size.width > this.x)
+			ovx = true;
+
+		var ovy = false;
+		if (this.y <= y && this.y + this.h > y)
+			ovy = true;
+		if (y <= this.y && y + size.height > this.y)
+			ovy = true;
+
+		return ovx && ovy;
+	}
+}
 export default LayoutAlgorithm;

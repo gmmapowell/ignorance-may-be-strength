@@ -18,20 +18,24 @@ class RenderInto {
 		this.totalHeight = 0;
 	}
 
-	shape(x, y, s) {
-		if (x >= this.maxx) this.maxx = x+1;
-		if (y >= this.maxy) this.maxy = y+1;
+	shape(x, y, w, h, s) {
+		if (x+w >= this.maxx) this.maxx = x+w+1;
+		if (y+h >= this.maxy) this.maxy = y+h+1;
 
-		if (!this.rows[y]) {
-			this.rows[y] = new RowInfo();
+		for (var i=0;i<h;i++) {
+			if (!this.rows[y+i]) {
+				this.rows[y+i] = new RowInfo();
+			}
 		}
-		if (!this.columns[x]) {
-			this.columns[x] = new ColumnInfo();
+		for (var i=0;i<w;i++) {
+			if (!this.columns[x+i]) {
+				this.columns[x+i] = new ColumnInfo();
+			}
 		}
 		this.rows[y].include(s);
 		this.columns[x].include(s);
 
-		this.shapes.push({ x: x, y: y, s: s });
+		this.shapes.push({ x, y, w, h, s });
 	}
 
 	connector(pts) {
@@ -45,7 +49,7 @@ class RenderInto {
 		// draw all the shapes
 		for (var i=0;i<this.shapes.length;i++) {
 			var si = this.shapes[i];
-			this.drawShape(si.x, si.y, si.s);
+			this.drawShape(si.x, si.y, si.w, si.h, si.s);
 		}
 
 		// draw the connectors
@@ -84,19 +88,21 @@ class RenderInto {
 		this.totalHeight = ypos;
 	}
 
-	drawShape(x, y, shape) {
-		var col = this.columns[x];
-		var row = this.rows[y];
-		var left = col.from;
-		var top = row.from;
-		var width = col.to - col.from;
-		var height = row.to - row.from;
-		var cx = left + width/2;
-		var cy = top + height/2;
+	drawShape(x, y, w, h, shape) {
+		var colF = this.columns[x];
+		var rowF = this.rows[y];
+		var colT = this.columns[x+w-1];
+		var rowT = this.rows[y+h-1];
+		var left = colF.from;
+		var top = rowF.from;
+		var width = colT.to - left;
+		var height = rowT.to - top;
 		shape.render(this.drawto, left, top, width, height);
 
 		// try and show the label (if any)
 		var label = this.findProp(shape, NodeLabel);
+		var cx = left + width/2;
+		var cy = top + height/2;
 		if (label) {
 			this.drawto.text(label.name, cx, cy, width * .75, height * .75);
 		}

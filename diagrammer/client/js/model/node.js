@@ -7,6 +7,21 @@ class Node {
 	add(prop) {
 		this.props.push(prop);
 	}
+
+	size() {
+		var width = 1, height = 1;
+		for (var p of this.props) {
+			if (p instanceof NodeHeight)
+				height = p.height;
+		}
+		return { width, height };
+	}
+}
+
+class NodeHeight {
+	constructor(ht) {
+		this.height = ht;
+	}
 }
 
 class NodeLabel {
@@ -21,4 +36,4 @@ class NodeShape {
 	}
 }
 
-export { Node, NodeLabel, NodeShape };
+export { Node, NodeHeight, NodeLabel, NodeShape };
