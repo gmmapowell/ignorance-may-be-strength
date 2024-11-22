@@ -46,7 +46,8 @@ class Portfolio {
 	each(f) {
 		for (var i=0;i<this.diagrams.length;i++) {
 			var d = this.diagrams[i];
-			f(d.named, d.diagram, this.tabs[d.named].diagram);
+			var tab = this.tabs[d.named];
+			f(d.named, d.diagram, tab ? tab.diagram : null);
 		}
 	}
 }

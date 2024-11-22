@@ -24,6 +24,19 @@
 	"tasks": {
 		"version": "2.0.0",
 		"tasks": [
+       {
+            "label": "Diagrammer Tests"
+            "type": "npm",
+            "script": "test",
+				"options": {
+					"cwd": "${workspaceFolder}/../diagrammer/test"
+				},
+				"presentation": {
+					"reveal": "always"
+				},
+            "problemMatcher": []
+        },
+
 			{
 				"label": "Metrolink PHP Tests",
 				"type": "shell",

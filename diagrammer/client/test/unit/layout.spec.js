@@ -31,10 +31,10 @@ describe('Layout', () => {
 	});
 
 	it('three nodes with two connections are laid out in a Y', () => {
-		var diag = diagram(3, [1,2], [1, 3]);
+		var diag = diagram(3, [1,2], [1,3]);
 		into.expectShape(0, 0, "node1");
-		into.expectShape(1, 0, "node2");
-		into.expectShape(0, 1, "node3");
+		into.expectShape(1, 0, "node3");
+		into.expectShape(0, 1, "node2");
 		into.expectConnector([ east(0, 0, 0), west(1, 0, 0) ]);
 		into.expectConnector([ south(0, 0, 0), north(0, 1, 0) ]);
 		diag.layout(into);
@@ -98,7 +98,7 @@ class MockRender {
 		return expected;
 	}
 
-	shape(x, y, s) {
+	shape(x, y, w, h, s) {
 		for (var i=0;i<this.expect.length;i++) {
 			var e = this.expect[i];
 			if (e.isShapeAt(x, y)) {
