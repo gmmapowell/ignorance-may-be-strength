@@ -3,7 +3,7 @@ import DiagramModel from "../../js/model/diagram.js";
 import { ShapeEdge } from "../../js/model/shape.js";
 import { NoError } from "./errorsupport.js";
 import { Node, NodeLabel } from "../../js/model/node.js";
-import { Edge, EdgeEnd } from "../../js/model/edge.js";
+import { Edge, EdgeCompass, EdgeEnd } from "../../js/model/edge.js";
 
 describe('Layout', () => {
 	var into;
@@ -40,6 +40,38 @@ describe('Layout', () => {
 		diag.layout(into);
 	});
 
+	it('west is the default for the locations of two connected nodes', () => {
+		var diag = diagram(2, [1,2,"W"]);
+		into.expectShape(0, 0, "node1");
+		into.expectShape(1, 0, "node2");
+		into.expectConnector([ east(0, 0, 0), west(1, 0, 0) ]);
+		diag.layout(into);
+	});
+
+	it('east alters the locations of two connected nodes', () => {
+		var diag = diagram(2, [1,2,"E"]);
+		into.expectShape(0, 0, "node2");
+		into.expectShape(1, 0, "node1");
+		into.expectConnector([ west(1, 0, 0), east(0, 0, 0) ]);
+		diag.layout(into);
+	});
+
+	it('south aligns the two connected nodes vertically', () => {
+		var diag = diagram(2, [1,2,"S"]);
+		into.expectShape(0, 0, "node2");
+		into.expectShape(0, 1, "node1");
+		into.expectConnector([ north(0, 1, 0), south(0, 0, 0) ]);
+		diag.layout(into);
+	});
+
+	it('north aligns the two connected nodes the other way', () => {
+		var diag = diagram(2, [1,2,"N"]);
+		into.expectShape(0, 0, "node1");
+		into.expectShape(0, 1, "node2");
+		into.expectConnector([ south(0, 0, 0), north(0, 1, 0) ]);
+		diag.layout(into);
+	});
+
 	afterEach(() => {
 		into.check();
 	});
@@ -55,8 +87,13 @@ function diagram(nodeCount, ...connectors) {
 	for (var i=0;i<connectors.length;i++) {
 		var c = connectors[i];
 		var e = new Edge();
-		for (var j=0;j<c.length;j++) {
-			e.add(new EdgeEnd("from", "node" + c[j]));
+		for (var ei of c) {
+			if (typeof(ei) == 'number') {
+				var end = new EdgeEnd("from", "node" + ei);
+				e.add(end);
+			} else {
+				e.add(new EdgeCompass(ei));
+			}
 		}
 		diag.add(e);
 	}
@@ -69,11 +106,11 @@ function north(x, y, chan) {
 }
 
 function east(x, y, chan) {
-	return new ShapeEdge(x, y, 1, 0, chan);
+	return new ShapeEdge(x, y, Number.MAX_SAFE_INTEGER, 0, chan);
 }
 
 function south(x, y, chan) {
-	return new ShapeEdge(x, y, 0, 1, chan);
+	return new ShapeEdge(x, y, 0, Number.MAX_SAFE_INTEGER, chan);
 }
 
 function west(x, y, chan) {
@@ -157,6 +194,22 @@ class ExpectConnector {
 	}
 
 	isConnector(pts) {
+		if (pts.length != this.pts.length)
+			return false;
+
+		for (var i=0;i<pts.length;i++) {
+			var p = pts[i];
+			var tp = this.pts[i];
+			if (p.x != tp.x)
+				return false;
+			if (p.y != tp.y)
+				return false;
+			if (p.xd != tp.xd)
+				return false;
+			if (p.yd != tp.yd)
+				return false;
+		}
+
 		return true;
 	}
 }
