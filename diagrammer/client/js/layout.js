@@ -66,13 +66,31 @@ class LayoutAlgorithm {
 			var tn = this.placement.isPlaced(t.name);
 			// This is nothing like sophisticated enough for 90% of cases.  But it passes all current unit tests
 			if (fn && tn) {
-				var mfx = fn.x + (fn.w - 1)/2;
-				var mfy = fn.y + (fn.h - 1)/2;
-				var mtx = tn.x + (tn.w - 1)/2;
-				var mty = tn.y + (tn.h - 1)/2;
-				this.placement.connect([ new ShapeEdge(mfx, mfy, mtx-mfx, mty - mfy, 0), new ShapeEdge(mtx, mty, mfx - mtx, mfy - mty, 0) ]);
+				var xs1 = this.figureEnd(fn.x, fn.w, tn.x, tn.w);
+				var ys1 = this.figureEnd(fn.y, fn.h, tn.y, tn.h);
+				var xs2 = this.figureEnd(tn.x, tn.w, fn.x, fn.w);
+				var ys2 = this.figureEnd(tn.y, tn.h, fn.y, fn.h);
+				this.placement.connect([ new ShapeEdge(xs1.pos, ys1.pos, xs1.pt, ys1.pt, 0), new ShapeEdge(xs2.pos, ys2.pos, xs2.pt, ys2.pt, 0) ]);
 			}
 		}
+	}
+
+
+	// Given a shape with position "pos" and size "size" in some dimension, connected
+	// to a shape with position "other" and size "osz" in the same dimension,
+	// figure out the coordinate on this side to use, in range pos ... pos+size-1 (usually pos)
+	// and the point to connect from (<0 = top/left corner, 0,1,2,3,4... = row/column in range 0..size-1, MAX = bottom/right corner)
+	figureEnd(pos, size, other, osz) {
+		if (other+osz-1 < pos)
+			return { pos, pt: -1 };
+		else if (other > pos+size-1)
+			return { pos: pos+size-1, pt: Number.MAX_SAFE_INTEGER };
+		else if (size == 1)
+			return { pos: pos, pt: 0};
+		else if (other > pos)
+			return { pos, pt: other-pos };
+		else
+			return { pos, pt: 0 };
 	}
 
 	// Look at all the nodes connected to this one which have already been placed and figure out their average position

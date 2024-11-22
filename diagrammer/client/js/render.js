@@ -125,41 +125,37 @@ class RenderInto {
 		this.drawto.newpath();
 		for (var i=0;i<pts.length;i++) {
 			var curr = this.determinePoint(pts[i]);
-			if (prev) {
+			if (!prev) {
 				this.drawto.move(curr.x, curr.y);
 			} else {
 				this.drawto.line(curr.x, curr.y);
 			}
+			prev = curr;
 		}
 		this.drawto.stroke();
 	}
 
 	determinePoint(pt) {
 		var c = this.columns[pt.x];
+		var x;
+		
+		if (pt.xd == -1) x = c.from;
+		else if (pt.xd == Number.MAX_SAFE_INTEGER) x = c.to;
+		else {
+			c = this.columns[pt.x + pt.xd];
+			x = (c.from+c.to)/2;
+		}
+
 		var r = this.rows[pt.y];
-		var x, y;
-		switch (pt.xd) {
-			case -1: 
-				x = c.from;
-				break;
-			case 0:
-				x = (c.from+c.to)/2;
-				break;
-			case 1:
-				x = c.to;
-				break;
+		var y;
+
+		if (pt.yd == -1) y = r.from;
+		else if (pt.yd == Number.MAX_SAFE_INTEGER) y = r.to;
+		else {
+			r = this.rows[pt.y + pt.yd];
+			y = (r.from+r.to)/2;
 		}
-		switch (pt.yd) {
-			case -1: 
-				y = r.from;
-				break;
-			case 0:
-				y = (r.from+r.to)/2;
-				break;
-			case 1:
-				y = r.to;
-				break;
-		}
+
 		return { x, y };
 	}
 }
