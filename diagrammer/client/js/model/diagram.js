@@ -25,6 +25,10 @@ class DiagramModel {
 		}
 	}
 
+	findNode(name) {
+		return this.nodeNames[name];
+	}
+
 	assertUniqueNode(next)  {
 		for (var i=0;i<this.nodes.length;i++) {
 			if (this.nodes[i].name == next) {

@@ -6,6 +6,10 @@ class ShapeEdge {
 		this.yd = yd;
 		this.chan = chan;
 	}
+
+	toString() {
+		return "EdgeOf[" + this.x + "," + this.y + "]";
+	}
 }
 
 export { ShapeEdge };

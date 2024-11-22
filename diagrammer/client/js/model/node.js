@@ -16,6 +16,15 @@ class Node {
 		}
 		return { width, height };
 	}
+
+	toString() {
+		for (var p of this.props) {
+			if (p instanceof NodeLabel) {
+				return "Node[" + p.name +"]";
+			}
+		}
+		return "Node[?]";
+	}
 }
 
 class NodeHeight {

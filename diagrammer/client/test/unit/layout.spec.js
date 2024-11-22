@@ -2,7 +2,7 @@ import { expect } from "chai";
 import DiagramModel from "../../js/model/diagram.js";
 import { ShapeEdge } from "../../js/model/shape.js";
 import { NoError } from "./errorsupport.js";
-import { Node, NodeLabel } from "../../js/model/node.js";
+import { Node, NodeHeight, NodeLabel } from "../../js/model/node.js";
 import { Edge, EdgeCompass, EdgeEnd } from "../../js/model/edge.js";
 
 describe('Layout', () => {
@@ -72,6 +72,28 @@ describe('Layout', () => {
 		diag.layout(into);
 	});
 
+	it('three nodes laid out when one is double height', () => {
+		var diag = diagram(3, [1,2], [1,3]);
+		diag.findNode("node1").add(new NodeHeight(2));
+		into.expectShape(1, 0, "node1");
+		into.expectShape(2, 0, "node3");
+		into.expectShape(0, 0, "node2");
+		into.expectConnector([ west(1, 0, 0), east(0, 0, 0)  ]);
+		into.expectConnector([ east(1, 0, 0), west(2, 0, 0)  ]);
+		diag.layout(into);
+	});
+
+	it.skip('three nodes laid out when one is double height and both connections are to the west', () => {
+		var diag = diagram(3, [1,2,"W"], [1,3,"W"]);
+		diag.findNode("node1").add(new NodeHeight(2));
+		into.expectShape(0, 0, "node1");
+		into.expectShape(1, 0, "node2");
+		into.expectShape(1, 1, "node3");
+		into.expectConnector([ east(0, 0, 0), west(1, 0, 0)  ]);
+		into.expectConnector([ east(0, 0, 0), west(2, 0, 0)  ]);
+		diag.layout(into);
+	});
+
 	afterEach(() => {
 		into.check();
 	});
@@ -121,6 +143,7 @@ class MockRender {
 	constructor() {
 		this.expect = [];
 		this.completed = false;
+		this.fails = 0;
 	}
 
 	expectShape(x, y, name) {
@@ -139,10 +162,13 @@ class MockRender {
 		for (var i=0;i<this.expect.length;i++) {
 			var e = this.expect[i];
 			if (e.isShapeAt(x, y)) {
-				this.expect.splice(i, 1);
 				e.match(s);
+				this.expect.splice(i, 1);
+				return;
 			}
 		}
+		this.fails++;
+		throw new Error("did not expect a shape at " + x +"," + y + ":" + s.info);
 	}
 
 	connector(pts) {
@@ -150,8 +176,11 @@ class MockRender {
 			var e = this.expect[i];
 			if (e.isConnector(pts)) {
 				this.expect.splice(i, 1);
+				return;
 			}
 		}
+		this.fails++;
+		throw new Error("did not expect a connector between " + pts);
 	}
 
 	done() {
@@ -159,6 +188,8 @@ class MockRender {
 	}
 
 	check() {
+		if (this.fails > 0)
+			return; // we have already exploded in a test
 		expect(this.completed).to.be.true;
 		expect(this.expect.length).to.equal(0);
 	}
