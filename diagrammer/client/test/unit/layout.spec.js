@@ -83,14 +83,14 @@ describe('Layout', () => {
 		diag.layout(into);
 	});
 
-	it.skip('three nodes laid out when one is double height and both connections are to the west', () => {
+	it.only('three nodes laid out when one is double height and both connections are to the west', () => {
 		var diag = diagram(3, [1,2,"W"], [1,3,"W"]);
 		diag.findNode("node1").add(new NodeHeight(2));
 		into.expectShape(0, 0, "node1");
 		into.expectShape(1, 0, "node2");
 		into.expectShape(1, 1, "node3");
 		into.expectConnector([ east(0, 0, 0), west(1, 0, 0)  ]);
-		into.expectConnector([ east(0, 0, 0), west(2, 0, 0)  ]);
+		into.expectConnector([ east(0, 1, 0), west(1, 1, 0)  ]);
 		diag.layout(into);
 	});
 

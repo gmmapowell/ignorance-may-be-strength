@@ -11,6 +11,25 @@ class LayoutAlgorithm {
 		this.nameMap = nameMap;
 		this.edges = edges;
 		this.placement = new Placement(errors);
+		this.links = this.figureLinks();
+	}
+
+	figureLinks() {
+		var ret = {};
+		for (var n of Object.keys(this.nameMap)) {
+			ret[n] = [];
+		}
+		for (var e of this.edges) {
+			for (var ee of e.ends) {
+				for (var qq of e.ends) {
+					if (ee != qq && !ret[ee.name].includes(qq.name))
+						ret[ee.name].push(qq.name);
+				}
+			}
+		}
+
+		console.log(ret);
+		return ret;
 	}
 
 	layout() {
@@ -27,7 +46,7 @@ class LayoutAlgorithm {
 
 		// First place the most connected node
 		var name = frontier.first();
-		this.placement.place(0, 0, this.nameMap[name]);
+		this.placement.place(0, 0, this.nameMap[name], []);
 
 		// Now, iteratively consider all the remaining nodes
 		// Each node we receive will be connected to one or more (preferably more) nodes already in the diagram
@@ -42,6 +61,7 @@ class LayoutAlgorithm {
 				var placedAt = this.placement.isPlaced(first.relativeTo);
 				if (!placedAt)
 					continue;
+				console.log("connected to", first.relativeTo, "with", placedAt);
 				placeAt = first.dir.relativeTo(placedAt.x, placedAt.y);
 			} else {
 				// try and figure out where it's near ...
@@ -49,8 +69,10 @@ class LayoutAlgorithm {
 				placeAt = this.findNear(frontier, name);
 			}
 
+			console.log("placing", name, placeAt.x, placeAt.y);
+
 			// now place it somewhere near there that isn't occupied
-			this.placement.place(placeAt.x, placeAt.y, this.nameMap[name]);
+			this.placement.place(placeAt.x, placeAt.y, this.nameMap[name], this.links[name]);
 		}
 	}
 
@@ -98,6 +120,7 @@ class LayoutAlgorithm {
 	findNear(frontier, name) {
 		var sx = 0, sy = 0, cnt = 0;
 		var conns = frontier.connectedTo(name);
+		console.log("finding nodes near", name, "based on connections", conns);
 		for (var c of conns) {
 			var pl = this.placement.isPlaced(c.name);
 			if (!pl)
@@ -202,6 +225,7 @@ class PushFrontier {
 
 	nextDirect() {
 		if (this.currentDirect.length > 0) {
+			console.log("next direct is", this.currentDirect[0]);
 			return this.currentDirect.shift();
 		} else {
 			return;
@@ -339,8 +363,8 @@ class Placement {
 	// attempt to place a node in the grid at a given position
 	// if that position is occupied, try and find somewhere else for it to go
 	// if that position is above or to the left of the grid, move everything down/across to make room for it
-	place(x, y, node) {
-		var xy = this.findSlot(x, y, node.size());
+	place(x, y, node, conns) {
+		var xy = this.findSlot(x, y, node.size(), conns);
 		if (!xy) {
 			console.log("could not find a slot for " + node.name);
 			return; // we could not find a slot
@@ -352,16 +376,30 @@ class Placement {
 		this.placement[node.name] = p;
 	}
 
+	connectedTo(name) {
+		return [];
+	}
+
 	connect(pts) {
 		this.connectors.push(pts);
 	}
 
 	// find a slot for the node to go in, ideally the one it asked for
-	findSlot(x, y, size) {
+	findSlot(x, y, size, conns) {
 		// rounding is good from the perspective of trying something, but we possibly should try "all 4" (if not an integer) before trying neighbouring squares.
 		x = Math.round(x - (size.width-1)/2);
 		y = Math.round(y - (size.height-1)/2);
 
+		var slots = [];
+		for (var xd = -2;xd <= 2; xd++) {
+			for (var yd = -2; yd <= 2; yd++) {
+				var cost = this.costOf(x+xd, y+yd, xd*xd+yd*yd, size, conns);
+				if (cost)
+					slots.push(cost);
+			}
+		}
+		slots.sort(this.cheapest);
+		/*
 		// if that slot is free, go for it!
 		if (!this.haveNodeAt(x, y, size))	return { x, y };
 
@@ -370,8 +408,22 @@ class Placement {
 		if (!this.haveNodeAt(x, y+1, size))	return { x: x,   y: y+1 };
 		if (!this.haveNodeAt(x-1, y, size))	return { x: x-1, y: y };
 		if (!this.haveNodeAt(x, y-1, size))	return { x: x,   y: y-1 };
+		*/
 
-		this.errors.raise("cannot find free slot C, E, S, W or N");
+		if (slots.length > 0)
+			return slots[0];
+		else
+			this.errors.raise("cannot find free slot to place " + node.name);
+	}
+
+	costOf(x, y, size, mean, conns) {
+		if (this.haveNodeAt(x, y, size))
+			return null;
+		var cost = mean;
+		for (var c of conns) {
+			cost += c.costTo(x, y, size);
+		}
+		return new CostSlot(x, y, cost);
 	}
 
 	haveNodeAt(x, y, size) {
@@ -412,6 +464,10 @@ class Placement {
 		}
 		return { x: xy.x, y: xy.y + downCount };
 	}
+}
+
+class CostSlot {
+
 }
 
 class PlacedAt {
