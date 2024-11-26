@@ -5,7 +5,7 @@ import { NoError } from "./errorsupport.js";
 import { Node, NodeHeight, NodeLabel } from "../../js/model/node.js";
 import { Edge, EdgeCompass, EdgeEnd } from "../../js/model/edge.js";
 
-describe('Layout', () => {
+describe.only('Layout', () => {
 	var into;
 	beforeEach(() => {
 		into = new MockRender();
@@ -83,7 +83,7 @@ describe('Layout', () => {
 		diag.layout(into);
 	});
 
-	it.only('three nodes laid out when one is double height and both connections are to the west', () => {
+	it('three nodes laid out when one is double height and both connections are to the west', () => {
 		var diag = diagram(3, [1,2,"W"], [1,3,"W"]);
 		diag.findNode("node1").add(new NodeHeight(2));
 		into.expectShape(0, 0, "node1");

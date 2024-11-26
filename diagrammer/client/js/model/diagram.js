@@ -1,6 +1,7 @@
 import { Node } from "./node.js";
 import { Edge } from "./edge.js";
-import LayoutAlgorithm from "../layout.js";
+import { MetaModel } from "../layout/meta.js";
+import LayoutAlgorithm from "../layout/layout.js";
 
 class DiagramModel {
 	constructor(errors) {
@@ -119,7 +120,8 @@ class DiagramModel {
 	}
 
 	layout(render) {
-		var alg = new LayoutAlgorithm(this.errors, this.nodes, this.nodeNames, this.edges);
+		var meta = new MetaModel(this.nodes, this.nodeNames, this.edges);
+		var alg = new LayoutAlgorithm(this.errors, meta);
 		alg.layout();
 		alg.render(render);
 	}
