@@ -1,11 +1,15 @@
 package com.example.android_hce;
 
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.nfc.cardemulation.HostApduService;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 public class ReceiveReceiptService extends HostApduService {
     public ReceiveReceiptService() {
@@ -14,10 +18,27 @@ public class ReceiveReceiptService extends HostApduService {
     @Override
     public byte[] processCommandApdu(byte[] apdu, Bundle extras) {
        Log.w("service", "processApdu");
+       showNotification();
        return new byte[] { (byte)0x90, 0x00 }; // APDU "OK"
     }
     @Override
     public void onDeactivated(int reason) {
         Log.w("service", "lost contact with card: " + reason);
+    }
+
+    private void showNotification() {
+        int notificationId = 99; // is this more a constant or more a per request ID?
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, ReceiptApplication.CHANNEL_ID)
+                        .setSmallIcon(R.drawable.credit_card)
+                        .setContentTitle("NFC")
+                        .setContentText("NFC Contact Made")
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_STATUS);
+
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }
