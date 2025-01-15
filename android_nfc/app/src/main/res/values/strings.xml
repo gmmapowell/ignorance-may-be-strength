@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Android NFC</string>
+    <string name="please_tap">Please tap on Reader</string>
 </resources>
