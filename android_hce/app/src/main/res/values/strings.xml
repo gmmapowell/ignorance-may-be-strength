@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Android HCE</string>
+    <string name="servicedesc">Receipt Processor</string>
+    <string name="aiddescription">AID for Receipts</string>
 </resources>
