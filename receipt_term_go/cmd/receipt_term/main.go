@@ -34,53 +34,42 @@ func doCardInteraction(ctx *smartcard.Context) {
 		panic(err)
 	}
 	log.Printf("connected to smart card\n")
-	tryToSendReceipt(card)
+	sender := apdu.Sender(card)
+	receipt, err := generateReceipt()
+	if err != nil {
+		log.Printf("error: %s\n", err)
+	} else {
+		err = transmitReceipt(sender, receipt)
+		if err != nil {
+			log.Printf("error: %s\n", err)
+		}
+	}
+
 	card.Disconnect()
 	reader.WaitUntilCardRemoved()
 	log.Printf("disconnected from smart card\n")
 }
 
-func tryToSendReceipt(card *smartcard.Card) {
-	log.Printf("selecting receipt app on card\n")
-	// select command
-	apdu := []byte{0x00, 0xA4, 0x04, 0x00}
-	// AID
-	apdu = append(apdu, 0x10, 0xF1, 0x67, 0x6d, 0x6d, 0x61, 0x70, 0x6f, 0x77, 0x65, 0x6c, 0x6c, 0x2d, 0x61, 0x70, 0x70, 0x31)
-	// Le - expected response length
-	apdu = append(apdu, 0x00)
-	cmd := smartcard.CommandAPDU(apdu)
-	if !cmd.IsValid() {
-		panic(fmt.Sprintf("invalid apdu from %v", apdu))
-	}
-	log.Printf("issuing cmd %s\n", cmd)
-	res, err := card.TransmitAPDU(cmd)
-	if err != nil {
-		panic(err)
-	}
-	log.Printf("<< %s\n", res)
-	if res == nil || len(res) != 2 {
-		panic("result was not 2 bytes")
-	}
-	if res[0] != 0x90 || res[1] != 0x00 {
-		log.Printf("response was not 0x90 0x00")
-		return
-	}
+func generateReceipt() (*receipt.Receipt, error) {
 	store := store.AnyStore()
 	if store == nil {
-		log.Printf("no store found")
-		return
+		return nil, fmt.Errorf("no store found")
 	}
 	receipt := store.MakePurchase()
 	if receipt == nil {
-		log.Printf("no receipt generated")
-		return
+		return nil, fmt.Errorf("no receipt generated")
+
 	}
-	transmitReceipt(card, receipt)
+	return receipt, nil
 }
 
-func transmitReceipt(card *smartcard.Card, send *receipt.Receipt) {
+func transmitReceipt(sender apdu.BlockSender, send *receipt.Receipt) error {
+	err := sender.SelectAID(0xf1, "gmmapowell-app1")
+	if err != nil {
+		log.Printf("error: %s\n", err)
+		return err
+	}
 	blocks := send.AsWire()
-	sender := apdu.Sender(card)
 	for i, blk := range blocks {
 		log.Printf("sending blk %d", i)
 		err := sender.Transmit(blk)
@@ -88,9 +77,10 @@ func transmitReceipt(card *smartcard.Card, send *receipt.Receipt) {
 			panic("failed to send")
 		}
 	}
-	err := sender.Close()
+	err = sender.Close()
 	if err != nil {
 		panic("failed to close")
 	}
 	log.Printf("finished sending receipt\n")
+	return nil
 }

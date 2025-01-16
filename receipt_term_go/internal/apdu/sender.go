@@ -9,12 +9,43 @@ import (
 )
 
 type BlockSender interface {
+	SelectAID(first byte, aid string) error
 	Transmit(receipt.WireBlock) error
 	Close() error
 }
 
 type ApduSender struct {
 	card *smartcard.Card
+}
+
+func (sender *ApduSender) SelectAID(first byte, aid string) error {
+	bytes := []byte{first}
+	bytes = append(bytes, ([]byte(aid))...)
+	apdu := []byte{0x00, 0xA4, 0x04, 0x00}
+	nc := 1 + len(aid)
+	if nc < 5 || nc > 16 {
+		return fmt.Errorf("aid must be between 5 and 16 bytes")
+	}
+	apdu = append(apdu, byte(nc))
+	apdu = append(apdu, bytes...)
+	apdu = append(apdu, 0x00)
+
+	cmd := smartcard.CommandAPDU(apdu)
+	if !cmd.IsValid() {
+		panic(fmt.Sprintf("invalid apdu from %v", apdu))
+	}
+	reply, err := sender.card.TransmitAPDU(cmd)
+	if err != nil {
+		panic(err)
+	}
+	if !isOK(reply) {
+		if reply[0] == 0x6A && reply[1] == 0x82 {
+			return fmt.Errorf("no such application on phone: %v", bytes)
+		}
+		return fmt.Errorf("invalid response from phone")
+	}
+
+	return nil
 }
 
 func (sender *ApduSender) Transmit(blk receipt.WireBlock) error {
