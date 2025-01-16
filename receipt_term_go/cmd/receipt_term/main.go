@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/gmmapowell/ignorance/receipt_term/internal/receipt"
+	"github.com/gmmapowell/ignorance/receipt_term/internal/store"
+
 	"github.com/deeper-x/gopcsc/smartcard"
 )
 
@@ -61,5 +64,19 @@ func tryToSendReceipt(card *smartcard.Card) {
 		log.Printf("response was not 0x90 0x00")
 		return
 	}
-	log.Printf("still need to transmit receipt")
+	store := store.AnyStore()
+	if store == nil {
+		log.Printf("no store found")
+		return
+	}
+	receipt := store.MakePurchase()
+	if receipt == nil {
+		log.Printf("no receipt generated")
+		return
+	}
+	transmitReceipt(card, receipt)
+}
+
+func transmitReceipt(_ *smartcard.Card, _ *receipt.Receipt) {
+	fmt.Printf("transmit receipt here")
 }
