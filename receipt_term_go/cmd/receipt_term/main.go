@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/gmmapowell/ignorance/receipt_term/internal/apdu"
 	"github.com/gmmapowell/ignorance/receipt_term/internal/receipt"
 	"github.com/gmmapowell/ignorance/receipt_term/internal/store"
 
@@ -77,6 +78,19 @@ func tryToSendReceipt(card *smartcard.Card) {
 	transmitReceipt(card, receipt)
 }
 
-func transmitReceipt(_ *smartcard.Card, _ *receipt.Receipt) {
-	fmt.Printf("transmit receipt here")
+func transmitReceipt(card *smartcard.Card, send *receipt.Receipt) {
+	blocks := send.AsWire()
+	sender := apdu.Sender(card)
+	for i, blk := range blocks {
+		log.Printf("sending blk %d", i)
+		err := sender.Transmit(blk)
+		if err != nil {
+			panic("failed to send")
+		}
+	}
+	err := sender.Close()
+	if err != nil {
+		panic("failed to close")
+	}
+	log.Printf("finished sending receipt\n")
 }

@@ -21,6 +21,7 @@ type LineItem struct {
 }
 
 type LineItemComment interface {
+	AsWire() []byte
 }
 
 type LineItemQuant struct {
@@ -34,6 +35,7 @@ type LineItemMultiBuy struct {
 }
 
 type TotalLine struct {
+	Type   byte
 	Text   string
 	Amount Money
 }

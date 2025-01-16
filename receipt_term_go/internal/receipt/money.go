@@ -13,6 +13,10 @@ func (m Money) String() string {
 	return fmt.Sprintf("£%d.%02d", pounds, pence)
 }
 
+func (m Money) AsWire() []byte {
+	return encodeInt(int(m))
+}
+
 func RandMoney() Money {
 	return Money(rand.IntN(50) + rand.IntN(50) + rand.IntN(100))
 }

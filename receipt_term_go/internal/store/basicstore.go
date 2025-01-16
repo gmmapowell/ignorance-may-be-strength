@@ -17,8 +17,8 @@ func (b *BasicStore) MakePurchase() *receipt.Receipt {
 	headers := []string{fmt.Sprintf("Welcome to %s", b.name)}
 	preface := []receipt.Preface{{Title: "MID", Value: b.mid}}
 	items := createLineItems()
-	totals := figureTotals(items)
-	payments := []receipt.PaymentLine{}
+	totals, grandTotal := figureTotals(items)
+	payments := makePayment(grandTotal)
 	footers := []string{"Thank you"}
 	return &receipt.Receipt{Headers: headers, Preface: preface, LineItems: items, Totals: totals, Payments: payments, Footers: footers}
 }
@@ -88,14 +88,14 @@ func createComment() receipt.LineItemComment {
 	}
 }
 
-func figureTotals(items []receipt.LineItem) []receipt.TotalLine {
+func figureTotals(items []receipt.LineItem) ([]receipt.TotalLine, receipt.Money) {
 	subtotal := receipt.Money(0)
 	discounts := receipt.Money(0)
 	for _, item := range items {
 		subtotal += item.Price
 		for _, comment := range item.Comments {
 			switch ds := comment.(type) {
-			case receipt.LineItemMultiBuy:
+			case *receipt.LineItemMultiBuy:
 				discounts += ds.Discount
 			default:
 			}
@@ -104,9 +104,14 @@ func figureTotals(items []receipt.LineItem) []receipt.TotalLine {
 	total := subtotal - discounts
 	vat := total / 5
 	ret := make([]receipt.TotalLine, 4)
-	ret[0] = receipt.TotalLine{Text: "SubTotal", Amount: subtotal}
-	ret[1] = receipt.TotalLine{Text: "Discounts", Amount: discounts}
-	ret[2] = receipt.TotalLine{Text: "Including VAT", Amount: vat}
-	ret[3] = receipt.TotalLine{Text: "Total", Amount: total}
-	return ret
+	ret[0] = receipt.TotalLine{Type: 0x31, Text: "SubTotal", Amount: subtotal}
+	ret[1] = receipt.TotalLine{Type: 0x32, Text: "Discounts", Amount: discounts}
+	ret[2] = receipt.TotalLine{Type: 0x33, Text: "Including VAT", Amount: vat}
+	ret[3] = receipt.TotalLine{Type: 0x3f, Text: "Total", Amount: total}
+	return ret, total
+}
+
+func makePayment(amount receipt.Money) []receipt.PaymentLine {
+	payment := receipt.PaymentLine{Method: "PHONE", Amount: amount}
+	return []receipt.PaymentLine{payment}
 }
