@@ -7,9 +7,15 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.android_hce.apdu.APDUCommand;
 import com.example.android_hce.apdu.APDUResponse;
+import com.example.android_hce.receipt.WireBlock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReceiptSessionController implements SessionController {
     Context context;
+    List<WireBlock> blocks = new ArrayList<>();
+
     public ReceiptSessionController(Context context) {
         this.context = context;
     }
@@ -21,8 +27,7 @@ public class ReceiptSessionController implements SessionController {
 
     @Override
     public void updateBinary(int p1, int p2, byte[] data) {
-        // This needs to collect all these messages for later processing
-
+        blocks.add(new WireBlock(p1, p2, data));
     }
 
     @Override
