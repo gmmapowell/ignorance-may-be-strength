@@ -16,13 +16,13 @@ public class ReceiptDatabaseContract {
         public final static String TABLE_NAME = "receipt_line";
         public final static String COLUMN_NAME_RECEIPT = "receipt_id";
         public final static String COLUMN_NAME_TYPE = "type";
-        public final static String COLUMN_NAME_INDEX = "index";
+        public final static String COLUMN_NAME_INDEX = "idx";
     }
 
     public static class ReceiptLineCommentEntry implements BaseColumns {
         public final static String TABLE_NAME = "receipt_line_comments";
         public final static String COLUMN_NAME_ENTRY = "entry_id";
         public final static String COLUMN_NAME_TYPE = "type";
-        public final static String COLUMN_NAME_INDEX = "index";
+        public final static String COLUMN_NAME_INDEX = "idx";
     }
 }
