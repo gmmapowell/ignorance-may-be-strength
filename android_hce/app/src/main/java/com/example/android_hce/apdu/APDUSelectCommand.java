@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.android_hce.ReceiptSessionController;
 import com.example.android_hce.ReceiveReceiptService;
 import com.example.android_hce.SessionController;
+import com.example.android_hce.db.ReceiptDatabaseHelper;
 
 public class APDUSelectCommand extends APDUBaseCommand {
     APDUSelectCommand() {
@@ -18,7 +19,7 @@ public class APDUSelectCommand extends APDUBaseCommand {
         return new APDUResponse(false, (byte)0x90, (byte)0x00);
     }
 
-    public SessionController initiate(Context context) {
-        return new ReceiptSessionController(context);
+    public SessionController initiate(Context context, ReceiptDatabaseHelper db) {
+        return new ReceiptSessionController(context, db);
     }
 }

@@ -36,7 +36,7 @@ func (sender *ApduSender) SelectAID(first byte, aid string) error {
 	}
 	reply, err := sender.card.TransmitAPDU(cmd)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("failed to communicate to card, error %v", err)
 	}
 	if !isOK(reply) {
 		if reply[0] == 0x6A && reply[1] == 0x82 {

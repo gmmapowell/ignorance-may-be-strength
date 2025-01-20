@@ -12,12 +12,15 @@ import com.example.android_hce.apdu.APDUCommand;
 import com.example.android_hce.apdu.APDUCommandProcessor;
 import com.example.android_hce.apdu.APDUResponse;
 import com.example.android_hce.apdu.APDUSelectCommand;
+import com.example.android_hce.db.ReceiptDatabaseHelper;
 
 public class ReceiveReceiptService extends HostApduService {
+    private final ReceiptDatabaseHelper db;
     APDUCommandProcessor processor = new APDUCommandProcessor();
     SessionController controller = null;
 
     public ReceiveReceiptService() {
+        db = new ReceiptDatabaseHelper(this);
     }
 
     @Override
@@ -29,7 +32,7 @@ public class ReceiveReceiptService extends HostApduService {
                 return new byte[] { (byte) 0x69, (byte)0x00 }; // APDU "Command not allowed"
             }
             if (cmd instanceof APDUSelectCommand) {
-                controller = ((APDUSelectCommand)cmd).initiate(this);
+                controller = ((APDUSelectCommand)cmd).initiate(this, db);
             }
             if (controller == null) { // no current application selected - is there a more precise code?
                 return new byte[] { (byte) 0x6f, (byte) 0x00 }; // APDU "command aborted - OS Error?"

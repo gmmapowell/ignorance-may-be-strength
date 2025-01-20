@@ -74,12 +74,12 @@ func transmitReceipt(sender apdu.BlockSender, send *receipt.Receipt) error {
 		log.Printf("sending blk %d", i)
 		err := sender.Transmit(blk)
 		if err != nil {
-			panic("failed to send")
+			return err
 		}
 	}
 	err = sender.Close()
 	if err != nil {
-		panic("failed to close")
+		return fmt.Errorf("failed to close: %v", err)
 	}
 	log.Printf("finished sending receipt\n")
 	return nil

@@ -15,7 +15,7 @@ type BasicStore struct {
 // MakePurchase implements Store.
 func (b *BasicStore) MakePurchase() *receipt.Receipt {
 	headers := []string{fmt.Sprintf("Welcome to %s", b.name)}
-	preface := []receipt.Preface{{Title: "MID", Value: b.mid}}
+	preface := []receipt.Preface{{Title: "Name", Value: b.name}, {Title: "MID", Value: b.mid}}
 	items := createLineItems()
 	totals, grandTotal := figureTotals(items)
 	payments := makePayment(grandTotal)
