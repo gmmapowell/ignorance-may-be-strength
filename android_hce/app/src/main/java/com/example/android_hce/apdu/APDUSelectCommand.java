@@ -15,7 +15,7 @@ public class APDUSelectCommand extends APDUBaseCommand {
 
     @Override
     public APDUResponse dispatch(SessionController controller) {
-        Log.w("select", "we have selected an aid");
+//        Log.w("select", "we have selected an aid");
         return new APDUResponse(false, (byte)0x90, (byte)0x00);
     }
 

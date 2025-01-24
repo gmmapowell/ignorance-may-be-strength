@@ -22,7 +22,13 @@ public class ReceiptDatabaseHelper extends SQLiteOpenHelper {
                     ReceiptLineEntry._ID + " INTEGER PRIMARY KEY," +
                     ReceiptLineEntry.COLUMN_NAME_RECEIPT + " INTEGER," +
                     ReceiptLineEntry.COLUMN_NAME_INDEX + " INTEGER," +
-                    ReceiptLineEntry.COLUMN_NAME_TYPE + " INTEGER)";
+                    ReceiptLineEntry.COLUMN_NAME_TYPE + " TEXT," +
+                    ReceiptLineEntry.COLUMN_VALUE_AMOUNT + " INTEGER," +
+                    ReceiptLineEntry.COLUMN_VALUE_DESC + " TEXT," +
+                    ReceiptLineEntry.COLUMN_VALUE_PRICE + " INTEGER," +
+                    ReceiptLineEntry.COLUMN_VALUE_TEXT + " TEXT," +
+                    ReceiptLineEntry.COLUMN_VALUE_TITLE + " TEXT," +
+                    ReceiptLineEntry.COLUMN_VALUE_VALUE + " TEXT)";
 
     private static final String SQL_DELETE_ITEM_LINES =
             "DROP TABLE IF EXISTS " + ReceiptLineEntry.TABLE_NAME;
@@ -32,13 +38,17 @@ public class ReceiptDatabaseHelper extends SQLiteOpenHelper {
                     ReceiptLineCommentEntry._ID + " INTEGER PRIMARY KEY," +
                     ReceiptLineCommentEntry.COLUMN_NAME_ENTRY + " INTEGER," +
                     ReceiptLineCommentEntry.COLUMN_NAME_INDEX + " INTEGER," +
-                    ReceiptLineCommentEntry.COLUMN_NAME_TYPE + " INTEGER)";
+                    ReceiptLineCommentEntry.COLUMN_NAME_TYPE + " TEXT," +
+                    ReceiptLineCommentEntry.COLUMN_VALUE_DISC + " INTEGER," +
+                    ReceiptLineCommentEntry.COLUMN_VALUE_EXPL + " TEXT," +
+                    ReceiptLineCommentEntry.COLUMN_VALUE_QUANT + " INTEGER," +
+                    ReceiptLineCommentEntry.COLUMN_VALUE_UNIT + " INTEGER)";
 
     private static final String SQL_DELETE_ITEM_COMMENTS =
             "DROP TABLE IF EXISTS " + ReceiptLineCommentEntry.TABLE_NAME;
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "Receipts.db";
 
     public ReceiptDatabaseHelper(Context context) {

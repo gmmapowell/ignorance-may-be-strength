@@ -26,7 +26,7 @@ public class ReceiveReceiptService extends HostApduService {
     @Override
     public byte[] processCommandApdu(byte[] apdu, Bundle extras) {
         try {
-            processor.LogInput(apdu);
+//            processor.LogInput(apdu);
             APDUCommand cmd = processor.parse(apdu);
             if (cmd == null) {
                 return new byte[] { (byte) 0x69, (byte)0x00 }; // APDU "Command not allowed"

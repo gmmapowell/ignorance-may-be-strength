@@ -23,6 +23,10 @@ func (b *BasicStore) MakePurchase() *receipt.Receipt {
 	return &receipt.Receipt{Headers: headers, Preface: preface, LineItems: items, Totals: totals, Payments: payments, Footers: footers}
 }
 
+func (b *BasicStore) String() string {
+	return b.name
+}
+
 func makeStore() Store {
 	return &BasicStore{name: randomName(), mid: genMid()}
 }
@@ -82,7 +86,9 @@ func createComment() receipt.LineItemComment {
 		price := receipt.RandMoney()
 		return &receipt.LineItemQuant{Quant: quant, UnitPrice: price}
 	case 1:
-		return &receipt.LineItemMultiBuy{}
+		expl := randomName()
+		disc := receipt.RandMoney()
+		return &receipt.LineItemMultiBuy{Explanation: expl, Discount: disc}
 	default:
 		panic("rand(2) was not 0 or 1")
 	}

@@ -18,7 +18,7 @@ func (r *Receipt) AsWire() []WireBlock {
 	for p2, q := range r.LineItems {
 		wire = append(wire, CodeWire(0x21, byte(p2+1), q.AsWire()))
 		for cp2, c := range q.Comments {
-			wire = append(wire, CodeWire(0x22, byte(cp2+1), c.AsWire()))
+			wire = append(wire, CodeWire(c.Code(), byte(cp2+1), c.AsWire()))
 		}
 	}
 	for _, q := range r.Totals {
@@ -45,10 +45,18 @@ func (li *LineItem) AsWire() []byte {
 	return ret
 }
 
+func (q *LineItemQuant) Code() byte {
+	return 0x22
+}
+
 func (q *LineItemQuant) AsWire() []byte {
 	ret := encodeInt(q.Quant)
 	ret = append(ret, q.UnitPrice.AsWire()...)
 	return ret
+}
+
+func (q *LineItemMultiBuy) Code() byte {
+	return 0x23
 }
 
 func (mb *LineItemMultiBuy) AsWire() []byte {

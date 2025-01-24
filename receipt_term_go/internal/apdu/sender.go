@@ -83,6 +83,7 @@ func writeBlock(p1 byte, p2 byte, data []byte) smartcard.CommandAPDU {
 	apdu := []byte{0xFF, 0xD6, p1, p2}
 	apdu = xxLen(apdu, len(data))
 	apdu = append(apdu, data...)
+	fmt.Printf("writing block as APDU: %v\n", apdu)
 	return smartcard.CommandAPDU(apdu)
 }
 

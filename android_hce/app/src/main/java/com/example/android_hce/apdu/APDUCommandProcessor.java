@@ -32,7 +32,7 @@ public class APDUCommandProcessor {
         byte[] in = null, out = null;
         if (ret.wantsInput()) {
             int xx = readLength(apdu, pos);
-            Log.w("processor", "input length = " + xx);
+//            Log.w("processor", "input length = " + xx);
             in = new byte[xx];
             for (int i=0;i<xx;i++) {
                 in[i] = apdu[pos.getAndIncrement()];
@@ -41,7 +41,7 @@ public class APDUCommandProcessor {
         if (ret.wantsOutputLength()) {
             int s = apdu[pos.getAndIncrement()];
             if (s != 0) {
-                Log.w("processor", "allocating " + s + " bytes for response");
+//                Log.w("processor", "allocating " + s + " bytes for response");
                 out = new byte[s];
             }
         }

@@ -11,7 +11,7 @@ public class APDUUpdateBinaryCommand extends APDUBaseCommand {
 
     @Override
     public APDUResponse dispatch(SessionController controller) {
-        Log.w("select", "update binary on " + Integer.toHexString(p1) + ":" + Integer.toHexString(p2));
+//        Log.w("select", "update binary on " + Integer.toHexString(p1) + ":" + Integer.toHexString(p2));
         if (p1 == 0) {
             // tell the controller that we have read everything and are ready to execute it
             controller.executeCommand();

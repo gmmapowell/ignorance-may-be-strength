@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"math/rand/v2"
 )
 
@@ -11,6 +12,7 @@ func init() {
 	stores = make([]Store, ns)
 	for i := 0; i < ns; i++ {
 		stores[i] = makeStore()
+		fmt.Printf("store %d = %s\n", i, stores[i])
 	}
 }
 

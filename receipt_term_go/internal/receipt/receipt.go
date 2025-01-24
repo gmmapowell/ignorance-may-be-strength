@@ -21,6 +21,7 @@ type LineItem struct {
 }
 
 type LineItemComment interface {
+	Code() byte
 	AsWire() []byte
 }
 
