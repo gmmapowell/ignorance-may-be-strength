@@ -10,6 +10,10 @@ public class ReceiptDatabaseContract {
         public final static String TABLE_NAME = "receipt";
         public final static String COLUMN_NAME_MERCHANT = "merchant";
         public final static String COLUMN_NAME_TOTAL = "total";
+        public static final String[] ALL_COLUMNS = new String[] {
+            COLUMN_NAME_MERCHANT,
+            COLUMN_NAME_TOTAL
+        };
     }
 
     public static class ReceiptLineEntry implements BaseColumns {
