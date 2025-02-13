@@ -24,9 +24,10 @@ function write(msg) {
 }
 
 function url(goto) {
-	var url = window.location;
+	var url = new URL(window.location.href);
 	url.pathname = version + '/' + goto;
-	write("pushing " + pushid + " to " + goto + ": url = " + url);
+	write("pushing " + pushid + " to " + goto + ": url = " + url + "; stack = " + window.history.length);
+	window.history.pushState({unique: pushid++}, null, url);
 }
 
 // export the functions that are used externally
