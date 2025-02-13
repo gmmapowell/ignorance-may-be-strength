@@ -23,14 +23,32 @@ function write(msg) {
 	scrollTo(elt);
 }
 
+function handleLoad(origin, route) {
+	if (route == "/") {
+		write("loaded with root; setting state to " + pushid + "; stack = " + window.history.length);
+		window.history.replaceState({unique: pushid++}, null);
+	} else {
+		var nested = new URL(window.location.href);
+		var root = new URL(window.location.href);
+		root.pathname = version + "/";
+		write("loaded with route " + route + "; replacing with " + root + " as " + pushid + "; stack = " + window.history.length);
+		window.history.replaceState({unique: pushid++}, null, root);
+		window.history.pushState({unique: pushid}, null, nested);
+		write("pushing " + nested + " as " + pushid + "; stack = " + window.history.length);
+		pushid++;
+	}
+}
+
 function url(goto) {
 	var url = new URL(window.location.href);
 	url.pathname = version + '/' + goto;
+	window.history.pushState({unique: pushid}, null, url);
 	write("pushing " + pushid + " to " + goto + ": url = " + url + "; stack = " + window.history.length);
-	window.history.pushState({unique: pushid++}, null, url);
+	pushid++;
 }
 
 // export the functions that are used externally
 window.url = url;
 
 write("application loaded: " + version);
+handleLoad(window.location.origin, window.location.pathname.substring(version.length));
