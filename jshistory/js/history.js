@@ -1,7 +1,3 @@
-var logArea = document.querySelector(".logging");
-var pushid = 1;
-var version = figureVersion(window.location.pathname);
-
 function figureVersion(path) {
 	var idx = path.indexOf('/', 1);
 	if (idx == -1) {
@@ -68,8 +64,65 @@ function capturePopstate() {
 	});
 }
 
+function launchCart() {
+	cartStep("details");
+	var s = window.history.state;
+	s.launchCart = true;
+	window.history.replaceState(s, null);
+}
+
+function cartStep(path) {
+	if (path != "confirm") {
+		url(path);
+		cartEnabled(true);
+	} else {
+		replaceConfirm();
+		cartEnabled(false);
+	}
+}
+
+function cartEnabled(enable) {
+	var cartButtons = document.querySelectorAll(".cart.buttons button");
+	for (var b of cartButtons) {
+		if (enable) {
+			b.removeAttribute("disabled");
+		} else {
+			b.setAttribute("disabled", "");
+		}
+	}
+	var launchBtn = document.querySelector(".buttons .launch-cart");
+	if (enable) {
+		launchBtn.setAttribute("disabled", "");
+	} else {
+		launchBtn.removeAttribute("disabled");
+	}
+}
+
+function replaceConfirm() {
+	var url = new URL(window.location.href);
+	url.pathname = version + '/confirm';
+	while (true) {
+		var top = window.history.state.launchCart;
+		var prev = window.history.state.unique;
+		window.history.replaceState({ unique: pushid }, null, url);
+		write("cart confirmed at " + prev + " replaced with " + pushid + " for confirmation: " + url + "; stack = " + window.history.length);
+		pushid++;
+		window.history.back();
+		if (top) {
+			break;
+		}
+	}
+}
+
 // export the functions that are used externally
 window.url = url;
+window.launchCart = launchCart;
+window.cartStep = cartStep;
+
+// start everything up
+var logArea = document.querySelector(".logging");
+var pushid = 1;
+var version = figureVersion(window.location.pathname);
 
 write("application loaded: " + version);
 handleLoad(window.location.origin, window.location.pathname.substring(version.length));
