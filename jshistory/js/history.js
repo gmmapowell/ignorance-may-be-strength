@@ -47,8 +47,19 @@ function url(goto) {
 	pushid++;
 }
 
+function captureLocalAHref(origin) {
+	document.addEventListener('click', (ev) => {
+		var t = ev.target;
+		if (t.tagName === 'A' && t.origin === origin) {
+			ev.preventDefault();
+			url(t.pathname.substring(version.length+1));
+		}
+	});
+}
+
 // export the functions that are used externally
 window.url = url;
 
 write("application loaded: " + version);
 handleLoad(window.location.origin, window.location.pathname.substring(version.length));
+captureLocalAHref(window.location.origin);
