@@ -5,8 +5,14 @@
 	<link rel="stylesheet" type="text/css" href="css/history.css">
   </head>
   <body>
-	<div class="main">
+	  <div class="main">
 		<div class="title">Experiments with history and paths</div>
+		<div class="buttons">
+			<button onclick="url('first')">first</button>
+			<button onclick="url('down/again')">down/again</button>
+			<a href="linkto">linkto</a>
+			<span class="likelink" onclick="url('textlink')">textlink</span>
+		</div>
 		<div class="logging"></div>
 	</div>
 	<script src="js/history.js" type="module" charset="UTF-8"></script>

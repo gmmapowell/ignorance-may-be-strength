@@ -12,6 +12,17 @@ body {
 	height: 10%;
 	padding-top: 10px;
 }
+.buttons {
+	background-color: silver;
+	margin: 0px 20% 10px 20%;
+	padding: 10px 0px 10px 0px;
+	text-align: center;
+}
+.likelink {
+	cursor: pointer;
+	text-decoration: underline;
+	color: -webkit-link;
+}
 .logging {
 	position: relative;
 	background-color: aliceblue;

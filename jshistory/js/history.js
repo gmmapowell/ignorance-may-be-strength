@@ -12,4 +12,11 @@ function write(msg) {
 	scrollTo(elt);
 }
 
+function url(goto) {
+	write(goto);
+}
+
+// export the functions that are used externally
+window.url = url;
+
 write("application loaded");
