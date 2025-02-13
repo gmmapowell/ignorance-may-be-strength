@@ -10,6 +10,10 @@
 			"path": "diagrammer"
 		},
 		{
+			"name": "JS History",
+			"path": "jshistory"
+		},
+		{
 			"path": "mediaqueries"
 		},
 		{

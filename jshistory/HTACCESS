@@ -1,0 +1,3 @@
+RewriteRule (js/.*)$ $1 [L]
+RewriteRule (css/.*)$ $1 [L]
+RewriteRule ^.*$ index.html

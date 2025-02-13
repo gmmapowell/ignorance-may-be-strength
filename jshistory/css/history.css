@@ -1,0 +1,29 @@
+body {
+	margin: 0px;
+}
+.main {
+	width: 100vw;
+	height: 100vh;
+	background-color: lightblue;
+}
+.title {
+	text-align: center;
+	font-size: 20px;
+	height: 10%;
+	padding-top: 10px;
+}
+.logging {
+	position: relative;
+	background-color: aliceblue;
+	height: 80%;
+	margin-left: 10%;
+	margin-right: 10%;
+	padding: 1px;
+	overflow-y: scroll;
+}
+.message {
+	margin: 10px 10px 0px 10px;
+	border: solid black 1px;
+	padding: 7px;
+	font-family: monospace;
+}
