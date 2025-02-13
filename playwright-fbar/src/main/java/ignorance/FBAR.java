@@ -2,8 +2,11 @@ package ignorance;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 
 import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
@@ -17,67 +20,100 @@ class FBAR {
 	public static void main(String[] argv) {
 		PortfolioLoader loader = new PortfolioLoader();
 		Portfolio portfolio;
+		String password = null;
 		File downloadsTo = null;
 		try {
-			if (argv.length > 0) {
-				portfolio = loader.loadJson(new File(argv[0]));
-				if (argv.length > 1) {
-					downloadsTo = new File(argv[1]);
-				}
-			} else {
-				portfolio = loader.loadDummy();
+			if (argv.length < 3) {
+				System.out.println("Usage: fbar portfolio password downloadTo");
+				return;
 			}
+			portfolio = loader.loadJson(new File(argv[0]));
+			password = argv[1];
+			downloadsTo = new File(argv[2]);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return;
 		}
 		AccountInfo user = portfolio.getUser();
+		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(System.in));
 
 		try (Playwright playwright = Playwright.create()) {
-			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(50));
+			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(500));
+			BrowserContext cxt = browser.newContext();
+			
+			Page page = cxt.newPage();
+			
+			page.navigate("https://bsaefiling.fincen.gov/PublicAccess");
+			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("AGREE AND CONTINUE")).click();
+			
+			page.locator("div.usa-button").click();
 
-			Page page = browser.newPage();
+			page.locator("button").nth(0).click();
+
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Email address").setExact(true)).fill(portfolio.email());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Password").setExact(true)).fill(password);
+			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Sign in")).click();
+
+			System.out.print("Login.gov one-time code, please, from Authenticator: ");
+			String otc = lnr.readLine();
 			
-			page.navigate("https://bsaefiling1.fincen.treas.gov/lc/content/xfaforms/profiles/htmldefault.html");
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your email address.").setExact(true)).fill(portfolio.email());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Re-enter your email address.")).fill(portfolio.email());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your first name.")).fill(user.getFirstName());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your last name.")).fill(user.getLastName());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your telephone number. Do not include formatting such as spaces, dashes, or other punctuation.")).fill(portfolio.phone());
+			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("One-time code").setExact(true)).fill(otc);
+			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Submit")).click();
 			
-			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Please click this button to begin preparing your FBAR.")).click();
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Filing name")).fill(portfolio.filingName());
+			// Now wait to be fully logged in ...
+			page.getByAltText("File Now Button").click();
+			
+			Page form = cxt.waitForPage(() -> {
+				page.navigate("https://bsaefiling.fincen.treas.gov/NoRegFBARFiler.html");
+				page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(" Prepare & Submit ")).click();
+			});
+			
+			if (form == null) {
+				System.out.println("new page did not open");
+				return;
+			}
+
+			System.out.println("New Page: " + form.url() + " -- " + form.title());
+			
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your email address.").setExact(true)).fill(portfolio.email());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Re-enter your email address.")).fill(portfolio.email());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your first name.")).fill(user.getFirstName());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your last name.")).fill(user.getLastName());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your telephone number. Do not include formatting such as spaces, dashes, or other punctuation.")).fill(portfolio.phone());
+			
+			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Please click this button to begin preparing your FBAR.")).click();
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Filing name")).fill(portfolio.filingName());
 //			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("reason")).selectOption("A");
 //			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Explanation")).fill("I keep forgetting the deadline has changed.");
 			
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 1")).fill(Integer.toString(portfolio.getFilingYear()));
-			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("* 2")).selectOption("A");
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 3")).fill(user.getTin());
-			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName(" 3a")).selectOption("B");
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 1")).fill(Integer.toString(portfolio.getFilingYear()));
+			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("* 2")).selectOption("A");
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 3")).fill(user.getTin());
+			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName(" 3a")).selectOption("B");
 
-			Locator dob = page.locator("div.subform.DobLastSub");
+			Locator dob = form.locator("div.subform.DobLastSub");
 			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Month")).selectOption(portfolio.getMonth());
 			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Day")).selectOption(portfolio.getDate());
 			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Year")).selectOption(portfolio.getYear());
 
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 6 Last")).fill(user.getLastName());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("7 First name").setExact(true)).fill(user.getFirstName());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8 Middle name").setExact(true)).fill(user.getMiddleName());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8a Suffix").setExact(true)).fill(user.getSuffix());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 6 Last")).fill(user.getLastName());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("7 First name").setExact(true)).fill(user.getFirstName());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8 Middle name").setExact(true)).fill(user.getMiddleName());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8a Suffix").setExact(true)).fill(user.getSuffix());
 
-			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).selectOption(user.getCountry());
-			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).dispatchEvent("blur");
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("9 Address").setExact(true)).fill(user.getAddress());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("10")).fill(user.getCity());
-			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("12 ZIP")).fill(user.getPostCode());
-			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("11")).selectOption(user.getState());
+			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).selectOption(user.getCountry());
+			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).dispatchEvent("blur");
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("9 Address").setExact(true)).fill(user.getAddress());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("10")).fill(user.getCity());
+			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("12 ZIP")).fill(user.getPostCode());
+			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("11")).selectOption(user.getState());
 
-			page.locator("div.subform.InterestAccts").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
-			page.locator("div.subform.SigAuthAcctns").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
+			form.locator("div.subform.InterestAccts").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
+			form.locator("div.subform.SigAuthAcctns").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
 			
 			boolean first = true;
 			for (Asset solo : portfolio.solos()) {
-				Locator mypage2 = page.locator("div.subform.Part2");
+				Locator mypage2 = form.locator("div.subform.Part2");
 				if (!first) {
 					mypage2.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).last().click();
 					mypage2 = mypage2.last();
@@ -101,7 +137,7 @@ class FBAR {
 			
 			first = true;
 			for (JointAsset joint : portfolio.joints()) {
-				Locator mypage3 = page.locator("div.subform.Part3");
+				Locator mypage3 = form.locator("div.subform.Part3");
 				if (!first) {
 					mypage3.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).last().click();
 					mypage3 = mypage3.last();
@@ -125,7 +161,7 @@ class FBAR {
 				fillJoint(mypage3.locator("div.PrincipalJointOwner"), joint.getOther());
 			}
 
-			page.onDialog(dialog -> {
+			form.onDialog(dialog -> {
 				System.out.println("Dialog message: " + dialog.message());
 				System.out.println("Dialog prompt: " + dialog.defaultValue());
 				dialog.accept();
@@ -134,7 +170,7 @@ class FBAR {
 			if (downloadsTo != null) {
 				WaitForDownloadOptions options = new WaitForDownloadOptions();
 				options.setTimeout(6000000);
-				Download download = page.waitForDownload(options, () -> { });
+				Download download = form.waitForDownload(options, () -> { });
 				File isAt = download.path().toFile();
 				File saveAs = new File(downloadsTo, isAt.getName());
 				System.out.println("Copying " + isAt + " to " + saveAs);
@@ -149,7 +185,9 @@ class FBAR {
 
 			WaitForCloseOptions options = new WaitForCloseOptions();
 			options.setTimeout(6000000);
-			page.waitForClose(options, () -> {});
+			form.waitForClose(options, () -> {});
+		} catch (Throwable t) {
+			t.printStackTrace();
 		}
 	}
 
