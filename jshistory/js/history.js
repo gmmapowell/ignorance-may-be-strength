@@ -47,6 +47,10 @@ function url(goto) {
 	pushid++;
 }
 
+function moveTo(url, state) {
+	write("moved to " + state.unique + " at " + url + "; stack = " + window.history.length);
+}
+
 function captureLocalAHref(origin) {
 	document.addEventListener('click', (ev) => {
 		var t = ev.target;
@@ -57,9 +61,17 @@ function captureLocalAHref(origin) {
 	});
 }
 
+function capturePopstate() {
+	window.addEventListener("popstate", (ev) => {
+		ev.preventDefault();
+		moveTo(new URL(window.location.href), ev.state);
+	});
+}
+
 // export the functions that are used externally
 window.url = url;
 
 write("application loaded: " + version);
 handleLoad(window.location.origin, window.location.pathname.substring(version.length));
 captureLocalAHref(window.location.origin);
+capturePopstate();
