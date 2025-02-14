@@ -60,7 +60,13 @@ function captureLocalAHref(origin) {
 function capturePopstate() {
 	window.addEventListener("popstate", (ev) => {
 		ev.preventDefault();
-		moveTo(new URL(window.location.href), ev.state);
+		if (popMode) {
+			var popFn = popMode;
+			popMode = null;
+			popFn();
+		} else {
+			moveTo(new URL(window.location.href), ev.state);
+		}
 	});
 }
 
@@ -101,16 +107,16 @@ function cartEnabled(enable) {
 function replaceConfirm() {
 	var url = new URL(window.location.href);
 	url.pathname = version + '/confirm';
-	while (true) {
-		var top = window.history.state.launchCart;
-		var prev = window.history.state.unique;
-		window.history.replaceState({ unique: pushid }, null, url);
-		write("cart confirmed at " + prev + " replaced with " + pushid + " for confirmation: " + url + "; stack = " + window.history.length);
-		pushid++;
+	var atTop = window.history.state.launchCart;
+
+	var prev = window.history.state.unique;
+	window.history.replaceState({ unique: pushid }, null, url);
+	write("cart confirmed at " + prev + " replaced with " + pushid + " for confirmation: " + url + "; stack = " + window.history.length);
+	pushid++;
+
+	if (!atTop) {
+		popMode = replaceConfirm;
 		window.history.back();
-		if (top) {
-			break;
-		}
 	}
 }
 
@@ -123,6 +129,7 @@ window.cartStep = cartStep;
 var logArea = document.querySelector(".logging");
 var pushid = 1;
 var version = figureVersion(window.location.pathname);
+var popMode = null;
 
 write("application loaded: " + version);
 handleLoad(window.location.origin, window.location.pathname.substring(version.length));
