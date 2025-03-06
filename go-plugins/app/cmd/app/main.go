@@ -10,6 +10,7 @@ import (
 func main() {
 	hasHelp := false
 	noMod := false
+	invalidArg := false
 	modules := make([]string, 0)
 	i := 1
 	for i < len(os.Args) {
@@ -29,10 +30,12 @@ func main() {
 			} else {
 				noMod = true
 			}
+		default:
+			invalidArg = true
 		}
 		i++
 	}
-	if !hasHelp || noMod {
+	if !hasHelp || noMod || invalidArg {
 		fmt.Println("Usage: app --help [-m module]")
 		return
 	}
@@ -43,10 +46,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		init, err := p.Lookup("expose_me")
+		init, err := p.Lookup("ExportMe")
 		if err != nil {
 			panic(err)
 		}
-		log.Printf("have expose_me function %v", init)
+		log.Printf("have ExportMe function %v", init)
 	}
 }
