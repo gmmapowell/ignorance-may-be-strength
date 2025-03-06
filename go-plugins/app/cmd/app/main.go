@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"plugin"
+
+	"slices"
+
+	"gmmapowell.com/app/pkg/api"
 )
 
 func main() {
@@ -39,9 +42,9 @@ func main() {
 		fmt.Println("Usage: app --help [-m module]")
 		return
 	}
-	for _, m := range modules {
-		log.Printf("have module %s\n", m)
 
+	toplevels := make([]api.PluginTopLevel, 0)
+	for _, m := range modules {
 		p, err := plugin.Open(m + "/plugin.so")
 		if err != nil {
 			panic(err)
@@ -50,6 +53,21 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		log.Printf("have ExportMe function %v", init)
+		tl := init.(func() api.PluginTopLevel)()
+		toplevels = append(toplevels, tl)
+	}
+
+	texts := make([]string, 0)
+	for _, tl := range toplevels {
+		for _, meth := range tl.Methods() {
+			h := meth.Help()
+			texts = append(texts, h)
+		}
+	}
+
+	slices.Sort(texts)
+
+	for _, t := range texts {
+		fmt.Println(t)
 	}
 }

@@ -10,5 +10,17 @@ func ExportMe() api.PluginTopLevel {
 }
 
 func (db *FrontEnd) Methods() []api.PluginMethod {
-	return nil
+	return []api.PluginMethod{&BrowseMethod{}, &QuitMethod{}}
+}
+
+type BrowseMethod struct{}
+
+func (m *BrowseMethod) Help() string {
+	return "  browse - open brower"
+}
+
+type QuitMethod struct{}
+
+func (m *QuitMethod) Help() string {
+	return "  quit - quit brower"
 }

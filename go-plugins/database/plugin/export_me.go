@@ -10,5 +10,17 @@ func ExportMe() api.PluginTopLevel {
 }
 
 func (db *Database) Methods() []api.PluginMethod {
-	return nil
+	return []api.PluginMethod{&InsertMethod{}, &QueryMethod{}}
+}
+
+type InsertMethod struct{}
+
+func (m *InsertMethod) Help() string {
+	return "  insert - insert data into database"
+}
+
+type QueryMethod struct{}
+
+func (m *QueryMethod) Help() string {
+	return "  query - interrogate the database"
 }
