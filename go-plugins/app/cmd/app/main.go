@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"plugin"
 )
 
 func main() {
@@ -37,5 +38,15 @@ func main() {
 	}
 	for _, m := range modules {
 		log.Printf("have module %s\n", m)
+
+		p, err := plugin.Open(m + "/plugin.so")
+		if err != nil {
+			panic(err)
+		}
+		init, err := p.Lookup("expose_me")
+		if err != nil {
+			panic(err)
+		}
+		log.Printf("have expose_me function %v", init)
 	}
 }
