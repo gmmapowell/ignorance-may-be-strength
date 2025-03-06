@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "app"
+		},
+		{
+			"path": "database"
+		},
+		{
+			"path": "frontend"
+		}
+	],
+	"settings": {},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+		]
+	}
+}
