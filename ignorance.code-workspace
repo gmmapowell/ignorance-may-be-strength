@@ -29,7 +29,7 @@
 		"version": "2.0.0",
 		"tasks": [
        {
-            "label": "Diagrammer Tests"
+            "label": "Diagrammer Tests",
             "type": "npm",
             "script": "test",
 				"options": {
