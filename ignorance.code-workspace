@@ -22,6 +22,10 @@
 		{
 			"name": "metrolink-watch",
 			"path": "metrolink-watch"
+		},
+		{
+			"name": "SyntaxTest",
+			"path": "syntax-testing"
 		}
 	],
 	"settings": {},

@@ -1,0 +1,53 @@
+{
+	"name": "syntest",
+	"displayName": "SynTest",
+	"description": "Syntax Testing",
+	"version": "0.0.1",
+	"publisher": "GarethPowell",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gmmapowell/ignorance-may-be-strength.git"
+	},
+	"engines": {
+		"vscode": "^1.97.0"
+	},
+	"activationEvents": [
+		"onLanguage:abc"
+	],
+	"main": "out/syntest.js",
+	"files": ["package.json", "out", "syntaxes", "license.txt"],
+	"categories": [
+		"Programming Languages"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "abc",
+				"extensions": [
+					".abc"
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "abc",
+				"scopeName": "source.abc",
+				"path": "./syntaxes/abc.tmGrammar.json"
+			}
+		]
+	},
+	"scripts": {
+		"compile": "tsc -p ./",
+		"package": "node_modules/@vscode/vsce/vsce package",
+		"test": "vscode-tmgrammar-snap 'tests/snap/**/*.abc'",
+		"update": "vscode-tmgrammar-snap --updateSnapshot 'tests/snap/**/*.abc'"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@vscode/vsce": "^3.2.2",
+		"vscode-languageclient": "^9.0.1",
+		"@types/vscode": "^1.97.0",
+		"@types/node": "^22.13.9",
+		"typescript": "^5.8.2"
+	}
+}
