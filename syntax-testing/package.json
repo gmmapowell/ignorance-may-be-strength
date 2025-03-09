@@ -15,7 +15,12 @@
 		"onLanguage:abc"
 	],
 	"main": "out/syntest.js",
-	"files": ["package.json", "out", "syntaxes", "license.txt"],
+	"files": [
+		"package.json",
+		"out",
+		"syntaxes",
+		"license.txt"
+	],
 	"categories": [
 		"Programming Languages"
 	],
@@ -39,15 +44,15 @@
 	"scripts": {
 		"compile": "tsc -p ./",
 		"package": "node_modules/@vscode/vsce/vsce package",
-		"test": "vscode-tmgrammar-snap 'tests/snap/**/*.abc'",
-		"update": "vscode-tmgrammar-snap --updateSnapshot 'tests/snap/**/*.abc'"
+		"test": "node node_modules/vscode-tmgrammar-test/dist/snapshot.js samples/*.abc",
+		"update": "node node_modules/vscode-tmgrammar-test/dist/snapshot.js --updateSnapshot samples/*.abc"
 	},
-	"dependencies": {},
 	"devDependencies": {
-		"@vscode/vsce": "^3.2.2",
-		"vscode-languageclient": "^9.0.1",
-		"@types/vscode": "^1.97.0",
 		"@types/node": "^22.13.9",
-		"typescript": "^5.8.2"
+		"@types/vscode": "^1.97.0",
+		"@vscode/vsce": "^3.2.2",
+		"typescript": "^5.8.2",
+		"vscode-languageclient": "^9.0.1",
+		"vscode-tmgrammar-test": "^0.1.3"
 	}
 }
