@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
+	"github.com/gmmapowell/ignorance/cdp-till/internal/chrome"
+	"github.com/gmmapowell/ignorance/cdp-till/internal/watcher"
 	server "github.com/gmmapowell/ignorance/cdp-till/internal/web"
 )
 
+const port = "1399"
+
 func main() {
-	wd, _ := os.Getwd()
-	fmt.Println("Working Directory:", wd)
-	server.StartServer()
+	reloader := chrome.NewReloader("http://localhost:"+port+"/", "http://localhost:9222")
+	go watcher.Watch("website", reloader)
+	server.StartServer(":" + port)
 }
