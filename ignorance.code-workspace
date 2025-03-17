@@ -26,9 +26,27 @@
 		{
 			"name": "SyntaxTest",
 			"path": "syntax-testing"
+		},
+		{
+			"name": "CDPTill",
+			"path": "cdp-till"
 		}
 	],
 	"settings": {},
+        "launch": {
+                "configurations": [
+                        {
+                                "name": "CDPTill",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:CDPTill}/cmd/till",
+                                "args": [
+                                ],
+								"cwd": "${workspaceFolder:CDPTill}"
+                        },
+                ],
+                "compounds": []
+        },
 	"tasks": {
 		"version": "2.0.0",
 		"tasks": [
