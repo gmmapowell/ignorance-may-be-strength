@@ -20,7 +20,7 @@ export class TokensProvider implements TreeDataProvider<ProjectTokens | Token | 
 			});
 			this.locations.push(new ProjectTokens(vscode.workspace.workspaceFolders[wf], this.tokenize(result)));
 		}
-		this._onDidChangeTreeData.fire();
+		this._onDidChangeTreeData.fire(null);
 	}
 
 	setTokens(tokens: any) {
