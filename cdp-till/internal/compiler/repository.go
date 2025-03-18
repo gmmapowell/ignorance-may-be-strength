@@ -1,23 +1,35 @@
 package compiler
 
+import (
+	"encoding/json"
+	"log"
+	"maps"
+	"slices"
+)
+
 type Repository interface {
 	Layout(lineNo int, name string, rows []RowInfo)
 	Method(lineNo int, name string, actions []Action)
+	Json() []byte
 }
 
 type Entry interface {
 }
 
+type BaseEntry struct {
+	EntryType string
+	LineNo    int
+	Name      string
+}
+
 type LayoutEntry struct {
-	lineNo int
-	name   string
-	rows   []RowInfo
+	BaseEntry
+	Rows []RowInfo
 }
 
 type MethodEntry struct {
-	lineNo  int
-	name    string
-	actions []Action
+	BaseEntry
+	Actions []Action
 }
 
 type RepositoryStore struct {
@@ -29,7 +41,7 @@ func (r *RepositoryStore) Layout(lineNo int, name string, rows []RowInfo) {
 	if ok {
 		panic("duplicate name: " + name)
 	}
-	r.entries[name] = LayoutEntry{lineNo: lineNo, name: name, rows: rows}
+	r.entries[name] = LayoutEntry{BaseEntry: BaseEntry{EntryType: "layout", LineNo: lineNo, Name: name}, Rows: rows}
 }
 
 func (r *RepositoryStore) Method(lineNo int, name string, actions []Action) {
@@ -37,7 +49,17 @@ func (r *RepositoryStore) Method(lineNo int, name string, actions []Action) {
 	if ok {
 		panic("duplicate name: " + name)
 	}
-	r.entries[name] = MethodEntry{lineNo: lineNo, name: name, actions: actions}
+	r.entries[name] = MethodEntry{BaseEntry: BaseEntry{EntryType: "method", LineNo: lineNo, Name: name}, Actions: actions}
+}
+
+func (r *RepositoryStore) Json() []byte {
+	bs, err := json.Marshal(slices.Collect(maps.Values(r.entries)))
+	if err != nil {
+		log.Printf("Error %v\n", err)
+		return nil
+	} else {
+		return bs
+	}
 }
 
 func NewRepository() Repository {

@@ -3,33 +3,38 @@ package compiler
 type Action interface {
 }
 
+type BaseAction struct {
+	ActionName string
+	LineNo     int
+}
+
 type AssignAction struct {
-	LineNo int
+	BaseAction
 	Dest   string
 	Append []string
 }
 
 type EnableAction struct {
-	LineNo int
-	Tiles  []string
+	BaseAction
+	Tiles []string
 }
 
 type DisableAction struct {
-	LineNo int
-	Tiles  []string
+	BaseAction
+	Tiles []string
 }
 
 type ClearAction struct {
-	LineNo int
-	Vars   []string
+	BaseAction
+	Vars []string
 }
 
 type SubmitAction struct {
-	LineNo int
-	Var    string
+	BaseAction
+	Var string
 }
 
 type StyleAction struct {
-	LineNo int
+	BaseAction
 	Styles []string
 }
