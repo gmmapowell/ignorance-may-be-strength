@@ -25,12 +25,10 @@ func (r *FileHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 
 func (r *DirHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	rsc := req.PathValue("resource")
-	fmt.Printf("serving resource from dir %s\n", rsc)
 	sendFile(resp, r.mediatype, filepath.Join(r.dir, rsc))
 }
 
 func sendFile(resp http.ResponseWriter, mediatype, path string) {
-	log.Printf("Sending file %s of type %s\n", path, mediatype)
 	resp.Header().Set("Content-Type", mediatype)
 	info, err := os.Stat(path)
 	if err != nil {

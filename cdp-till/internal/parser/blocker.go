@@ -10,7 +10,15 @@ type Blocker struct {
 	globalScope Scope
 }
 
-func (b *Blocker) ProcessLine(line string) {
+func (b *Blocker) BeginFile(file string) {
+
+}
+
+func (b *Blocker) ProcessLine(lineNo int, line string) {
+
+}
+
+func (b *Blocker) EndFile(file string) {
 
 }
 
