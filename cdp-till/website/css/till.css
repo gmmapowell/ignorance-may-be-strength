@@ -1,0 +1,14 @@
+.cell {
+	display: flex;
+	width: 100px;
+	height: 100px;
+}
+
+.blue-cell {
+	background-color: blue;
+	color: white;
+}
+
+.cell-text {
+	margin: auto auto;
+}

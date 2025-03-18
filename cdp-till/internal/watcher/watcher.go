@@ -2,6 +2,7 @@ package watcher
 
 import (
 	"log"
+	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -19,6 +20,8 @@ func Watch(dir string, handler FileChanged) {
 	defer watcher.Close()
 
 	watcher.Add(dir)
+	watcher.Add(filepath.Join(dir, "css"))
+	watcher.Add(filepath.Join(dir, "js"))
 
 	for {
 		select {

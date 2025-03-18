@@ -68,8 +68,9 @@ func (r *Reloader) TryReloading(ctx context.Context) bool {
 	}
 	for _, ti := range tabs.TargetInfos {
 		if ti.URL == r.loadURL {
-			ign := true
-			err = r.client.Page.Reload(ctx, &page.ReloadArgs{IgnoreCache: &ign})
+			reload := &page.ReloadArgs{}
+			reload.SetIgnoreCache(true)
+			err = r.client.Page.Reload(ctx, reload)
 			if err != nil {
 				log.Printf("Error refreshing target: %v\n", err)
 				return false
