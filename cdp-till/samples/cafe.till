@@ -1,0 +1,74 @@
+A layout enables us to say where the buttons go on the screen.
+
+In theory, we could have any number of layouts, but for ease, I'm only going to support one for now,
+and thus the name is irrelevant.  If we did support multiple layouts, then the idea would be
+that there would be a verb "show" that switched to a different layout.  It may be the case that I
+will find that adding more will add an essential complexity to the language that makes the debugger
+more interesting.
+
+	layout main
+		row1 <- Coffee Tea Steamer Water
+		row2 <- Strong Black
+		row3 <- Dairy blank Oat Almond
+		row4 <- blank blank blank blank
+		row5 <- NEXT blank blank DONE
+
+All good programming languages need an entry point and this one is no different.
+
+The entry point is always called init, and, as shown here, does not have any arguments.
+All routines are the same in that they have a header at one level of indentation and then
+nested operations.  We'll come back to what the operations mean later.
+
+	init
+		enable all
+		disable NEXT
+		disable DONE
+		milks <- Oat Dairy Almond
+		drinks <- Tea Coffee Steamer Water
+
+Each button on the screen has a name which is both an identifier (used elsewhere in the program)
+and the label that appears on the button.  For simplicity, spaces are not allowed.  When pressed,
+the operations listed "inside" it are carried out.
+
+	button Coffee
+		style noun
+		noun <- Coffee
+		disable all
+		enable Strong Black milks
+		enable NEXT
+
+	button Tea
+		noun <- Tea
+		disable all
+		enable Black milks
+		enable NEXT
+
+	button Water
+		disable all
+		enable NEXT
+
+	button Oat
+		style adjective
+		adjs <- Oat
+		disable milks Water
+
+	button Dairy
+		adjs <- Dairy
+		disable milks Water
+
+	button Almond
+		adjs <- Almond
+		disable milks Water
+
+	button NEXT
+		order <- noun adjs
+		clear noun adjs
+		enable all
+		disable NEXT
+
+	button DONE
+		submit order
+		clear order
+		enable all
+		disable NEXT
+		disable DONE
