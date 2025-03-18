@@ -7,7 +7,7 @@ import (
 )
 
 type Scope interface {
-	PresentTokens([]string) Scope
+	PresentTokens(int, []string) Scope
 	Close()
 }
 
@@ -36,7 +36,7 @@ func (b *Blocker) ProcessLine(lineNo int, line string) {
 	}
 
 	tokens := b.lineLexer.Lexicate(remaining)
-	inner := b.scopes[len(b.scopes)-1].PresentTokens(tokens)
+	inner := b.scopes[len(b.scopes)-1].PresentTokens(lineNo, tokens)
 	b.scopes = append(b.scopes, inner)
 }
 
