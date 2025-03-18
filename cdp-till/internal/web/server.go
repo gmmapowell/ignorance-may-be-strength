@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"github.com/gmmapowell/ignorance/cdp-till/internal/compiler"
 )
 
-func StartServer(addr string) {
+func StartServer(addr string, repo compiler.Repository) {
 	handlers := http.NewServeMux()
 	index := NewFileHandler("website/index.html", "text/html")
 	handlers.Handle("/{$}", index)
@@ -17,6 +19,8 @@ func StartServer(addr string) {
 	handlers.Handle("/css/{resource}", cssHandler)
 	jsHandler := NewDirHandler("website/js", "text/javascript")
 	handlers.Handle("/js/{resource}", jsHandler)
+	repoHandler := NewRepoHandler(repo, "application/json")
+	handlers.Handle("/till-code", repoHandler)
 	server := &http.Server{Addr: addr, Handler: handlers}
 	err := server.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/gmmapowell/ignorance/cdp-till/internal/compiler"
 )
 
 type FileHandler struct {
@@ -50,10 +52,26 @@ func sendFile(resp http.ResponseWriter, mediatype, path string) {
 	}
 }
 
+type RepoHandler struct {
+	repo      compiler.Repository
+	mediatype string
+}
+
+func (r *RepoHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	bs := r.repo.Json()
+	resp.Header().Set("Content-Type", r.mediatype)
+	resp.Header().Set("Content-Length", fmt.Sprintf("%d", len(bs)))
+	resp.Write(bs)
+}
+
 func NewFileHandler(file, mediatype string) http.Handler {
 	return &FileHandler{file: file, mediatype: mediatype}
 }
 
 func NewDirHandler(dir, mediatype string) http.Handler {
 	return &DirHandler{dir: dir, mediatype: mediatype}
+}
+
+func NewRepoHandler(repo compiler.Repository, mediatype string) http.Handler {
+	return &RepoHandler{repo: repo, mediatype: mediatype}
 }

@@ -8,6 +8,7 @@ import (
 )
 
 type Repository interface {
+	Clean()
 	Layout(lineNo int, name string, rows []RowInfo)
 	Method(lineNo int, name string, actions []Action)
 	Json() []byte
@@ -34,6 +35,10 @@ type MethodEntry struct {
 
 type RepositoryStore struct {
 	entries map[string]Entry
+}
+
+func (r *RepositoryStore) Clean() {
+	clear(r.entries)
 }
 
 func (r *RepositoryStore) Layout(lineNo int, name string, rows []RowInfo) {
