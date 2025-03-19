@@ -19,7 +19,7 @@ class LayoutEngine {
 				icell = irow.appendChild(icell.children[0]);
 				icell.className = "cell blue-cell";
 				if (state.buttons[c]) {
-					this.addClick(icell, state.buttons[c]);
+					this.addClick(state, icell, state.buttons[c]);
 				} else {
 					icell.classList.add("blue-text");
 				}
@@ -29,9 +29,11 @@ class LayoutEngine {
 		}
 	}
 
-	addClick(tile, buttonInfo) {
+	addClick(state, tile, buttonInfo) {
 		tile.addEventListener("click", ev => {
 			console.log("click on", buttonInfo);
+			buttonInfo.methodCode.execute(state);
+			console.log("state", state);
 		});
 	}
 }

@@ -9,8 +9,9 @@ class Repository {
 		for (var x of json) {
 			switch (x.EntryType) {
 			case "button": {
-				this.methods[x.Name] = new Method(x);
-				this.buttons[x.Name] = {};
+				var m = new Method(x);
+				this.methods[x.Name] = m;
+				this.buttons[x.Name] = { methodCode: m };
 				break;
 			}
 			case "method": {
