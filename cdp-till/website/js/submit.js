@@ -5,7 +5,10 @@ class Submit {
 	}
 
 	execute(state) {
-		console.log(state[this.var]);
+		var json = JSON.stringify(state[this.var]);
+		fetch("/order", { method: "POST", body: json }).then(resp => {
+			console.log("submitted order ... response =", resp.status, resp.statusText);
+		});
 	}
 }
 
