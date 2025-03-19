@@ -21,6 +21,8 @@ func StartServer(addr string, repo compiler.Repository) {
 	handlers.Handle("/js/{resource}", jsHandler)
 	repoHandler := NewRepoHandler(repo, "application/json")
 	handlers.Handle("/till-code", repoHandler)
+	orderHandler := NewOrderHandler()
+	handlers.Handle("/order", orderHandler)
 	server := &http.Server{Addr: addr, Handler: handlers}
 	err := server.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -64,6 +65,25 @@ func (r *RepoHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	resp.Write(bs)
 }
 
+type OrderHandler struct {
+}
+
+func (r *OrderHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		panic(err)
+	}
+	var order []string
+	err = json.Unmarshal(body, &order)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(" --- NEW ORDER ---")
+	for _, item := range order {
+		fmt.Printf("   %s\n", item)
+	}
+}
+
 func NewFileHandler(file, mediatype string) http.Handler {
 	return &FileHandler{file: file, mediatype: mediatype}
 }
@@ -74,4 +94,8 @@ func NewDirHandler(dir, mediatype string) http.Handler {
 
 func NewRepoHandler(repo compiler.Repository, mediatype string) http.Handler {
 	return &RepoHandler{repo: repo, mediatype: mediatype}
+}
+
+func NewOrderHandler() http.Handler {
+	return &OrderHandler{}
 }
