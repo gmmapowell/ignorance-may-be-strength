@@ -18,8 +18,13 @@ class LayoutEngine {
 				var icell = this.cell.content.cloneNode(true);
 				icell = irow.appendChild(icell.children[0]);
 				icell.className = "cell blue-cell";
-				if (state.buttons[c]) {
-					this.addClick(layout, state, icell, state.buttons[c]);
+				var b = state.buttons[c];
+				if (b) {
+					if (b.disabled) {
+						icell.classList.add("disabled-tile");
+					} else {
+						this.addClick(layout, state, icell, state.buttons[c]);
+					}
 				} else {
 					icell.classList.add("blue-text");
 				}

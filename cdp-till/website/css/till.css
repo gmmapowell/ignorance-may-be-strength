@@ -15,5 +15,11 @@
 }
 
 .blue-cell.blue-text {
-	color: blue;
+	background-color: lightblue;
+	color: lightblue;
+}
+
+.cell.disabled-tile {
+	background-color: lightblue;
+	color: coral;
 }

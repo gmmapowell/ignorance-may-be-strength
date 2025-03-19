@@ -13,7 +13,6 @@ class Enable {
 				}
 			} else {
 				var b = state.buttons[t];
-				debugger;
 				if (b) {
 					this.set(b);
 				}
