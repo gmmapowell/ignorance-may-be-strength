@@ -5,5 +5,11 @@
 	"permissions": ["sidePanel"],
 	"side_panel": {
 		"default_path": "html/sidepanel.html"
+	},
+	"action": {
+		"default_title": "Click to open debugger"
+	},
+	"background": {
+		"service_worker": "js/service-worker.js"
 	}
 }
