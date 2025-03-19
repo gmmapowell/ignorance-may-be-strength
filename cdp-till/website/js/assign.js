@@ -10,7 +10,18 @@ class Assign {
 			state[this.dest] = [];
 		}
 		for (var x of this.append) {
-			state[this.dest].push(x);
+			if (state[x]) {
+				var a = state[x];
+				if (Array.isArray(a)) {
+					for (var c of a) {
+						state[this.dest].push(c);
+					}
+				} else {
+					state[this.dest].push(a);
+				}
+			} else {
+				state[this.dest].push(x);
+			}
 		}
 	}
 }
