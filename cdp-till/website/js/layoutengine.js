@@ -20,6 +20,11 @@ class LayoutEngine {
 				icell.className = "cell blue-cell";
 				var b = state.buttons[c];
 				if (b) {
+					if (b.styles) {
+						for (var s of b.styles) {
+							icell.classList.add(s);
+						}
+					}
 					if (b.disabled) {
 						icell.classList.add("disabled-tile");
 					} else {

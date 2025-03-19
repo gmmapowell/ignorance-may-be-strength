@@ -38,18 +38,21 @@ the operations listed "inside" it are carried out.
 		enable NEXT
 
 	button Tea
+		style noun
 		noun <- Tea
 		disable all
 		enable Black milks
 		enable NEXT
 
 	button Steamer
+		style noun
 		noun <- Steamer
 		disable all
 		enable milks
 		enable NEXT
 
 	button Water
+		style noun
 		disable all
 		enable NEXT
 
@@ -69,10 +72,12 @@ the operations listed "inside" it are carried out.
 		disable milks Water
 
 	button Dairy
+		style adjective
 		adjs <- Dairy
 		disable milks Water
 
 	button Almond
+		style adjective
 		adjs <- Almond
 		disable milks Water
 

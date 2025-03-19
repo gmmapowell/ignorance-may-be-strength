@@ -3,6 +3,7 @@
 	vertical-align: top;
 	width: 100px;
 	height: 100px;
+	border: 3px solid transparent;
 }
 
 .blue-cell {
@@ -22,4 +23,12 @@
 .cell.disabled-tile {
 	background-color: lightblue;
 	color: coral;
+}
+
+.cell.noun {
+	border: 3px solid red;
+}
+
+.cell.adjective {
+	border: 3px solid green;
 }

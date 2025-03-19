@@ -1,10 +1,12 @@
 import { Assign } from "./assign.js";
+import { Clear } from "./clear.js";
 import { Enable } from "./enable.js";
 
 class Method {
 	constructor(json) {
 		this.lineNo = json.LineNo;
 		this.actions = [];
+		this.styles = [];
 		for (var a of json.Actions) {
 			switch (a.ActionName) {
 				case "assign": {
@@ -14,6 +16,16 @@ class Method {
 				case "enable":
 				case "disable": {
 					this.actions.push(new Enable(a));
+					break;
+				}
+				case "clear": {
+					this.actions.push(new Clear(a));
+					break;
+				}
+				case "style": {
+					for (var s of a.Styles) {
+						this.styles.push(s);
+					}
 					break;
 				}
 				default: {
