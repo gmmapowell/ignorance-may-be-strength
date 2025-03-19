@@ -1,0 +1,5 @@
+class Method {
+
+}
+
+export { Method };
