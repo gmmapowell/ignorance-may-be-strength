@@ -62,6 +62,7 @@ func (r *RepoHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	bs := r.repo.Json()
 	resp.Header().Set("Content-Type", r.mediatype)
 	resp.Header().Set("Content-Length", fmt.Sprintf("%d", len(bs)))
+	resp.Header().Set("Access-Control-Allow-Origin", "*")
 	resp.Write(bs)
 }
 
