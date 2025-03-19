@@ -1,4 +1,5 @@
 import { Repository } from "./repository.js";
+import { RuntimeState } from "./state.js";
 
 window.addEventListener('load', function(ev) {
 	this.fetch("/till-code").then(resp => {
@@ -8,6 +9,10 @@ window.addEventListener('load', function(ev) {
 		}
 		resp.json().then(json => {
 			var repo = new Repository(json);
+			var state = new RuntimeState();
+			var init = repo.methods["init"];
+			init.execute(state);
+			console.log(state);
 		});
 	});
 })
