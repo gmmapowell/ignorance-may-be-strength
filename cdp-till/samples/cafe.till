@@ -43,9 +43,25 @@ the operations listed "inside" it are carried out.
 		enable Black milks
 		enable NEXT
 
+	button Steamer
+		noun <- Steamer
+		disable all
+		enable milks
+		enable NEXT
+
 	button Water
 		disable all
 		enable NEXT
+
+	button Strong
+		style adjective
+		adjs <- Strong
+		disable milks Water
+
+	button Black
+		style adjective
+		adjs <- Black
+		disable milks Water
 
 	button Oat
 		style adjective
