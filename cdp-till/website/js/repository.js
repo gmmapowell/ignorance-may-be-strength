@@ -21,8 +21,6 @@ class Repository {
 			}
 			}
 		}
-		console.log(this.layouts);
-		console.log(this.methods);
 	}
 }
 
