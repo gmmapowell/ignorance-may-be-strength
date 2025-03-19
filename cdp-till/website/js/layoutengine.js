@@ -18,13 +18,21 @@ class LayoutEngine {
 				var icell = this.cell.content.cloneNode(true);
 				icell = irow.appendChild(icell.children[0]);
 				icell.className = "cell blue-cell";
-				if (!state.buttons[c]) {
+				if (state.buttons[c]) {
+					this.addClick(icell, state.buttons[c]);
+				} else {
 					icell.classList.add("blue-text");
 				}
 				var tc = icell.querySelector(".cell-text");
 				tc.appendChild(document.createTextNode(c));
 			}
 		}
+	}
+
+	addClick(tile, buttonInfo) {
+		tile.addEventListener("click", ev => {
+			console.log("click on", buttonInfo);
+		});
 	}
 }
 
