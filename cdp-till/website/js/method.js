@@ -1,4 +1,5 @@
 import { Assign } from "./assign.js";
+import { Enable } from "./enable.js";
 
 class Method {
 	constructor(json) {
@@ -8,6 +9,11 @@ class Method {
 			switch (a.ActionName) {
 				case "assign": {
 					this.actions.push(new Assign(a));
+					break;
+				}
+				case "enable":
+				case "disable": {
+					this.actions.push(new Enable(a));
 					break;
 				}
 				default: {
