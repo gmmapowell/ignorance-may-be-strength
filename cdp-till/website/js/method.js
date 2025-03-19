@@ -2,6 +2,7 @@ import { Assign } from "./assign.js";
 
 class Method {
 	constructor(json) {
+		this.lineNo = json.LineNo;
 		this.actions = [];
 		for (var a of json.Actions) {
 			switch (a.ActionName) {
@@ -15,7 +16,6 @@ class Method {
 				}
 			}
 		}
-		console.log(this.actions);
 	}
 
 	execute(state) {

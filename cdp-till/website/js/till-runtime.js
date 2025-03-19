@@ -1,3 +1,4 @@
+import { LayoutEngine } from "./layoutengine.js";
 import { Repository } from "./repository.js";
 import { RuntimeState } from "./state.js";
 
@@ -9,10 +10,11 @@ window.addEventListener('load', function(ev) {
 		}
 		resp.json().then(json => {
 			var repo = new Repository(json);
-			var state = new RuntimeState();
+			var state = new RuntimeState(repo.buttons);
 			var init = repo.methods["init"];
 			init.execute(state);
-			console.log(state);
+			var engine = new LayoutEngine(document);
+			engine.layout(repo.layouts["main"], state);
 		});
 	});
 })
