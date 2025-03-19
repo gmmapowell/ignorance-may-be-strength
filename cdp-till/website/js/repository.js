@@ -3,10 +3,16 @@ import { Layout } from "./layout.js";
 
 class Repository {
 	constructor(json) {
+		this.buttons = {};
 		this.layouts = {};
 		this.methods = {};
 		for (var x of json) {
 			switch (x.EntryType) {
+			case "button": {
+				this.methods[x.Name] = new Method(x);
+				this.buttons[x.Name] = {};
+				break;
+			}
 			case "method": {
 				this.methods[x.Name] = new Method(x);
 				break;
