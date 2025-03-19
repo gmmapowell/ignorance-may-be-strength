@@ -1,6 +1,7 @@
 import { Assign } from "./assign.js";
 import { Clear } from "./clear.js";
 import { Enable } from "./enable.js";
+import { Submit } from "./submit.js";
 
 class Method {
 	constructor(json) {
@@ -26,6 +27,10 @@ class Method {
 					for (var s of a.Styles) {
 						this.styles.push(s);
 					}
+					break;
+				}
+				case "submit": {
+					this.actions.push(new Submit(a));
 					break;
 				}
 				default: {
