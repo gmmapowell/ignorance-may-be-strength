@@ -7,7 +7,24 @@ class LayoutEngine {
 	}
 
 	layout(layout, state) {
-		debugger;
+		this.writeTo.innerHTML = '';
+		var iroot = this.root.content.cloneNode(true);
+		iroot = this.writeTo.appendChild(iroot.children[0]);
+	
+		for (var r of layout.rows) {
+			var irow = this.row.content.cloneNode(true);
+			irow = iroot.appendChild(irow.children[0]);
+			for (var c of r.tiles) {
+				var icell = this.cell.content.cloneNode(true);
+				icell = irow.appendChild(icell.children[0]);
+				icell.className = "cell blue-cell";
+				if (!state.buttons[c]) {
+					icell.classList.add("blue-text");
+				}
+				var tc = icell.querySelector(".cell-text");
+				tc.appendChild(document.createTextNode(c));
+			}
+		}
 	}
 }
 

@@ -1,5 +1,6 @@
 .cell {
-	display: flex;
+	display: inline-flex;
+	vertical-align: top;
 	width: 100px;
 	height: 100px;
 }
@@ -11,4 +12,8 @@
 
 .cell-text {
 	margin: auto auto;
+}
+
+.blue-cell.blue-text {
+	color: blue;
 }
