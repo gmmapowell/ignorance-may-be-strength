@@ -1,5 +1,9 @@
 {
 	"manifest_version": 3,
 	"name": "Till Debugger",
-	"version": "2025.03.19"
+	"version": "2025.03.19",
+	"permissions": ["sidePanel"],
+	"side_panel": {
+		"default_path": "sidepanel.html"
+	}
 }
