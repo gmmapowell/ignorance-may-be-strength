@@ -6,7 +6,7 @@ class Clear {
 
 	execute(state) {
 		for (var v of this.vars) {
-			delete state[v];
+			state[v] = [];
 		}
 	}
 }

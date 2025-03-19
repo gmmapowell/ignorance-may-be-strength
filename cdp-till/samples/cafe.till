@@ -23,6 +23,7 @@ nested operations.  We'll come back to what the operations mean later.
 		enable all
 		disable NEXT
 		disable DONE
+		clear noun adjs
 		milks <- Oat Dairy Almond
 		drinks <- Tea Coffee Steamer Water
 
