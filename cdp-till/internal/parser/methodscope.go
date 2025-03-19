@@ -3,10 +3,11 @@ package parser
 import "github.com/gmmapowell/ignorance/cdp-till/internal/compiler"
 
 type MethodScope struct {
-	repo    compiler.Repository
-	hdrLine int
-	name    string
-	actions []compiler.Action
+	repo      compiler.Repository
+	hdrLine   int
+	entrytype string
+	name      string
+	actions   []compiler.Action
 }
 
 func (s *MethodScope) PresentTokens(lineNo int, tokens []string) Scope {
@@ -39,5 +40,9 @@ func (s *MethodScope) PresentTokens(lineNo int, tokens []string) Scope {
 }
 
 func (s *MethodScope) Close() {
-	s.repo.Method(s.hdrLine, s.name, s.actions)
+	if (s.entrytype == "method") {
+		s.repo.Method(s.hdrLine, s.name, s.actions)
+	} else if (s.entrytype == "button") {
+		s.repo.Button(s.hdrLine, s.name, s.actions)
+	}
 }

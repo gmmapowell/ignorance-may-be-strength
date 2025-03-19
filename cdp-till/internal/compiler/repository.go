@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	Clean()
 	Layout(lineNo int, name string, rows []RowInfo)
+	Button(lineNo int, name string, actions []Action)
 	Method(lineNo int, name string, actions []Action)
 	Json() []byte
 }
@@ -55,6 +56,14 @@ func (r *RepositoryStore) Method(lineNo int, name string, actions []Action) {
 		panic("duplicate name: " + name)
 	}
 	r.entries[name] = MethodEntry{BaseEntry: BaseEntry{EntryType: "method", LineNo: lineNo, Name: name}, Actions: actions}
+}
+
+func (r *RepositoryStore) Button(lineNo int, name string, actions []Action) {
+	_, ok := r.entries[name]
+	if ok {
+		panic("duplicate name: " + name)
+	}
+	r.entries[name] = MethodEntry{BaseEntry: BaseEntry{EntryType: "button", LineNo: lineNo, Name: name}, Actions: actions}
 }
 
 func (r *RepositoryStore) Json() []byte {

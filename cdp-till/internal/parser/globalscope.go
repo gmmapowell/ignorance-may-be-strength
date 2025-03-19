@@ -11,9 +11,9 @@ func (gs *GlobalScope) PresentTokens(lineNo int, tokens []string) Scope {
 	case "layout":
 		return &LayoutScope{repo: gs.repo, hdrLine: lineNo, name: tokens[1]}
 	case "init":
-		return &MethodScope{repo: gs.repo, hdrLine: lineNo, name: "init"}
+		return &MethodScope{repo: gs.repo, hdrLine: lineNo, entrytype: "method", name: "init"}
 	case "button":
-		return &MethodScope{repo: gs.repo, hdrLine: lineNo, name: tokens[1]}
+		return &MethodScope{repo: gs.repo, hdrLine: lineNo, entrytype: "button", name: tokens[1]}
 	default:
 		panic("cannot handle global command" + tokens[0])
 	}
