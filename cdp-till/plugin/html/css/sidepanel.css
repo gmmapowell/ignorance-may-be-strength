@@ -11,3 +11,8 @@
 .line-no {
 	text-align: right;
 }
+
+.line-no.breakpoint {
+	background-color: red;
+	color: white;
+}

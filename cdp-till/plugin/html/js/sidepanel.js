@@ -20,4 +20,12 @@ fetch("http://localhost:1399/src/cafe.till").then(resp => {
 		}
 	});
 });
-  
+
+tbody.addEventListener('click', ev => {
+	var target = ev.target;
+	var row = target.parentElement;
+	if (row.tagName == 'TR') {
+		var lineNo = row.querySelector(".line-no");
+		lineNo.classList.toggle("breakpoint");
+	}
+});
