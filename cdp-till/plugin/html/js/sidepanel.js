@@ -1,4 +1,5 @@
 var tbody = document.getElementById("source-code");
+var breakLines = {};
 
 fetch("http://localhost:1399/src/cafe.till").then(resp => {
 	resp.text().then(src => {
@@ -19,6 +20,23 @@ fetch("http://localhost:1399/src/cafe.till").then(resp => {
 			tbody.appendChild(tr);
 		}
 	});
+});
+
+fetch("http://localhost:1399/till-code").then(resp => {
+	resp.json().then(code => {
+		for (var entry of code) {
+			if (entry.LineNo) {
+				breakLines[entry.LineNo] = entry;
+			}
+			if (entry.Actions) {
+				for (var a of entry.Actions) {
+					if (a.LineNo) {
+						breakLines[a.LineNo] = a;
+					}
+				}
+			}
+		}
+	})
 });
 
 tbody.addEventListener('click', ev => {
