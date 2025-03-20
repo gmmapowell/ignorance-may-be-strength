@@ -1,0 +1,13 @@
+.scroll-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.scroll-table tr th {
+	text-align: left;
+}
+
+.line-no {
+	text-align: right;
+}

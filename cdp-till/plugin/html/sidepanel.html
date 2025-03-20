@@ -3,9 +3,18 @@
   <head>
     <title>Till Debugger Panel</title>
     <script src="js/sidepanel.js" type="module"></script>
+    <link rel="stylesheet" href="css/sidepanel.css" type="text/css">
   </head>
   <body>
-    <h1>Till Debugger</h1>
-    <pre id="source-code"></pre>
+    <table class="scroll-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Code</th>
+        </tr>
+      </thead>
+      <tbody id="source-code">
+      </tbody>
+    </table>
   </body>
 </html>
