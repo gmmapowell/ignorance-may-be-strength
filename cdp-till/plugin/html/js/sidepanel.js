@@ -43,7 +43,10 @@ tbody.addEventListener('click', ev => {
 	var target = ev.target;
 	var row = target.parentElement;
 	if (row.tagName == 'TR') {
-		var lineNo = row.querySelector(".line-no");
-		lineNo.classList.toggle("breakpoint");
+		var lineNo = row.querySelector(".line-no"); // this is a td
+		var lineText = lineNo.innerText;
+		if (breakLines[Number(lineText)]) {
+			lineNo.classList.toggle("breakpoint");
+		}
 	}
 });
