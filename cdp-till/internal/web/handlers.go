@@ -32,6 +32,7 @@ func (r *DirHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 }
 
 func sendFile(resp http.ResponseWriter, mediatype, path string) {
+	resp.Header().Set("Access-Control-Allow-Origin", "*")
 	resp.Header().Set("Content-Type", mediatype)
 	info, err := os.Stat(path)
 	if err != nil {

@@ -23,6 +23,8 @@ func StartServer(addr string, repo compiler.Repository) {
 	handlers.Handle("/till-code", repoHandler)
 	orderHandler := NewOrderHandler()
 	handlers.Handle("/order", orderHandler)
+	srcHandler := NewDirHandler("samples", "text/plain")
+	handlers.Handle("/src/{resource}", srcHandler)
 	server := &http.Server{Addr: addr, Handler: handlers}
 	err := server.ListenAndServe()
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
