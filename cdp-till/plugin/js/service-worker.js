@@ -12,6 +12,7 @@ chrome.tabs.query({ url: "http://localhost/*" }).then(tabs => {
     for (var tab of tabs) {
         if (tab.url == "http://localhost:1399/") {
             chrome.debugger.attach({ tabId: tab.id }, "1.3");
+            chrome.debugger.sendCommand({ tabId: tab.id }, "Debugger.enable");
         }
     }
 });
