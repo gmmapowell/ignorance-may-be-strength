@@ -9,9 +9,6 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                 var lines = src.scriptSource.split(/\r?\n/g);
                 for (var i=0;i<lines.length;i++) {
                     if (lines[i].match(/^\s*execute\(/)) {
-                        console.log(i+1, lines[i]);
-                        console.log("thus break at", i+2);
-
                         chrome.debugger.sendCommand(source, "Debugger.setBreakpoint", { location: { scriptId: params.scriptId, lineNumber: i+1, columnNumber: 0 }}).then(brk => {
                             console.log("breakpoint at", brk);
                         });
@@ -19,6 +16,11 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                 }
             });
         }
+    } else if (method == "Debugger.paused") {
+        console.log("paused: ", params.reason, params.hitBreakpoints, params.callFrames);
+        chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
+            console.log("resume response", resp);
+        });
     }
 });
 
