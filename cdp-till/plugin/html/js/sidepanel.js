@@ -76,3 +76,34 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
     }
     }
 });
+
+function selectTab(which) {
+	var all = document.querySelectorAll(".tab");
+	console.log(all);
+	for (var a of all) {
+		a.classList.remove("tab-selected");
+	}
+
+	var chosen = document.querySelectorAll(".tab-" + which);
+	console.log(chosen);
+	for (var c of chosen) {
+		c.classList.add("tab-selected");
+	}
+}
+
+function selectTabFn(th, t) {
+	th.addEventListener('click', ev => {
+		console.log("selected ", t);
+		selectTab(t);
+	})
+}
+
+function selectTabFns(list) {
+	for (var t of list) {
+		var th = document.querySelector(".tab-head.tab-" + t);
+		selectTabFn(th, t);
+	}
+}
+
+selectTabFns(["source", "stack", "state", "dom"]);
+selectTab("source");

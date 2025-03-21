@@ -20,3 +20,36 @@
 .current-break {
 	background-color: lime;
 }
+
+.toolbar {
+	margin: 4px;
+}
+
+.tool {
+	border: 1px solid black;
+	border-radius: 2px;
+	padding: 3px;
+	width: fit-content;
+}
+
+.tab-head {
+	display: inline-block;
+	background-color: grey;
+	color: white;
+	padding: 2px;
+}
+
+.tab-head.tab-selected {
+	background-color: silver;
+	color: red;
+}
+
+.tab-body {
+	display: none;
+}
+
+.tab-body.tab-selected {
+	display: block;
+	border: 1px solid black;
+	padding: 4px;
+}

@@ -6,15 +6,28 @@
     <link rel="stylesheet" href="css/sidepanel.css" type="text/css">
   </head>
   <body>
-    <table class="scroll-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Code</th>
-        </tr>
-      </thead>
-      <tbody id="source-code">
-      </tbody>
-    </table>
+    <div>
+      <div class="toolbar">
+        <div class="tool tool-continue">&#x25b6;</div>
+      </div>
+      <div class="tabs">
+        <div class="tab tab-head tab-source">Source</div>
+        <div class="tab tab-head tab-stack">Stack</div>
+        <div class="tab tab-head tab-state">State</div>
+        <div class="tab tab-head tab-dom">DOM</div>
+      </div>
+      <div class="tab tab-body tab-source">
+        <table class="scroll-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Code</th>
+            </tr>
+          </thead>
+          <tbody id="source-code">
+          </tbody>
+        </table>
+      </div>
+    </div>
   </body>
 </html>
