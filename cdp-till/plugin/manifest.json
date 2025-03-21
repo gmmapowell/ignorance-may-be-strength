@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "Till Debugger",
 	"version": "2025.03.19",
-	"permissions": ["sidePanel", "webRequest"],
+	"permissions": ["debugger", "sidePanel", "webRequest"],
 	"side_panel": {
 		"default_path": "html/sidepanel.html"
 	},
