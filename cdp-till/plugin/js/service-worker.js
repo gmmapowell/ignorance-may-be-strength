@@ -1,6 +1,25 @@
+var breakpointLines = {};
+
 chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error));
+
+chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
+    switch (request.action) {
+    case "breakpoint": {
+        if (request.enabled) {
+            breakpointLines[request.line] = {};
+        } else {
+            delete breakpointLines[request.line];
+        }
+        break;
+    }
+    default: {
+        console.log("message:", request);
+        break;
+    }
+    }
+});
 
 chrome.debugger.onEvent.addListener(function(source, method, params) {
     if (method == "Debugger.scriptParsed") {
@@ -10,7 +29,7 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                 for (var i=0;i<lines.length;i++) {
                     if (lines[i].match(/^\s*execute\(/)) {
                         chrome.debugger.sendCommand(source, "Debugger.setBreakpoint", { location: { scriptId: params.scriptId, lineNumber: i+1, columnNumber: 0 }}).then(brk => {
-                            console.log("breakpoint at", brk);
+                            console.log("breakpoint set in Method.execute at", brk);
                         });
                     }
                 }

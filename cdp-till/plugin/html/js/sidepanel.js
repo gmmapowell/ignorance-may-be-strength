@@ -43,10 +43,14 @@ tbody.addEventListener('click', ev => {
 	var target = ev.target;
 	var row = target.parentElement;
 	if (row.tagName == 'TR') {
-		var lineNo = row.querySelector(".line-no"); // this is a td
-		var lineText = lineNo.innerText;
-		if (breakLines[Number(lineText)]) {
-			lineNo.classList.toggle("breakpoint");
+		var lineNoTD = row.querySelector(".line-no"); // this is a td
+		var lineText = lineNoTD.innerText;
+		var lineNo = Number(lineText);
+		if (breakLines[lineNo]) {
+			var enabled = lineNoTD.classList.toggle("breakpoint");
+			chrome.runtime.sendMessage({ action: "breakpoint", line: lineNo, enabled: enabled }).then(resp => {
+				console.log("response", resp);
+			});
 		}
 	}
 });
