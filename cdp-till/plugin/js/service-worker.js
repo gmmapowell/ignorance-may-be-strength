@@ -18,8 +18,11 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
         }
     } else if (method == "Debugger.paused") {
         console.log("paused: ", params.reason, params.hitBreakpoints, params.callFrames);
-        chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
-            console.log("resume response", resp);
+        chrome.debugger.sendCommand(source, "Debugger.evaluateOnCallFrame", { callFrameId: params.callFrames[0].callFrameId, expression: "this.lineNo" }).then(resp => {
+            console.log("line #:", resp.result.value);
+            chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
+                console.log("resume response", resp);
+            });
         });
     }
 });
