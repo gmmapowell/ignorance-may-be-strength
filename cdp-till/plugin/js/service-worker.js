@@ -11,6 +11,10 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                     if (lines[i].match(/^\s*execute\(/)) {
                         console.log(i+1, lines[i]);
                         console.log("thus break at", i+2);
+
+                        chrome.debugger.sendCommand(source, "Debugger.setBreakpoint", { location: { scriptId: params.scriptId, lineNumber: i+1, columnNumber: 0 }}).then(brk => {
+                            console.log("breakpoint at", brk);
+                        });
                     }
                 }
             });
