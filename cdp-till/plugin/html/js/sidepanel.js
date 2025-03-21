@@ -1,5 +1,7 @@
 var tbody = document.getElementById("source-code");
+var sourceLines = {};
 var breakLines = {};
+var breakAt = null;
 
 fetch("http://localhost:1399/src/cafe.till").then(resp => {
 	resp.text().then(src => {
@@ -16,6 +18,8 @@ fetch("http://localhost:1399/src/cafe.till").then(resp => {
 			var tlineText = document.createElement("td");
 			tlineText.appendChild(document.createTextNode(lines[i]))
 			tr.appendChild(tlineText);
+
+			sourceLines[i+1] = tr;
 
 			tbody.appendChild(tr);
 		}
@@ -53,4 +57,22 @@ tbody.addEventListener('click', ev => {
 			});
 		}
 	}
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
+    switch (request.action) {
+    case "hitBreakpoint": {
+		var l = request.line;
+		if (breakAt) {
+			breakAt.classList.remove("current-break");
+		}
+		breakAt = sourceLines[l].children[1];
+		breakAt.classList.add("current-break");
+        break;
+    }
+    default: {
+        console.log("message:", request);
+        break;
+    }
+    }
 });

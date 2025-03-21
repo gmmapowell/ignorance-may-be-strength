@@ -41,7 +41,7 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
             var lineNo = resp.result.value;
             console.log("line #:", lineNo);
             if (breakpointLines[lineNo]) {
-                console.log("actual breakpoint");
+                chrome.runtime.sendMessage({ action: "hitBreakpoint", line: lineNo });
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
                     console.log("resume response", resp);
