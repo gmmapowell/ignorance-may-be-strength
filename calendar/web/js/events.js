@@ -89,6 +89,8 @@ function findTZ(tz) {
         case "GMT":
         case "BST":
             return "Europe/London";
+        case "CET":
+            return "Europe/Paris";
         case "NZT":
             return "Pacific/Auckland";
         default:
