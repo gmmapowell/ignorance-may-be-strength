@@ -2,6 +2,26 @@ var breakpointLines = {};
 var stepMode = false;
 var breakpointSource;
 
+class Tracker {
+    constructor(done, result) {
+        this.done = done;
+        this.result = result;
+        this.need = 1;
+        this.have = 0;
+    }
+
+    needOne() {
+        this.need++;
+    }
+
+    haveOne() {
+        this.have++;
+        if (this.have == this.need) {
+            this.done(this.result);
+        }
+    }
+}
+
 chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error));
@@ -58,6 +78,11 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
             if (stepMode || breakpointLines[lineNo]) {
                 breakpointSource = source;
                 chrome.runtime.sendMessage({ action: "hitBreakpoint", line: lineNo });
+                chrome.debugger.sendCommand(source, "Debugger.evaluateOnCallFrame", { callFrameId: params.callFrames[0].callFrameId, expression: "state" }).then(state => {
+                    copyObject(source, {}, state.result, copy => {
+                        console.log("state =", copy);
+                    })
+                });
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
                     console.log("resume response", resp);
@@ -66,6 +91,66 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
         });
     }
 });
+
+function copyObject(source, objsSeen, remoteObj, done) {
+    // there is always the possibility of cycles in data structures
+    // if we have seen this object before, just say "it's that object"
+    // it may or may not have been filled out yet, but for our purposes we are "done"
+    if (objsSeen[remoteObj.objectId]) {
+        done(objsSeen[remoteObj.objectId]);
+        return;
+    }
+
+    // Otherwise, create the object now and store it in the map
+    // We will be the only person filling it out
+    var ret;
+    if (remoteObj.subtype == 'array') {
+        ret = [];
+    } else {
+        ret = {};
+    }
+    objsSeen[remoteObj.objectId] = ret;
+
+    var tracker = new Tracker(done, ret);
+    chrome.debugger.sendCommand(source, "Runtime.getProperties", { objectId: remoteObj.objectId }).then(
+        props => copyProperties(source, objsSeen, ret, props, tracker)
+    );
+}
+
+function copyProperties(source, objsSeen, ret, props, tracker) {
+    for (var p of props.result) {
+        if (p.isOwn) {
+            tracker.needOne();
+            copyProperty(source, objsSeen, ret, p.name, p.value, tracker);
+        }
+    }
+    tracker.haveOne();
+}
+
+function copyProperty(source, objsSeen, building, prop, remote, tracker) {
+    if (remote.type == 'string') {
+        building[prop] = remote.value;
+        tracker.haveOne();
+    } else if (remote.type == 'boolean') {
+        building[prop] = remote.value;
+        tracker.haveOne();
+    } else if (remote.type == 'number') {
+        if (prop === 'length' && Array.isArray(building)) {
+            // nothing to see here ...
+        } else {
+            building[prop] = remote.value;
+        }
+        tracker.haveOne();
+    } else if (remote.objectId) {
+        copyObject(source, objsSeen, remote, have => {
+            building[prop] = have;
+            tracker.haveOne();
+        });
+    } else {
+        console.log("how do I copy this?", prop, tracker.tracker, remote);
+        tracker.haveOne();
+    }
+}
 
 chrome.tabs.query({ url: "http://localhost/*" }).then(tabs => {
     for (var tab of tabs) {
