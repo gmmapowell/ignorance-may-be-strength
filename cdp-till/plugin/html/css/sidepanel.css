@@ -1,6 +1,7 @@
 .scroll-table {
-    display: block;
+    /* display: block;
     overflow-x: auto;
+	overflow-y: auto; */
     white-space: nowrap;
 }
 
@@ -26,10 +27,19 @@
 }
 
 .tool {
-	border: 1px solid black;
+	display: inline-block;
+	border: 1px solid lightgrey;
 	border-radius: 2px;
 	padding: 3px;
 	width: fit-content;
+	cursor: default;
+	color: lightgrey;
+}
+
+.tool.available {
+	border-color: black;
+	cursor: pointer;
+	color: black;
 }
 
 .tab-head {
@@ -52,4 +62,6 @@
 	display: block;
 	border: 1px solid black;
 	padding: 4px;
+	height: 75vh;
+	overflow: auto;
 }
