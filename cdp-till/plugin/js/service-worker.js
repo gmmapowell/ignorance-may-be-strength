@@ -1,4 +1,6 @@
 var breakpointLines = {};
+var stepMode = false;
+var breakpointSource;
 
 chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
@@ -12,6 +14,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
         } else {
             delete breakpointLines[request.line];
         }
+        break;
+    }
+    case "continue": {
+        stepMode = request.stepMode;
+        chrome.debugger.sendCommand(breakpointSource, "Debugger.resume").then(resp => {
+            console.log("resume response", resp);
+        });
         break;
     }
     default: {
@@ -40,7 +49,8 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
         chrome.debugger.sendCommand(source, "Debugger.evaluateOnCallFrame", { callFrameId: params.callFrames[0].callFrameId, expression: "this.lineNo" }).then(resp => {
             var lineNo = resp.result.value;
             console.log("line #:", lineNo);
-            if (breakpointLines[lineNo]) {
+            if (stepMode || breakpointLines[lineNo]) {
+                breakpointSource = source;
                 chrome.runtime.sendMessage({ action: "hitBreakpoint", line: lineNo });
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {

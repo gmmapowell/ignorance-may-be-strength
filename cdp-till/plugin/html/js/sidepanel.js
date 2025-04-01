@@ -2,6 +2,10 @@ var tbody = document.getElementById("source-code");
 var sourceLines = {};
 var breakLines = {};
 var breakAt = null;
+var debugMode = false;
+
+var continueButton = document.querySelector(".tool-continue");
+var stepButton = document.querySelector(".tool-step");
 
 fetch("http://localhost:1399/src/cafe.till").then(resp => {
 	resp.text().then(src => {
@@ -63,11 +67,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
     switch (request.action) {
     case "hitBreakpoint": {
 		var l = request.line;
-		if (breakAt) {
-			breakAt.classList.remove("current-break");
-		}
 		breakAt = sourceLines[l].children[1];
-		breakAt.classList.add("current-break");
+		debuggerActive();
         break;
     }
     default: {
@@ -107,3 +108,42 @@ function selectTabFns(list) {
 
 selectTabFns(["source", "stack", "state", "dom"]);
 selectTab("source");
+
+function debuggerActive() {
+	debugMode = true;
+	breakAt.classList.add("current-break");
+	continueButton.classList.add("available");
+	stepButton.classList.add("available");
+}
+
+function debuggerInactive() {
+	debugMode = false;
+	breakAt.classList.remove("current-break");
+	continueButton.classList.remove("available");
+	stepButton.classList.remove("available");
+}
+
+function continueExecution(ev) {
+	if (!debugMode) {
+		return;
+	}
+	debuggerInactive();
+	askContinue(false);
+}
+
+function stepExecution(ev) {
+	if (!debugMode) {
+		return;
+	}
+	debuggerInactive();
+	askContinue(true);
+}
+
+function askContinue(stepMode) {
+	chrome.runtime.sendMessage({ action: "continue", stepMode: stepMode }).then(resp => {
+		console.log("response", resp);
+	});
+}
+
+continueButton.addEventListener("click", continueExecution);
+stepButton.addEventListener("click", stepExecution);
