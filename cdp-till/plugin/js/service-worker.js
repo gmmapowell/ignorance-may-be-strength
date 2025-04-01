@@ -32,13 +32,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
 
 chrome.debugger.onEvent.addListener(function(source, method, params) {
     if (method == "Debugger.scriptParsed") {
-        if (params.url.endsWith("method.js")) {
+        if (
+            params.url.endsWith("method.js") ||
+            params.url.endsWith("assign.js") ||
+            params.url.endsWith("clear.js") ||
+            params.url.endsWith("enable.js") ||
+            params.url.endsWith("submit.js")
+        ) {
             chrome.debugger.sendCommand(source, "Debugger.getScriptSource", { scriptId: params.scriptId }).then(src => {
                 var lines = src.scriptSource.split(/\r?\n/g);
                 for (var i=0;i<lines.length;i++) {
                     if (lines[i].match(/^\s*execute\(/)) {
                         chrome.debugger.sendCommand(source, "Debugger.setBreakpoint", { location: { scriptId: params.scriptId, lineNumber: i+1, columnNumber: 0 }}).then(brk => {
-                            console.log("breakpoint set in Method.execute at", brk);
+                            console.log("breakpoint set in ", params.url, "execute() at", brk);
                         });
                     }
                 }
