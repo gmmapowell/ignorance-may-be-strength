@@ -26,6 +26,10 @@ chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error));
 
+chrome.sidePanel
+    .setOptions({ enabled: false, path: "html/sidepanel.html" })
+    .catch((error) => console.error(error));
+
 chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
     switch (request.action) {
     case "breakpoint": {
@@ -155,8 +159,27 @@ function copyProperty(source, objsSeen, building, prop, remote, tracker) {
 chrome.tabs.query({ url: "http://localhost/*" }).then(tabs => {
     for (var tab of tabs) {
         if (tab.url == "http://localhost:1399/") {
+            chrome.sidePanel
+                .setOptions({ enabled: true, path: "html/sidepanel.html", tabId: tab.id })
+                .catch((error) => console.error(error));
             chrome.debugger.attach({ tabId: tab.id }, "1.3");
             chrome.debugger.sendCommand({ tabId: tab.id }, "Debugger.enable");
         }
     }
 });
+
+chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+    if (tab.url == "http://localhost:1399/") {
+      await chrome.sidePanel.setOptions({
+        tabId,
+        path: 'html/sidepanel.html',
+        enabled: true
+      });
+    } else {
+      await chrome.sidePanel.setOptions({
+        tabId,
+        enabled: false
+      });
+    }
+});
+
