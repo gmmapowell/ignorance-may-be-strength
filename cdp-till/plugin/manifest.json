@@ -1,8 +1,8 @@
 {
 	"manifest_version": 3,
 	"name": "Till Debugger",
-	"version": "2025.03.19",
-	"permissions": ["debugger", "sidePanel", "tabs", "webRequest"],
+	"version": "2025.04.02",
+	"permissions": ["debugger", "sidePanel", "webRequest"],
 	"side_panel": {
 		"default_path": "html/sidepanel.html"
 	},
@@ -11,5 +11,11 @@
 	},
 	"background": {
 		"service_worker": "js/service-worker.js"
-	}
+	},
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["content/find-script.js"]
+		}
+	]
 }

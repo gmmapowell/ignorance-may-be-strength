@@ -1,6 +1,7 @@
 var breakpointLines = {};
 var stepMode = false;
 var breakpointSource;
+var tabsWithTill = [];
 
 class Tracker {
     constructor(done, result) {
@@ -45,6 +46,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
         chrome.debugger.sendCommand(breakpointSource, "Debugger.resume").then(resp => {
             console.log("resume response", resp);
         });
+        break;
+    }
+    case "haveTill": {
+        if (!tabsWithTill.includes(sender.tab.id)) {
+            tabsWithTill.push(sender.tab.id);
+            chrome.debugger.attach({ tabId: sender.tab.id }, "1.3");
+            chrome.debugger.sendCommand({ tabId: sender.tab.id }, "Debugger.enable");
+            chrome.sidePanel.setOptions({
+                tabId: sender.tab.id,
+                path: 'html/sidepanel.html',
+                enabled: true
+            });
+        }
         break;
     }
     default: {
@@ -156,30 +170,20 @@ function copyProperty(source, objsSeen, building, prop, remote, tracker) {
     }
 }
 
-chrome.tabs.query({ url: "http://localhost/*" }).then(tabs => {
-    for (var tab of tabs) {
-        if (tab.url == "http://localhost:1399/") {
-            chrome.sidePanel
-                .setOptions({ enabled: true, path: "html/sidepanel.html", tabId: tab.id })
-                .catch((error) => console.error(error));
-            chrome.debugger.attach({ tabId: tab.id }, "1.3");
-            chrome.debugger.sendCommand({ tabId: tab.id }, "Debugger.enable");
+chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+    if (info.status != 'loading') {
+        return;
+    }
+    if (!info.url) {
+        return;
+    }
+    for (var i=0;i<tabsWithTill.length;i++) {
+        if (tabsWithTill[i] == tabId) {
+            tabsWithTill.splice(i, 1);
         }
     }
-});
-
-chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
-    if (tab.url == "http://localhost:1399/") {
-      await chrome.sidePanel.setOptions({
-        tabId,
-        path: 'html/sidepanel.html',
-        enabled: true
-      });
-    } else {
-      await chrome.sidePanel.setOptions({
+    await chrome.sidePanel.setOptions({
         tabId,
         enabled: false
-      });
-    }
+    });
 });
-
