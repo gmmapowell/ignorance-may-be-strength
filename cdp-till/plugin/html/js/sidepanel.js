@@ -1,4 +1,4 @@
-var tbody = document.getElementById("source-code");
+var srcbody = document.getElementById("source-code");
 var sourceLines = {};
 var breakLines = {};
 var breakAt = null;
@@ -9,23 +9,23 @@ var stepButton = document.querySelector(".tool-step");
 
 fetch("http://localhost:1399/src/cafe.till").then(resp => {
 	resp.text().then(src => {
-		tbody.innerHTML = '';
+		srcbody.innerHTML = '';
 		var lines = src.split(/\r?\n/g);
 		for (var i=0;i<lines.length;i++) {
 			var tr = document.createElement("tr");
 
 			var tlineNo = document.createElement("td");
-			tlineNo.className = 'line-no'
-			tlineNo.appendChild(document.createTextNode(i+1))
+			tlineNo.className = 'line-no';
+			tlineNo.appendChild(document.createTextNode(i+1));
 			tr.appendChild(tlineNo);
 
 			var tlineText = document.createElement("td");
-			tlineText.appendChild(document.createTextNode(lines[i]))
+			tlineText.appendChild(document.createTextNode(lines[i]));
 			tr.appendChild(tlineText);
 
 			sourceLines[i+1] = tr;
 
-			tbody.appendChild(tr);
+			srcbody.appendChild(tr);
 		}
 	});
 });
@@ -47,7 +47,7 @@ fetch("http://localhost:1399/till-code").then(resp => {
 	})
 });
 
-tbody.addEventListener('click', ev => {
+srcbody.addEventListener('click', ev => {
 	var target = ev.target;
 	var row = target.parentElement;
 	if (row.tagName == 'TR') {
@@ -80,13 +80,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
 
 function selectTab(which) {
 	var all = document.querySelectorAll(".tab");
-	console.log(all);
 	for (var a of all) {
 		a.classList.remove("tab-selected");
 	}
 
 	var chosen = document.querySelectorAll(".tab-" + which);
-	console.log(chosen);
 	for (var c of chosen) {
 		c.classList.add("tab-selected");
 	}
