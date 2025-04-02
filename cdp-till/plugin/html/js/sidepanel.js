@@ -1,4 +1,5 @@
 var srcbody = document.getElementById("source-code");
+var statebody = document.getElementById("display-state");
 var sourceLines = {};
 var breakLines = {};
 var breakAt = null;
@@ -71,6 +72,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
 		debuggerActive();
         break;
     }
+	case "showState": {
+		if (debugMode) {
+			showState(request.state);
+		}
+		break;
+	}
     default: {
         console.log("message:", request);
         break;
@@ -119,6 +126,7 @@ function debuggerInactive() {
 	breakAt.classList.remove("current-break");
 	continueButton.classList.remove("available");
 	stepButton.classList.remove("available");
+	statebody.innerHTML = '';
 }
 
 function continueExecution(ev) {
@@ -145,3 +153,74 @@ function askContinue(stepMode) {
 
 continueButton.addEventListener("click", continueExecution);
 stepButton.addEventListener("click", stepExecution);
+
+function showState(state) {
+	statebody.innerHTML = '';
+	var keys = Object.keys(state);
+	keys.sort();
+	for (var k of keys) {
+		var tr = document.createElement("tr");
+		statebody.appendChild(tr);
+
+		var tkey = document.createElement("td");
+		tkey.appendChild(document.createTextNode(k));
+		tr.appendChild(tkey);
+
+		var v = state[k];
+		if (Array.isArray(v)) {
+			showArray(v);
+		} else if (typeof(v) == 'object') {
+			showObject(v);
+		} else {
+			var ign = document.createElement("td");
+			tr.appendChild(ign);
+			showJSON(tr, v);
+		}
+	}
+}
+
+function showArray(arr) {
+	for (var i=0;i<arr.length;i++) {
+		var tr = document.createElement("tr");
+		statebody.appendChild(tr);
+
+		// leave the "var" column blank
+		var ign = document.createElement("td");
+		tr.appendChild(ign);
+
+		var idx = document.createElement("td");
+		idx.appendChild(document.createTextNode(i));
+		tr.appendChild(idx);
+
+		showJSON(tr, arr[i]);
+	}
+}
+
+function showObject(obj) {
+	var keys = Object.keys(obj);
+	keys.sort();
+	for (var k of keys) {
+		var tr = document.createElement("tr");
+		statebody.appendChild(tr);
+
+		// leave the "var" column blank
+		var ign = document.createElement("td");
+		tr.appendChild(ign);
+		
+		var tidx = document.createElement("td");
+		tidx.appendChild(document.createTextNode(k));
+		tr.appendChild(tidx);
+
+		showJSON(tr, obj[k]);
+	}
+}
+
+function showJSON(tr, v) {
+	// I don't want to show "methodCode"
+	delete v["methodCode"];
+
+	var json = JSON.stringify(v);
+	var val = document.createElement("td");
+	val.appendChild(document.createTextNode(json));
+	tr.appendChild(val);
+}

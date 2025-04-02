@@ -80,7 +80,7 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                 chrome.runtime.sendMessage({ action: "hitBreakpoint", line: lineNo });
                 chrome.debugger.sendCommand(source, "Debugger.evaluateOnCallFrame", { callFrameId: params.callFrames[0].callFrameId, expression: "state" }).then(state => {
                     copyObject(source, {}, state.result, copy => {
-                        console.log("state =", copy);
+                        chrome.runtime.sendMessage({ action: "showState", state: copy });
                     })
                 });
             } else {
