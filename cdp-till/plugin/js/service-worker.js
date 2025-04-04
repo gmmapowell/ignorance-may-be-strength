@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
         break;
     }
     default: {
-        console.log("message:", request);
+        console.log("unhandled message in service worker:", request);
         break;
     }
     }
@@ -100,6 +100,9 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                     copyObject(source, {}, state.result, copy => {
                         chrome.runtime.sendMessage({ action: "showState", state: copy });
                     })
+                });
+                chrome.tabs.sendMessage(source.tabId, { action: "scan-dom" }, null, resp => {
+                    chrome.runtime.sendMessage({ action: "present-dom", info: resp });
                 });
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {

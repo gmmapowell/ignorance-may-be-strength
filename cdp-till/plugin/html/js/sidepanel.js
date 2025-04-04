@@ -1,5 +1,6 @@
 var srcbody = document.getElementById("source-code");
 var statebody = document.getElementById("display-state");
+var dombody = document.getElementById("display-dom");
 var sourceLines = {};
 var breakLines = {};
 var breakAt = null;
@@ -58,7 +59,7 @@ srcbody.addEventListener('click', ev => {
 		if (breakLines[lineNo]) {
 			var enabled = lineNoTD.classList.toggle("breakpoint");
 			chrome.runtime.sendMessage({ action: "breakpoint", line: lineNo, enabled: enabled }).then(resp => {
-				console.log("response", resp);
+				// console.log("response", resp);
 			});
 		}
 	}
@@ -78,8 +79,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
 		}
 		break;
 	}
+	case "present-dom": {
+		if (debugMode) {
+			console.log("presenting dom", request.info);
+			presentDom(request.info);
+		}
+		break;
+	}
     default: {
-        console.log("message:", request);
+        console.log("unhandled message in side panel:", request);
         break;
     }
     }
@@ -99,7 +107,6 @@ function selectTab(which) {
 
 function selectTabFn(th, t) {
 	th.addEventListener('click', ev => {
-		console.log("selected ", t);
 		selectTab(t);
 	})
 }
@@ -223,4 +230,29 @@ function showJSON(tr, v) {
 	var val = document.createElement("td");
 	val.appendChild(document.createTextNode(json));
 	tr.appendChild(val);
+}
+
+function presentDom(dom) {
+	dombody.innerHTML = '';
+	for (var r of dom) {
+		for (var c of r.rowInfo) {
+			presentDomRow(r.rowNum, c.colNum, c.text, c.styles);
+		}
+	}
+}
+
+function presentDomRow(row, col, label, styles) {
+	var tr = document.createElement("tr");
+	dombody.appendChild(tr);
+
+	presentCell(tr, row);
+	presentCell(tr, col);
+	presentCell(tr, label);
+	presentCell(tr, styles.join(" "));
+}
+
+function presentCell(tr, str) {
+	var td = document.createElement("td");
+	td.appendChild(document.createTextNode(str));
+	tr.appendChild(td);
 }
