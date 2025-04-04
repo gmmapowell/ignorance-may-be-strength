@@ -101,6 +101,9 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                         chrome.runtime.sendMessage({ action: "showState", state: copy });
                     })
                 });
+                chrome.debugger.sendCommand(source, "DOM.getDocument", {}).then(
+                    doc => findRows(doc.root.nodeId)
+                );
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
                     // console.log("resume response", resp);
@@ -167,6 +170,34 @@ function copyProperty(source, objsSeen, building, prop, remote, tracker) {
     } else {
         console.log("how do I copy this?", prop, tracker.tracker, remote);
         tracker.haveOne();
+    }
+}
+
+function findRows(nodeId) {
+    chrome.debugger.sendCommand(breakpointSource, "DOM.querySelectorAll", { nodeId: nodeId, selector: ".row" }).then(
+        rows => findColumns(rows.nodeIds)
+    );
+}
+
+function findColumns(rows) {
+    var rowNum = 0;
+    for (var r of rows) {
+        chrome.debugger.sendCommand(breakpointSource, "DOM.querySelectorAll", { nodeId: r, selector: ".cell" }).then(
+            cols => findCells(rowNum++, cols.nodeIds)
+        );
+    }
+}
+
+function findCells(row, cols) {
+    var colNum = 0;
+    for (var c of cols) {
+        chrome.debugger.sendCommand(breakpointSource, "DOM.getAttributes", { nodeId: c }).then(
+            attrs => console.log(row, colNum, attrs)
+        );
+        chrome.debugger.sendCommand(breakpointSource, "DOM.requestChildNodes", { nodeId: c }).then(
+            cell => console.log(row, colNum, cell)
+        );
+        colNum++;
     }
 }
 
