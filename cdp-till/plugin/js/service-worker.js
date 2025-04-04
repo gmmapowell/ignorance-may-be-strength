@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
     case "continue": {
         stepMode = request.stepMode;
         chrome.debugger.sendCommand(breakpointSource, "Debugger.resume").then(resp => {
-            console.log("resume response", resp);
+            // console.log("resume response", resp);
         });
         break;
     }
@@ -89,10 +89,10 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
             });
         }
     } else if (method == "Debugger.paused") {
-        console.log("paused: ", params.reason, params.hitBreakpoints, params.callFrames);
+        // console.log("paused: ", params.reason, params.hitBreakpoints, params.callFrames);
         chrome.debugger.sendCommand(source, "Debugger.evaluateOnCallFrame", { callFrameId: params.callFrames[0].callFrameId, expression: "this.lineNo" }).then(resp => {
             var lineNo = resp.result.value;
-            console.log("line #:", lineNo);
+            // console.log("line #:", lineNo);
             if (stepMode || breakpointLines[lineNo]) {
                 breakpointSource = source;
                 chrome.runtime.sendMessage({ action: "hitBreakpoint", line: lineNo });
@@ -103,7 +103,7 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                 });
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
-                    console.log("resume response", resp);
+                    // console.log("resume response", resp);
                 });
             }
         });

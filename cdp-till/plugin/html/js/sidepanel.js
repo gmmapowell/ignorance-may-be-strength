@@ -147,7 +147,7 @@ function stepExecution(ev) {
 
 function askContinue(stepMode) {
 	chrome.runtime.sendMessage({ action: "continue", stepMode: stepMode }).then(resp => {
-		console.log("response", resp);
+		// console.log("response", resp);
 	});
 }
 
