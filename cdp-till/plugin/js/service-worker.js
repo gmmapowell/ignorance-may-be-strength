@@ -194,8 +194,12 @@ function findCells(row, cols) {
         chrome.debugger.sendCommand(breakpointSource, "DOM.getAttributes", { nodeId: c }).then(
             attrs => console.log(row, colNum, attrs)
         );
-        chrome.debugger.sendCommand(breakpointSource, "DOM.requestChildNodes", { nodeId: c }).then(
-            cell => console.log(row, colNum, cell)
+        chrome.debugger.sendCommand(breakpointSource, "DOM.querySelector", { nodeId: c, selector: ".cell-text" }).then(
+            res => {
+                chrome.debugger.sendCommand(breakpointSource, "DOM.getOuterHTML", { nodeId: res.nodeId }).then(
+                    html => console.log(row, colNum, html)
+                );
+            }
         );
         colNum++;
     }
