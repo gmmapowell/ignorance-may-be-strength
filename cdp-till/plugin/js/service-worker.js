@@ -23,6 +23,50 @@ class Tracker {
     }
 }
 
+class RowCollector {
+    constructor() {
+        this.rows = [];
+        this.need = 1;
+        this.have = 0;
+    }
+
+    ready(nrows) {
+        this.need += nrows;
+        for (var i=0;i<nrows;i++) {
+            this.rows[i] = { rowNum: i, rowInfo: [] };
+        }
+        this.sendWhenComplete();
+    }
+
+    rowHas(row, ncols) {
+        this.need += ncols * 2;
+        var cs = this.rows[row].rowInfo;
+        for (var i=0;i<ncols;i++) {
+            cs[i] = { colNum: i };
+        }
+        this.sendWhenComplete();
+    }
+
+    attrs(row, col, attrs) {
+        this.rows[row].rowInfo[col].styles = attrs;
+        this.sendWhenComplete();
+    }
+
+    html(row, col, html) {
+        this.rows[row].rowInfo[col].outer = html;
+        this.sendWhenComplete();
+    }
+
+    sendWhenComplete() {
+        this.have++;
+        console.log("need", this.need, "have", this.have);
+        if (this.need == this.have) {
+            console.log("sending collected dom", this.rows);
+            chrome.runtime.sendMessage({ action: "present-dom", info: this.rows });
+        }
+    }
+}
+
 chrome.sidePanel
     .setPanelBehavior({ openPanelOnActionClick: true })
     .catch((error) => console.error(error));
@@ -101,9 +145,10 @@ chrome.debugger.onEvent.addListener(function(source, method, params) {
                         chrome.runtime.sendMessage({ action: "showState", state: copy });
                     })
                 });
-                chrome.debugger.sendCommand(source, "DOM.getDocument", {}).then(
-                    doc => findRows(doc.root.nodeId)
-                );
+                var ret = new RowCollector();
+                chrome.debugger.sendCommand(source, "DOM.getDocument", {}).then(doc => {
+                    findRows(ret, doc.root.nodeId)
+                });
             } else {
                 chrome.debugger.sendCommand(source, "Debugger.resume").then(resp => {
                     // console.log("resume response", resp);
@@ -173,36 +218,45 @@ function copyProperty(source, objsSeen, building, prop, remote, tracker) {
     }
 }
 
-function findRows(nodeId) {
-    chrome.debugger.sendCommand(breakpointSource, "DOM.querySelectorAll", { nodeId: nodeId, selector: ".row" }).then(
-        rows => findColumns(rows.nodeIds)
-    );
+function findRows(collector, nodeId) {
+    chrome.debugger.sendCommand(breakpointSource, "DOM.querySelectorAll", { nodeId: nodeId, selector: ".row" }).then(rows => {
+        collector.ready(rows.nodeIds.length);
+        findColumns(collector, rows.nodeIds);
+    });
 }
 
-function findColumns(rows) {
+function findColumns(collector, rows) {
     var rowNum = 0;
-    for (var r of rows) {
-        chrome.debugger.sendCommand(breakpointSource, "DOM.querySelectorAll", { nodeId: r, selector: ".cell" }).then(
-            cols => findCells(rowNum++, cols.nodeIds)
-        );
+    for (var rowNum=0;rowNum<rows.length;rowNum++) {
+        collectRow(collector, rowNum, rows[rowNum]);
     }
 }
 
-function findCells(row, cols) {
+function collectRow(collector, rowNum, row) {
+    chrome.debugger.sendCommand(breakpointSource, "DOM.querySelectorAll", { nodeId: row, selector: ".cell" }).then(cols => {
+        collector.rowHas(rowNum, cols.nodeIds.length);
+        findCells(collector, rowNum, cols.nodeIds);
+    });
+}
+
+function findCells(collector, rowNum, cols) {
     var colNum = 0;
-    for (var c of cols) {
-        chrome.debugger.sendCommand(breakpointSource, "DOM.getAttributes", { nodeId: c }).then(
-            attrs => console.log(row, colNum, attrs)
-        );
-        chrome.debugger.sendCommand(breakpointSource, "DOM.querySelector", { nodeId: c, selector: ".cell-text" }).then(
-            res => {
-                chrome.debugger.sendCommand(breakpointSource, "DOM.getOuterHTML", { nodeId: res.nodeId }).then(
-                    html => console.log(row, colNum, html)
-                );
-            }
-        );
-        colNum++;
+    for (var colNum=0;colNum<cols.length;colNum++) {
+        collectCell(collector, rowNum, colNum, cols[colNum]);
     }
+}
+
+function collectCell(collector, rowNum, colNum, c) {
+    chrome.debugger.sendCommand(breakpointSource, "DOM.getAttributes", { nodeId: c }).then(
+        attrs => collector.attrs(rowNum, colNum, attrs.attributes[1])
+    );
+    chrome.debugger.sendCommand(breakpointSource, "DOM.querySelector", { nodeId: c, selector: ".cell-text" }).then(
+        res => {
+            chrome.debugger.sendCommand(breakpointSource, "DOM.getOuterHTML", { nodeId: res.nodeId }).then(
+                html => collector.html(rowNum, colNum, html.outerHTML)
+            );
+        }
+    );
 }
 
 chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {

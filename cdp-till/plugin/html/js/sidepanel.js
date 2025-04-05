@@ -1,5 +1,6 @@
 var srcbody = document.getElementById("source-code");
 var statebody = document.getElementById("display-state");
+var dombody = document.getElementById("display-dom");
 var sourceLines = {};
 var breakLines = {};
 var breakAt = null;
@@ -78,7 +79,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, respondTo) {
 		}
 		break;
 	}
-    default: {
+	case "present-dom": {
+		if (debugMode) {
+			presentDom(request.info);
+		}
+		break;
+    }
+	default: {
         console.log("message:", request);
         break;
     }
@@ -127,6 +134,7 @@ function debuggerInactive() {
 	continueButton.classList.remove("available");
 	stepButton.classList.remove("available");
 	statebody.innerHTML = '';
+	dombody.innerHTML = '';
 }
 
 function continueExecution(ev) {
@@ -224,3 +232,30 @@ function showJSON(tr, v) {
 	val.appendChild(document.createTextNode(json));
 	tr.appendChild(val);
 }
+
+function presentDom(dom) {
+    dombody.innerHTML = '';
+    for (var r of dom) {
+		for (var c of r.rowInfo) {
+			var text = c.outer;
+			presentDomRow(r.rowNum, c.colNum, text, c.styles);
+		}
+    }
+}
+
+function presentDomRow(row, col, label, styles) {
+    var tr = document.createElement("tr");
+    dombody.appendChild(tr);
+
+    presentCell(tr, row);
+    presentCell(tr, col);
+    presentCell(tr, label);
+    presentCell(tr, styles);
+}
+
+function presentCell(tr, str) {
+    var td = document.createElement("td");
+    td.appendChild(document.createTextNode(str));
+    tr.appendChild(td);
+}
+	
