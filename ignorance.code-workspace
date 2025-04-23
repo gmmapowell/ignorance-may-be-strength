@@ -30,6 +30,10 @@
 		{
 			"name": "CDPTill",
 			"path": "cdp-till"
+		},
+		{
+			"name": "Accounts",
+			"path": "accounts"
 		}
 	],
 	"settings": {},
@@ -42,7 +46,17 @@
                                 "program": "${workspaceFolder:CDPTill}/cmd/till",
                                 "args": [
                                 ],
-								"cwd": "${workspaceFolder:CDPTill}"
+				"cwd": "${workspaceFolder:CDPTill}"
+                        },
+                        {
+                                "name": "Accounts",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Accounts}/cmd/accounts",
+                                "args": [
+					"${userHome}/Ziniki/accounts-config"
+                                ],
+				"cwd": "${workspaceFolder:CDPTill}"
                         },
                 ],
                 "compounds": []
@@ -50,19 +64,18 @@
 	"tasks": {
 		"version": "2.0.0",
 		"tasks": [
-       {
-            "label": "Diagrammer Tests",
-            "type": "npm",
-            "script": "test",
-				"options": {
-					"cwd": "${workspaceFolder}/../diagrammer/test"
-				},
-				"presentation": {
-					"reveal": "always"
-				},
-            "problemMatcher": []
-        },
-
+		       {
+		            "label": "Diagrammer Tests",
+		            "type": "npm",
+		            "script": "test",
+			    "options": {
+				"cwd": "${workspaceFolder}/../diagrammer/test"
+			    },
+			    "presentation": {
+			        "reveal": "always"
+			    },
+            		    "problemMatcher": []
+        		},
 			{
 				"label": "Metrolink PHP Tests",
 				"type": "shell",
