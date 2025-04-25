@@ -1,14 +1,14 @@
 package pipeline
 
 import (
-	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/accounts"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
-	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/sheets"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 )
 
 func AccountsPipeline(conf *config.Configuration) {
-	writer := writer.MakeWriter(conf)
-	accts := accounts.MakeAccounts(conf, writer)
-	sheets.ReadSpreadsheet(conf, accts)
+	w := writer.MakeWriter(conf)
+	accts := writer.NewAccounts()
+	w.Deliver(accts)
+	// accts := accounts.MakeAccounts(conf, writer)
+	// sheets.ReadSpreadsheet(conf, accts)
 }
