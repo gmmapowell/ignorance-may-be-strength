@@ -29,14 +29,44 @@ func ReadSpreadsheet(conf *config.Configuration, rcvr Receiver) {
 		panic(err)
 	}
 
-	svc, err := sheetsService.Spreadsheets.Get(conf.Spreadsheet).Do()
+	info, err := sheetsService.Spreadsheets.Get(conf.Spreadsheet).Do()
 	if err != nil {
 		panic(err)
 	}
 
-	for _, id := range svc.Sheets {
-		fmt.Println(id.Properties.Title)
+	var tabs []Tab
+	for _, sheet := range info.Sheets {
+		tab := gatherTabData(sheetsService, conf.Spreadsheet, sheet.Properties.Title, sheet.Properties.GridProperties.RowCount, sheet.Properties.GridProperties.ColumnCount)
+		tabs = append(tabs, tab)
 	}
+
+	rcvr.DeliverSheet(tabs)
+}
+
+func gatherTabData(svc *sheets.Service, sheetId, title string, rc, cc int64) Tab {
+	cells, err := svc.Spreadsheets.Values.Get(sheetId, fmt.Sprintf("%s!R1C1:R%dC%d", title, rc, cc)).Do()
+	if err != nil {
+		panic(err)
+	}
+
+	heads := make(map[int]string)
+	var tab Tab
+	for i, r := range cells.Values {
+		if i == 0 {
+			for j, c := range r {
+				heads[j] = c.(string)
+			}
+		} else {
+			row := Row{Columns: make(map[string]any)}
+			for j, c := range r {
+				if heads[j] != "" {
+					row.Columns[heads[j]] = c
+				}
+			}
+			tab.Rows = append(tab.Rows, row)
+		}
+	}
+	return tab
 }
 
 func getClient(conf *config.Configuration) (*http.Client, error) {
