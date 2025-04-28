@@ -117,8 +117,11 @@ type AccountItem struct {
 }
 
 type Transaction struct {
-	XMLName xml.Name `xml:"gnc:transaction"`
-	Version string   `xml:"version,attr"`
+	XMLName      xml.Name `xml:"gnc:transaction"`
+	Version      string   `xml:"version,attr"`
+	accountGuids map[string]string
+	srcAcct      *TransactionItem
+	destAcct     *TransactionItem
 	Elements
 }
 
@@ -316,16 +319,12 @@ func newGuid() string {
 	return strings.Replace(uuid.New().String(), "-", "", -1)
 }
 
-func (g *Gnucash) Transact(date DateInfo, src string, dest string, amount Money) {
-	srcGuid := g.accountGuids[src]
-	if srcGuid == "" {
-		panic("there is no account for " + src)
-	}
-	destGuid := g.accountGuids[dest]
-	if destGuid == "" {
-		panic("there is no account for " + dest)
-	}
-	tx := &Transaction{Version: "2.0.0"}
+func (g *Gnucash) Verb(verb config.Verb, date DateInfo, description string, amount Money) *Transaction {
+	return g.Transact(date, description, verb.Source, verb.Dest, amount)
+}
+
+func (g *Gnucash) Transact(date DateInfo, description string, src string, dest string, amount Money) *Transaction {
+	tx := &Transaction{Version: "2.0.0", accountGuids: g.accountGuids}
 	guid := newGuid()
 	id := NewTxItem("id", guid)
 	id.Type = "guid"
@@ -338,7 +337,7 @@ func (g *Gnucash) Transact(date DateInfo, src string, dest string, amount Money)
 	datePosted.Elements = []any{dateXML}
 	dateEntered := NewTxItem("date-entered", "")
 	dateEntered.Elements = []any{dateXML}
-	desc := NewTxItem("description", "")
+	desc := NewTxItem("description", description)
 	slots := NewTxItem("slots", "")
 	dp := MakeSlot("date-posted", "")
 	dp.Value.Type = "gdate"
@@ -347,31 +346,50 @@ func (g *Gnucash) Transact(date DateInfo, src string, dest string, amount Money)
 	notes.Value.Type = "string"
 	slots.Elements = []any{dp, notes}
 	splits := NewTxItem("splits", "")
-	splitFrom := NewTxItem("split", "")
+	splitTo := NewTxItem("split", "")
 	{
-		sfid := NewSplitItem("id", newGuid())
-		sfid.Type = "guid"
+		destGuid := ""
+		if dest != "" {
+			destGuid = g.accountGuids[dest]
+			if destGuid == "" {
+				panic("there is no account for " + dest)
+			}
+		}
+
+		stid := NewSplitItem("id", newGuid())
+		stid.Type = "guid"
 		rec := NewSplitItem("reconciled-state", "y")
 		value := NewSplitItem("value", amount.GCCredit())
 		quant := NewSplitItem("quantity", amount.GCCredit())
 		acct := NewSplitItem("account", destGuid)
 		acct.Type = "guid"
-		splitFrom.Elements = []any{sfid, rec, value, quant, acct}
+		tx.destAcct = &acct
+		splitTo.Elements = []any{stid, rec, value, quant, &acct}
 	}
-	splitTo := NewTxItem("split", "")
+	splitFrom := NewTxItem("split", "")
 	{
-		stid := NewSplitItem("id", newGuid())
-		stid.Type = "guid"
+		srcGuid := ""
+		if src != "" {
+			srcGuid = g.accountGuids[src]
+			if srcGuid == "" {
+				panic("there is no account for " + src)
+			}
+		}
+
+		sfid := NewSplitItem("id", newGuid())
+		sfid.Type = "guid"
 		rec := NewSplitItem("reconciled-state", "y")
 		value := NewSplitItem("value", amount.GCDebit())
 		quant := NewSplitItem("quantity", amount.GCDebit())
 		acct := NewSplitItem("account", srcGuid)
 		acct.Type = "guid"
-		splitTo.Elements = []any{stid, rec, value, quant, acct}
+		tx.srcAcct = &acct
+		splitFrom.Elements = []any{sfid, rec, value, quant, &acct}
 	}
-	splits.Elements = []any{splitFrom, splitTo}
+	splits.Elements = []any{splitTo, splitFrom}
 	tx.Elements = []any{id, curr, datePosted, dateEntered, desc, slots, splits}
 	g.book.Elements = append(g.book.Elements, tx)
+	return tx
 }
 
 func NewTxItem(tag, value string) TransactionItem {
@@ -382,4 +400,20 @@ func NewTxItem(tag, value string) TransactionItem {
 func NewSplitItem(tag, value string) TransactionItem {
 	name := xml.Name{Local: "split:" + tag}
 	return TransactionItem{XMLName: name, Value: value}
+}
+
+func (tx *Transaction) SetDest(name string) {
+	destGuid := tx.accountGuids[name]
+	if destGuid == "" {
+		panic("there is no account for " + name)
+	}
+	tx.destAcct.Value = destGuid
+}
+
+func (tx *Transaction) SetSrc(name string) {
+	srcGuid := tx.accountGuids[name]
+	if srcGuid == "" {
+		panic("there is no account for " + name)
+	}
+	tx.srcAcct.Value = srcGuid
 }

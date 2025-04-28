@@ -12,6 +12,7 @@ type Configuration struct {
 
 	Business Business
 	Accounts []Account
+	Verbs    []Verb
 }
 
 type Business struct {
@@ -31,6 +32,11 @@ type Account struct {
 	Type        string
 	Placeholder bool
 	Accounts    []Account
+}
+
+type Verb struct {
+	Source string
+	Dest   string
 }
 
 func (c *Configuration) RedirectURI() string {
