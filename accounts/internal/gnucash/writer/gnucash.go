@@ -241,7 +241,8 @@ func NewCommodityItem(space, value string) CommodityItem {
 
 func mapAccounts(conf *config.Configuration) []any {
 	name := NewAccountItem("name", "RootAccount")
-	id := NewAccountItem("id", newGuid())
+	guid := newGuid()
+	id := NewAccountItem("id", guid)
 	id.Type = "guid"
 	ty := NewAccountItem("type", "ROOT")
 	curr := NewAccountItem("commodity", "")
@@ -250,8 +251,48 @@ func mapAccounts(conf *config.Configuration) []any {
 	curr.Elements = []any{space, currid}
 	scu := NewAccountItem("commodity-scu", "100")
 
+	ret := []any{}
 	rootAccount := Account{Version: "2.0.0", Elements: []any{name, id, ty, curr, scu}}
-	return []any{rootAccount}
+	ret = append(ret, rootAccount)
+	for _, acc := range conf.Accounts {
+		ret = mapAccount(ret, acc, guid)
+	}
+	return ret
+}
+
+func mapAccount(mapped []any, acc config.Account, parent string) []any {
+	name := NewAccountItem("name", acc.Name)
+	guid := newGuid()
+	id := NewAccountItem("id", guid)
+	id.Type = "guid"
+	ty := NewAccountItem("type", acc.Type)
+	curr := NewAccountItem("commodity", "")
+	space := NewCommodityItem("space", "CURRENCY")
+	currid := NewCommodityItem("id", "GBP")
+	curr.Elements = []any{space, currid}
+	scu := NewAccountItem("commodity-scu", "100")
+	acct := Account{Version: "2.0.0", Elements: []any{name, id, ty, curr, scu}}
+	if parent != "" {
+		desc := NewAccountItem("description", acc.Name)
+		acct.Elements = append(acct.Elements, desc)
+	}
+	if acc.Placeholder {
+		plac := NewAccountItem("slots", "")
+		ps := MakeSlot("placeholder", "string")
+		ps.Value.StringValue = "true"
+		plac.Elements = []any{ps}
+		acct.Elements = append(acct.Elements, plac)
+	}
+	if parent != "" {
+		parElt := NewAccountItem("parent", parent)
+		parElt.Type = "guid"
+		acct.Elements = append(acct.Elements, parElt)
+	}
+	mapped = append(mapped, acct)
+	for _, a := range acc.Accounts {
+		mapped = mapAccount(mapped, a, guid)
+	}
+	return mapped
 }
 
 func NewAccountItem(tag, value string) AccountItem {

@@ -13,7 +13,10 @@ func ReadConfig(file string) (*Configuration, error) {
 		return nil, err
 	}
 	ret := Configuration{}
-	json.Unmarshal(bs, &ret)
+	err = json.Unmarshal(bs, &ret)
+	if err != nil {
+		panic(err)
+	}
 	log.Printf("read %v\n", ret)
 	return &ret, nil
 }

@@ -11,6 +11,7 @@ type Configuration struct {
 	Output       string
 
 	Business Business
+	Accounts []Account
 }
 
 type Business struct {
@@ -23,6 +24,13 @@ type Business struct {
 	Phone   string
 	TaxNum  string
 	Web     string
+}
+
+type Account struct {
+	Name        string
+	Type        string
+	Placeholder bool
+	Accounts    []Account
 }
 
 func (c *Configuration) RedirectURI() string {
