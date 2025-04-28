@@ -2,8 +2,10 @@ package writer
 
 import (
 	"encoding/xml"
+	"strings"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+	"github.com/google/uuid"
 )
 
 type Gnucash struct {
@@ -99,6 +101,19 @@ type CommodityItem struct {
 	Value   string `xml:",chardata"`
 }
 
+type Account struct {
+	XMLName xml.Name `xml:"gnc:account"`
+	Version string   `xml:"version,attr"`
+	Elements
+}
+
+type AccountItem struct {
+	XMLName xml.Name
+	Type    string `xml:"type,attr,omitempty"`
+	Value   string `xml:",chardata"`
+	Elements
+}
+
 func NewAccounts(conf *config.Configuration) *Gnucash {
 	ret := Gnucash{}
 	completeNamespaces(&ret)
@@ -154,9 +169,11 @@ func NewAccountBook(conf *config.Configuration) *AccountBook {
 	slots.Elements = append(slots.Elements, opts)
 	ret.Elements = append(ret.Elements, slots)
 
+	mappedAccounts := mapAccounts(conf)
+
 	commodities := CountData{Type: "commodity", Count: 1}
 	ret.Elements = append(ret.Elements, commodities)
-	accounts := CountData{Type: "account", Count: 12} // TODO: figure out this number
+	accounts := CountData{Type: "account", Count: len(mappedAccounts)}
 	ret.Elements = append(ret.Elements, accounts)
 	txns := CountData{Type: "transaction", Count: 3} // TODO: figure out this number
 	ret.Elements = append(ret.Elements, txns)
@@ -169,6 +186,9 @@ func NewAccountBook(conf *config.Configuration) *AccountBook {
 	qtz := NewCommodityItem("quote_tz", "")
 	gbp.Elements = []any{space, id, gq, qs, qtz}
 	ret.Elements = append(ret.Elements, gbp)
+
+	ret.Elements = append(ret.Elements, mappedAccounts...)
+
 	return &ret
 }
 
@@ -217,4 +237,28 @@ func FillTax(conf *config.Configuration) Slot {
 func NewCommodityItem(space, value string) CommodityItem {
 	name := xml.Name{Local: "cmdty:" + space}
 	return CommodityItem{XMLName: name, Value: value}
+}
+
+func mapAccounts(conf *config.Configuration) []any {
+	name := NewAccountItem("name", "RootAccount")
+	id := NewAccountItem("id", newGuid())
+	id.Type = "guid"
+	ty := NewAccountItem("type", "ROOT")
+	curr := NewAccountItem("commodity", "")
+	space := NewCommodityItem("space", "CURRENCY")
+	currid := NewCommodityItem("id", "GBP")
+	curr.Elements = []any{space, currid}
+	scu := NewAccountItem("commodity-scu", "100")
+
+	rootAccount := Account{Version: "2.0.0", Elements: []any{name, id, ty, curr, scu}}
+	return []any{rootAccount}
+}
+
+func NewAccountItem(tag, value string) AccountItem {
+	name := xml.Name{Local: "act:" + tag}
+	return AccountItem{XMLName: name, Value: value}
+}
+
+func newGuid() string {
+	return strings.Replace(uuid.New().String(), "-", "", -1)
 }
