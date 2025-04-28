@@ -7,7 +7,8 @@ import (
 
 func AccountsPipeline(conf *config.Configuration) {
 	w := writer.MakeWriter(conf)
-	accts := writer.NewAccounts()
+	// TODO: these two lines skip reading the spreadsheet
+	accts := writer.NewAccounts(conf)
 	w.Deliver(accts)
 	// accts := accounts.MakeAccounts(conf, writer)
 	// sheets.ReadSpreadsheet(conf, accts)

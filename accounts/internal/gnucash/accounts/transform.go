@@ -9,15 +9,16 @@ import (
 )
 
 type AccountsTransformer struct {
+	conf *config.Configuration
 	dlvr writer.DeliverTo
 }
 
 func (at *AccountsTransformer) DeliverSheet(tabs []sheets.Tab) {
 	fmt.Printf("%v\n", tabs)
-	accts := writer.NewAccounts()
+	accts := writer.NewAccounts(at.conf)
 	at.dlvr.Deliver(accts)
 }
 
 func MakeAccounts(conf *config.Configuration, dlvr writer.DeliverTo) *AccountsTransformer {
-	return &AccountsTransformer{dlvr: dlvr}
+	return &AccountsTransformer{conf: conf, dlvr: dlvr}
 }

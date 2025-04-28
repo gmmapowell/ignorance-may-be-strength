@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	header = `<?xml version="1.0" encoding="UTF-8"?>` + "\n"
+	header = `<?xml version="1.0" encoding="utf-8" ?>` + "\n"
 )
 
 type Writer struct {
