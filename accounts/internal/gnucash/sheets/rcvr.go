@@ -5,7 +5,8 @@ type Row struct {
 }
 
 type Tab struct {
-	Rows []Row
+	Title string
+	Rows  []Row
 }
 
 type Receiver interface {

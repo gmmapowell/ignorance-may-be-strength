@@ -319,7 +319,7 @@ func newGuid() string {
 	return strings.Replace(uuid.New().String(), "-", "", -1)
 }
 
-func (g *Gnucash) Verb(verb config.Verb, date DateInfo, description string, amount Money) *Transaction {
+func (g *Gnucash) Verb(verb *config.Verb, date DateInfo, description string, amount Money) *Transaction {
 	return g.Transact(date, description, verb.Source, verb.Dest, amount)
 }
 

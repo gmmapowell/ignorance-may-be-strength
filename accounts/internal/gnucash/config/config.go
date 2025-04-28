@@ -13,6 +13,7 @@ type Configuration struct {
 	Business Business
 	Accounts []Account
 	Verbs    []Verb
+	VerbMap  map[string]*Verb
 }
 
 type Business struct {
@@ -35,6 +36,7 @@ type Account struct {
 }
 
 type Verb struct {
+	Name   string
 	Source string
 	Dest   string
 }

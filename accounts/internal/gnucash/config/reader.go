@@ -12,10 +12,13 @@ func ReadConfig(file string) (*Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	ret := Configuration{}
+	ret := Configuration{VerbMap: make(map[string]*Verb)}
 	err = json.Unmarshal(bs, &ret)
 	if err != nil {
 		panic(err)
+	}
+	for _, v := range ret.Verbs {
+		ret.VerbMap[v.Name] = &v
 	}
 	log.Printf("read %v\n", ret)
 	return &ret, nil

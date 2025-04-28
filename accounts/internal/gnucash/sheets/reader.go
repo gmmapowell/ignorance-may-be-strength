@@ -50,7 +50,7 @@ func gatherTabData(svc *sheets.Service, sheetId, title string, rc, cc int64) Tab
 	}
 
 	heads := make(map[int]string)
-	var tab Tab
+	tab := Tab{Title: title}
 	for i, r := range cells.Values {
 		if i == 0 {
 			for j, c := range r {
