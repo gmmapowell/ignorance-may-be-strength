@@ -9,7 +9,9 @@ import (
 )
 
 type Gnucash struct {
-	XMLName xml.Name `xml:"gnc-v2"`
+	XMLName      xml.Name `xml:"gnc-v2"`
+	book         *AccountBook
+	accountGuids map[string]string
 	Namespaces
 	Elements
 }
@@ -114,11 +116,25 @@ type AccountItem struct {
 	Elements
 }
 
+type Transaction struct {
+	XMLName xml.Name `xml:"gnc:transaction"`
+	Version string   `xml:"version,attr"`
+	Elements
+}
+
+type TransactionItem struct {
+	XMLName xml.Name
+	Type    string `xml:"type,attr,omitempty"`
+	Value   string `xml:",chardata"`
+	Elements
+}
+
 func NewAccounts(conf *config.Configuration) *Gnucash {
-	ret := Gnucash{}
+	ret := Gnucash{accountGuids: make(map[string]string)}
+	ret.book = NewAccountBook(&ret, conf)
 	completeNamespaces(&ret)
 	ret.Elements = append(ret.Elements, NewCountData("book", 1))
-	ret.Elements = append(ret.Elements, NewAccountBook(conf))
+	ret.Elements = append(ret.Elements, ret.book)
 	return &ret
 }
 
@@ -159,7 +175,7 @@ func NewCountData(ty string, cnt int) *CountData {
 	return &ret
 }
 
-func NewAccountBook(conf *config.Configuration) *AccountBook {
+func NewAccountBook(g *Gnucash, conf *config.Configuration) *AccountBook {
 	ret := AccountBook{BookVersion: "2.0.0"}
 	bookId := BookId{Type: "guid", Guid: "95d515f6a8ef4c6fb50d245c82e125b3"}
 	ret.Elements = append(ret.Elements, bookId)
@@ -169,7 +185,7 @@ func NewAccountBook(conf *config.Configuration) *AccountBook {
 	slots.Elements = append(slots.Elements, opts)
 	ret.Elements = append(ret.Elements, slots)
 
-	mappedAccounts := mapAccounts(conf)
+	mappedAccounts := mapAccounts(g, conf)
 
 	commodities := CountData{Type: "commodity", Count: 1}
 	ret.Elements = append(ret.Elements, commodities)
@@ -239,19 +255,23 @@ func NewCommodityItem(space, value string) CommodityItem {
 	return CommodityItem{XMLName: name, Value: value}
 }
 
-func mapAccounts(conf *config.Configuration) []any {
-	return makeAccount([]any{}, "RootAccount", "ROOT", "", false, conf.Accounts)
+func mapAccounts(g *Gnucash, conf *config.Configuration) []any {
+	return makeAccount(g, []any{}, "RootAccount", "ROOT", "", false, conf.Accounts)
 }
 
-func mapAccount(mapped []any, acc config.Account, parent string) []any {
-	return makeAccount(mapped, acc.Name, acc.Type, parent, acc.Placeholder, acc.Accounts)
+func mapAccount(g *Gnucash, mapped []any, acc config.Account, parent string) []any {
+	return makeAccount(g, mapped, acc.Name, acc.Type, parent, acc.Placeholder, acc.Accounts)
 }
 
-func makeAccount(mapped []any, called, ofType, parent string, placeholder bool, accts []config.Account) []any {
+func makeAccount(g *Gnucash, mapped []any, called, ofType, parent string, placeholder bool, accts []config.Account) []any {
 	name := NewAccountItem("name", called)
 	guid := newGuid()
 	id := NewAccountItem("id", guid)
 	id.Type = "guid"
+	if g.accountGuids[called] != "" {
+		panic("duplicate account name: " + called)
+	}
+	g.accountGuids[called] = guid
 	ty := NewAccountItem("type", ofType)
 	curr := NewAccountItem("commodity", "")
 	space := NewCommodityItem("space", "CURRENCY")
@@ -281,7 +301,7 @@ func makeAccount(mapped []any, called, ofType, parent string, placeholder bool, 
 
 	mapped = append(mapped, acct)
 	for _, a := range accts {
-		mapped = mapAccount(mapped, a, guid)
+		mapped = mapAccount(g, mapped, a, guid)
 	}
 
 	return mapped
@@ -294,4 +314,72 @@ func NewAccountItem(tag, value string) AccountItem {
 
 func newGuid() string {
 	return strings.Replace(uuid.New().String(), "-", "", -1)
+}
+
+func (g *Gnucash) Transact(date DateInfo, src string, dest string, amount Money) {
+	srcGuid := g.accountGuids[src]
+	if srcGuid == "" {
+		panic("there is no account for " + src)
+	}
+	destGuid := g.accountGuids[dest]
+	if destGuid == "" {
+		panic("there is no account for " + dest)
+	}
+	tx := &Transaction{Version: "2.0.0"}
+	guid := newGuid()
+	id := NewTxItem("id", guid)
+	id.Type = "guid"
+	curr := NewTxItem("currency", "")
+	space := NewCommodityItem("space", "CURRENCY")
+	currid := NewCommodityItem("id", "GBP")
+	curr.Elements = []any{space, currid}
+	dateXML := date.AsXML()
+	datePosted := NewTxItem("date-posted", "")
+	datePosted.Elements = []any{dateXML}
+	dateEntered := NewTxItem("date-entered", "")
+	dateEntered.Elements = []any{dateXML}
+	desc := NewTxItem("description", "")
+	slots := NewTxItem("slots", "")
+	dp := MakeSlot("date-posted", "")
+	dp.Value.Type = "gdate"
+	dp.Value.AnonymousValue = date.AsGDateXML()
+	notes := MakeSlot("notes", "")
+	notes.Value.Type = "string"
+	slots.Elements = []any{dp, notes}
+	splits := NewTxItem("splits", "")
+	splitFrom := NewTxItem("split", "")
+	{
+		sfid := NewSplitItem("id", newGuid())
+		sfid.Type = "guid"
+		rec := NewSplitItem("reconciled-state", "y")
+		value := NewSplitItem("value", amount.GCCredit())
+		quant := NewSplitItem("quantity", amount.GCCredit())
+		acct := NewSplitItem("account", destGuid)
+		acct.Type = "guid"
+		splitFrom.Elements = []any{sfid, rec, value, quant, acct}
+	}
+	splitTo := NewTxItem("split", "")
+	{
+		stid := NewSplitItem("id", newGuid())
+		stid.Type = "guid"
+		rec := NewSplitItem("reconciled-state", "y")
+		value := NewSplitItem("value", amount.GCDebit())
+		quant := NewSplitItem("quantity", amount.GCDebit())
+		acct := NewSplitItem("account", srcGuid)
+		acct.Type = "guid"
+		splitTo.Elements = []any{stid, rec, value, quant, acct}
+	}
+	splits.Elements = []any{splitFrom, splitTo}
+	tx.Elements = []any{id, curr, datePosted, dateEntered, desc, slots, splits}
+	g.book.Elements = append(g.book.Elements, tx)
+}
+
+func NewTxItem(tag, value string) TransactionItem {
+	name := xml.Name{Local: "trn:" + tag}
+	return TransactionItem{XMLName: name, Value: value}
+}
+
+func NewSplitItem(tag, value string) TransactionItem {
+	name := xml.Name{Local: "split:" + tag}
+	return TransactionItem{XMLName: name, Value: value}
 }
