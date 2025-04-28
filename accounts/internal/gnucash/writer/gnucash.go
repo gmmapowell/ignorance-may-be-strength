@@ -240,58 +240,50 @@ func NewCommodityItem(space, value string) CommodityItem {
 }
 
 func mapAccounts(conf *config.Configuration) []any {
-	name := NewAccountItem("name", "RootAccount")
-	guid := newGuid()
-	id := NewAccountItem("id", guid)
-	id.Type = "guid"
-	ty := NewAccountItem("type", "ROOT")
-	curr := NewAccountItem("commodity", "")
-	space := NewCommodityItem("space", "CURRENCY")
-	currid := NewCommodityItem("id", "GBP")
-	curr.Elements = []any{space, currid}
-	scu := NewAccountItem("commodity-scu", "100")
-
-	ret := []any{}
-	rootAccount := Account{Version: "2.0.0", Elements: []any{name, id, ty, curr, scu}}
-	ret = append(ret, rootAccount)
-	for _, acc := range conf.Accounts {
-		ret = mapAccount(ret, acc, guid)
-	}
-	return ret
+	return makeAccount([]any{}, "RootAccount", "ROOT", "", false, conf.Accounts)
 }
 
 func mapAccount(mapped []any, acc config.Account, parent string) []any {
-	name := NewAccountItem("name", acc.Name)
+	return makeAccount(mapped, acc.Name, acc.Type, parent, acc.Placeholder, acc.Accounts)
+}
+
+func makeAccount(mapped []any, called, ofType, parent string, placeholder bool, accts []config.Account) []any {
+	name := NewAccountItem("name", called)
 	guid := newGuid()
 	id := NewAccountItem("id", guid)
 	id.Type = "guid"
-	ty := NewAccountItem("type", acc.Type)
+	ty := NewAccountItem("type", ofType)
 	curr := NewAccountItem("commodity", "")
 	space := NewCommodityItem("space", "CURRENCY")
 	currid := NewCommodityItem("id", "GBP")
 	curr.Elements = []any{space, currid}
 	scu := NewAccountItem("commodity-scu", "100")
 	acct := Account{Version: "2.0.0", Elements: []any{name, id, ty, curr, scu}}
+
 	if parent != "" {
-		desc := NewAccountItem("description", acc.Name)
+		desc := NewAccountItem("description", called)
 		acct.Elements = append(acct.Elements, desc)
 	}
-	if acc.Placeholder {
+
+	if placeholder {
 		plac := NewAccountItem("slots", "")
 		ps := MakeSlot("placeholder", "string")
 		ps.Value.StringValue = "true"
 		plac.Elements = []any{ps}
 		acct.Elements = append(acct.Elements, plac)
 	}
+
 	if parent != "" {
 		parElt := NewAccountItem("parent", parent)
 		parElt.Type = "guid"
 		acct.Elements = append(acct.Elements, parElt)
 	}
+
 	mapped = append(mapped, acct)
-	for _, a := range acc.Accounts {
+	for _, a := range accts {
 		mapped = mapAccount(mapped, a, guid)
 	}
+
 	return mapped
 }
 
