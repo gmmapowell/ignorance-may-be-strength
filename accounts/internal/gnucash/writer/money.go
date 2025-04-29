@@ -27,3 +27,7 @@ func (m Money) GCCredit() string {
 func (m Money) GCDebit() string {
 	return "-" + m.GCCredit()
 }
+
+func (m Money) String() string {
+	return fmt.Sprintf("£%d.%02d", m.Units, m.Subunits)
+}

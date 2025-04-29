@@ -122,6 +122,8 @@ type Transaction struct {
 	accountGuids map[string]string
 	srcAcct      *TransactionItem
 	destAcct     *TransactionItem
+	credit       *AccountCredit
+	debit        *AccountDebit
 	Elements
 }
 
@@ -130,6 +132,20 @@ type TransactionItem struct {
 	Type    string `xml:"type,attr,omitempty"`
 	Value   string `xml:",chardata"`
 	Elements
+}
+
+type AccountAction struct {
+	When   DateInfo
+	Acct   string
+	Amount Money
+}
+
+type AccountCredit struct {
+	AccountAction
+}
+
+type AccountDebit struct {
+	AccountAction
 }
 
 func NewAccounts(conf *config.Configuration) *Gnucash {
@@ -389,6 +405,11 @@ func (g *Gnucash) Transact(date DateInfo, description string, src string, dest s
 	splits.Elements = []any{splitTo, splitFrom}
 	tx.Elements = []any{id, curr, datePosted, dateEntered, desc, slots, splits}
 	g.book.Elements = append(g.book.Elements, tx)
+
+	// for regurgitation
+	tx.credit = &AccountCredit{AccountAction: AccountAction{When: date, Acct: dest, Amount: amount}}
+	tx.debit = &AccountDebit{AccountAction: AccountAction{When: date, Acct: src, Amount: amount}}
+
 	return tx
 }
 
@@ -408,6 +429,7 @@ func (tx *Transaction) SetDest(name string) {
 		panic("there is no account for " + name)
 	}
 	tx.destAcct.Value = destGuid
+	tx.credit.Acct = name
 }
 
 func (tx *Transaction) SetSrc(name string) {
@@ -416,4 +438,15 @@ func (tx *Transaction) SetSrc(name string) {
 		panic("there is no account for " + name)
 	}
 	tx.srcAcct.Value = srcGuid
+	tx.debit.Acct = name
+}
+
+func (g *Gnucash) Regurgitate(rcvr TxReceiver) {
+	for _, x := range g.book.Elements {
+		tx, ok := x.(*Transaction)
+		if ok {
+			rcvr.Credit(*tx.credit)
+			rcvr.Debit(*tx.debit)
+		}
+	}
 }

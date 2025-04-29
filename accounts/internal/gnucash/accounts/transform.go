@@ -10,12 +10,12 @@ import (
 )
 
 type AccountsTransformer struct {
-	conf *config.Configuration
-	dlvr writer.DeliverTo
+	conf  *config.Configuration
+	dlvr  writer.DeliverTo
+	accts *writer.Gnucash
 }
 
 func (at *AccountsTransformer) DeliverSheet(tabs []sheets.Tab) {
-	fmt.Printf("%v\n", tabs)
 	accts := writer.NewAccounts(at.conf)
 	for _, tab := range tabs {
 		verb := at.conf.VerbMap[tab.Title]
@@ -50,7 +50,12 @@ func (at *AccountsTransformer) DeliverSheet(tabs []sheets.Tab) {
 			}
 		}
 	}
+	at.accts = accts
 	at.dlvr.Deliver(accts)
+}
+
+func (at *AccountsTransformer) Regurgitate(rcvr writer.TxReceiver) {
+	at.accts.Regurgitate(rcvr)
 }
 
 func MakeAccounts(conf *config.Configuration, dlvr writer.DeliverTo) *AccountsTransformer {
