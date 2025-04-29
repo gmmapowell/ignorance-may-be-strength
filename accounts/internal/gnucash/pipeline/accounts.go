@@ -13,8 +13,10 @@ func AccountsPipeline(conf *config.Configuration) {
 	accts := accounts.MakeAccounts(conf, w)
 	sheets.ReadSpreadsheet(conf, accts)
 
-	for yr := 2018; yr <= 2018; yr++ {
+	for yr := 2018; yr <= 2025; yr++ {
 		r := reporter.NewReporter(conf, yr)
 		accts.Regurgitate(r)
+		r.ProfitLoss(yr)
+		r.BalanceSheet(yr)
 	}
 }

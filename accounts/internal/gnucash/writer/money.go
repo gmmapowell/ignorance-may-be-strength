@@ -37,6 +37,10 @@ func (m *Money) Normalize() {
 	}
 }
 
+func (m Money) IsNonZero() bool {
+	return m.Units != 0 || m.Subunits != 0
+}
+
 func (m Money) GCCredit() string {
 	return fmt.Sprintf("%d/100", 100*m.Units+m.Subunits)
 }
