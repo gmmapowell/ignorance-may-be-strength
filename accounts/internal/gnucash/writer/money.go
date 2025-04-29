@@ -20,6 +20,23 @@ func GBPP(units, subunits int) Money {
 	return Money{Units: units, Subunits: subunits}
 }
 
+func (m *Money) Incorporate(effect int, other Money) {
+	m.Units += effect * other.Units
+	m.Subunits += effect * other.Subunits
+	m.Normalize()
+}
+
+func (m *Money) Normalize() {
+	for m.Subunits < 0 {
+		m.Subunits += 100
+		m.Units -= 1
+	}
+	for m.Subunits >= 100 {
+		m.Subunits -= 100
+		m.Units += 1
+	}
+}
+
 func (m Money) GCCredit() string {
 	return fmt.Sprintf("%d/100", 100*m.Units+m.Subunits)
 }
