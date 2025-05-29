@@ -5,19 +5,20 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
+
+	"github.com/gmmapowell/ignorance/accounts/internal/ct600/submission"
 )
 
 func TestTheMinimalFileWorks(t *testing.T) {
-	file, err := os.Open("../../../ct600/no-attach.xml")
+	send, err := submission.Generate()
 	if err != nil {
-		log.Fatalf("error reading xml file: %v", err)
+		log.Fatalf("error generating xml file: %v", err)
 	}
 
 	cli := &http.Client{}
-	resp, err := cli.Post("https://test-transaction-engine.tax.service.gov.uk/submission", "application/x-binary", file)
+	resp, err := cli.Post("https://test-transaction-engine.tax.service.gov.uk/submission", "application/x-binary", send)
 	if err != nil {
 		log.Fatalf("error posting xml file: %v", err)
 	}
