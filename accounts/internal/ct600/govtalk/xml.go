@@ -8,6 +8,12 @@ type SimpleElement struct {
 	Elements
 }
 
+type KeyElement struct {
+	XMLName xml.Name `xml:"Key"`
+	Type    string   `xml:"Type,attr"`
+	Value   string   `xml:",chardata"`
+}
+
 type GovTalkMessageXML struct {
 	XMLName xml.Name `xml:"GovTalkMessage"`
 	XMLNS   string   `xml:"xmlns,attr"`
