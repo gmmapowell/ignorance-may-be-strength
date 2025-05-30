@@ -6,7 +6,7 @@ import (
 )
 
 func ReadConfig(file string) (*Configuration, error) {
-	ret := Configuration{VerbMap: make(map[string]*Verb)}
+	ret := MakeConfiguration()
 	err := ReadAConfiguration(&ret, file)
 	if err != nil {
 		return nil, err

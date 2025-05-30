@@ -41,6 +41,10 @@ type Verb struct {
 	Dest   string
 }
 
+func MakeConfiguration() Configuration {
+	return Configuration{VerbMap: make(map[string]*Verb)}
+}
+
 func (c *Configuration) RedirectURI() string {
 	return fmt.Sprintf("http://localhost:%d/redirect_uri", c.RedirectPort)
 }

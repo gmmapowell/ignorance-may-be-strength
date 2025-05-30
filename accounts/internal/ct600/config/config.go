@@ -9,12 +9,12 @@ type Config struct {
 	Vendor, Product, Version string
 }
 
-func ReadConfig(file string) (*Config, error) {
-	ret := Config{Configuration: config.Configuration{VerbMap: make(map[string]*config.Verb)}}
-	err := config.ReadAConfiguration(&ret, file)
-	if err != nil {
-		return nil, err
-	} else {
-		return &ret, nil
-	}
+func MakeBlankConfig() *Config {
+	ret := Config{Configuration: config.MakeConfiguration()}
+	return &ret
+}
+
+func IncludeConfig(conf *Config, file string) error {
+	err := config.ReadAConfiguration(conf, file)
+	return err
 }

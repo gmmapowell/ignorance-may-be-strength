@@ -3,6 +3,7 @@ package submission
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 
 	"io"
 
@@ -19,6 +20,6 @@ func Generate(conf *config.Config) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Printf("%s", string(bs))
+	fmt.Printf("%s", string(bs))
 	return bytes.NewReader(bs), nil
 }
