@@ -8,16 +8,15 @@ import (
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/submission"
+	gcconf "github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 )
 
 func TestWeCanConfigureSomething(t *testing.T) {
 	config := &config.Config{}
-	config.Sender = "me"
-	config.Password = "secret"
-	config.Utr = "1234509876"
-	config.Vendor = "Ziniki"
-	config.Product = "SendTax"
-	config.Version = "2025-05-30-Alpha"
+	err := gcconf.ReadAConfiguration(config, "../../../testdata/foo.json")
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 	send, err := submission.Generate(config)
 	if err != nil {
 		log.Fatalf("error generating xml file: %v", err)
