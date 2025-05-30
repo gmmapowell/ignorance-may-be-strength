@@ -1,6 +1,9 @@
 package govtalk
 
 type GovTalk interface {
+	Identity(send, pwd string)
+	Utr(utr string)
+	Product(vendor, product, version string)
 	AsXML() any
 }
 
@@ -9,6 +12,24 @@ func MakeGovTalk() GovTalk {
 }
 
 type GovTalkMessage struct {
+	sender, password         string
+	utr                      string
+	vendor, product, version string
+}
+
+func (gtm *GovTalkMessage) Identity(send, pwd string) {
+	gtm.sender = send
+	gtm.password = pwd
+}
+
+func (gtm *GovTalkMessage) Utr(utr string) {
+	gtm.utr = utr
+}
+
+func (gtm *GovTalkMessage) Product(vendor, product, version string) {
+	gtm.vendor = vendor
+	gtm.product = product
+	gtm.version = version
 }
 
 func (gtm *GovTalkMessage) AsXML() any {
@@ -25,26 +46,26 @@ func (gtm *GovTalkMessage) AsXML() any {
 		"SenderDetails",
 		ElementWithNesting(
 			"IDAuthentication",
-			ElementWithText("SenderID", "Provided by the SDST"),
+			ElementWithText("SenderID", gtm.sender),
 			ElementWithNesting(
 				"Authentication",
 				ElementWithText("Method", "clear"),
 				ElementWithText("Role", "Principal"),
-				ElementWithText("Value", "Provided by the SDST"),
+				ElementWithText("Value", gtm.password),
 			),
 		),
 	)
 	gtDetails := ElementWithNesting(
 		"GovTalkDetails",
-		ElementWithNesting("Keys", Key("UTR", "8596148860")),
+		ElementWithNesting("Keys", Key("UTR", gtm.utr)),
 		ElementWithNesting("TargetDetails", ElementWithText("Organisation", "HMRC")),
 		ElementWithNesting(
 			"ChannelRouting",
 			ElementWithNesting(
 				"Channel",
-				ElementWithText("URI", "Vendor ID"),
-				ElementWithText("Product", "Product Details"),
-				ElementWithText("Version", "Version #"),
+				ElementWithText("URI", gtm.vendor),
+				ElementWithText("Product", gtm.product),
+				ElementWithText("Version", gtm.version),
 			),
 		),
 	)
