@@ -59,6 +59,18 @@
 				"cwd": "${workspaceFolder:Accounts}"
                         },
                         {
+                                "name": "CT600 List",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Accounts}/cmd/ct600",
+                                "args": [
+					"--list",
+					"${userHome}/Ziniki/accounts-config"
+					"${userHome}/Ziniki/stsd-config"
+                                ],
+				"cwd": "${workspaceFolder:Accounts}"
+                        },
+                        {
                                 "name": "CT600",
                                 "type": "go",
                                 "request": "launch",

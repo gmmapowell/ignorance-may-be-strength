@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func transmit(body io.Reader) error {
+func transmit(body io.Reader) ([]byte, error) {
 	cli := &http.Client{}
 	resp, err := cli.Post("https://test-transaction-engine.tax.service.gov.uk/submission", "application/x-binary", body)
 	if err != nil {
@@ -19,11 +19,10 @@ func transmit(body io.Reader) error {
 		log.Fatalf("error reading response: %v", err)
 	}
 	msg := string(respBody)
-	fmt.Printf("%s", msg)
 	if strings.Contains(msg, "GovTalkErrors") {
 		fmt.Printf("%s", msg)
-		return fmt.Errorf("there was a GovTalkErrors block")
+		return respBody, fmt.Errorf("there was a GovTalkErrors block")
 	}
 
-	return nil
+	return respBody, nil
 }
