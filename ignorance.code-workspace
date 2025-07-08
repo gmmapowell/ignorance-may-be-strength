@@ -71,7 +71,7 @@
 				"cwd": "${workspaceFolder:Accounts}"
                         },
                         {
-                                "name": "CT600",
+                                "name": "CT600 Submit",
                                 "type": "go",
                                 "request": "launch",
                                 "program": "${workspaceFolder:Accounts}/cmd/ct600",
