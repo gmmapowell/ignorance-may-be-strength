@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema">
+    <import namespace="http://www.govtalk.gov.uk/CM/envelope" schemaLocation="envelope.xsd"/>
+    <import namespace="http://www.govtalk.gov.uk/taxation/CT/5" schemaLocation="ct600.xsd"/>
+</schema>
