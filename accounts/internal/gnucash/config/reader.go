@@ -6,17 +6,29 @@ import (
 )
 
 func ReadConfig(file string) (*Configuration, error) {
-	bs, err := os.ReadFile(file)
+	ret := MakeConfiguration()
+	err := ReadAConfiguration(&ret, file)
 	if err != nil {
 		return nil, err
+	} else {
+		return &ret, nil
 	}
-	ret := Configuration{VerbMap: make(map[string]*Verb)}
-	err = json.Unmarshal(bs, &ret)
+}
+
+func ReadAConfiguration(config any, file string) error {
+	bs, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(bs, config)
 	if err != nil {
 		panic(err)
 	}
-	for _, v := range ret.Verbs {
-		ret.VerbMap[v.Name] = &v
+	vc, isConfig := config.(Configuration)
+	if isConfig {
+		for _, v := range vc.Verbs {
+			vc.VerbMap[v.Name] = &v
+		}
 	}
-	return &ret, nil
+	return nil
 }
