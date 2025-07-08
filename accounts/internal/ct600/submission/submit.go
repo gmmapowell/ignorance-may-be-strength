@@ -30,7 +30,7 @@ func transmit(body io.Reader) error {
 		log.Fatalf("error reading response: %v", err)
 	}
 	msg := string(respBody)
-	fmt.Printf("%s", msg)
+	// fmt.Printf("%s", msg)
 	if strings.Contains(msg, "GovTalkErrors") {
 		return fmt.Errorf("there was a GovTalkErrors block")
 	}

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"os"
+	"os/exec"
 
 	"io"
 
@@ -20,6 +22,30 @@ func Generate(conf *config.Config) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%s", string(bs))
+
+	checkAgainstSchema(bs)
+
 	return bytes.NewReader(bs), nil
+}
+
+func checkAgainstSchema(bs []byte) {
+	file, err := os.Create("submit.xml")
+	if err != nil {
+		panic(err)
+	}
+	file.Write(bs)
+	file.Close()
+	cmd := exec.Command("xmllint", "--schema", "ct600/xsd/importer.xsd", "--output", "out.xml", "submit.xml")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	result := string(output)
+	fmt.Println("---- xmllint output")
+	fmt.Print(result)
+	fmt.Println("----")
+
+	if result != "submit.xml validates\n" {
+		panic("xml did not validate against schema; not submitting")
+	}
 }

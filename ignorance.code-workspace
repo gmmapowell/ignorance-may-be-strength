@@ -56,7 +56,7 @@
                                 "args": [
 					"${userHome}/Ziniki/accounts-config"
                                 ],
-				"cwd": "${workspaceFolder:CDPTill}"
+				"cwd": "${workspaceFolder:Accounts}"
                         },
                         {
                                 "name": "CT600",
@@ -67,7 +67,7 @@
 					"${userHome}/Ziniki/accounts-config"
 					"${userHome}/Ziniki/stsd-config"
                                 ],
-				"cwd": "${workspaceFolder:CDPTill}"
+				"cwd": "${workspaceFolder:Accounts}"
                         },
                 ],
                 "compounds": []
