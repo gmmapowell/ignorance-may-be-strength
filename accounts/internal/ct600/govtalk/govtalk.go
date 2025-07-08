@@ -7,14 +7,15 @@ type GovTalk interface {
 	AsXML() any
 }
 
-func MakeGovTalk() GovTalk {
-	return &GovTalkMessage{}
+func MakeGovTalk(opts *EnvelopeOptions) GovTalk {
+	return &GovTalkMessage{opts: opts}
 }
 
 type GovTalkMessage struct {
 	sender, password         string
 	utr                      string
 	vendor, product, version string
+	opts                     *EnvelopeOptions
 }
 
 func (gtm *GovTalkMessage) Identity(send, pwd string) {
@@ -34,30 +35,44 @@ func (gtm *GovTalkMessage) Product(vendor, product, version string) {
 
 func (gtm *GovTalkMessage) AsXML() any {
 	env := ElementWithText("EnvelopeVersion", "2.0")
+	var corrId *SimpleElement
+	if gtm.opts.SendCorrelationID {
+		corrId = ElementWithText("CorrelationID", gtm.opts.CorrelationID)
+	}
 	msgDetails := ElementWithNesting(
 		"MessageDetails",
 		ElementWithText("Class", "HMRC-CT-CT600"),
-		ElementWithText("Qualifier", "request"),
-		ElementWithText("Function", "submit"),
+		ElementWithText("Qualifier", gtm.opts.Qualifier),
+		ElementWithText("Function", gtm.opts.Function),
+		corrId,
 		ElementWithText("Transformation", "XML"),
 		ElementWithText("GatewayTest", "1"),
 	)
-	sndrDetails := ElementWithNesting(
-		"SenderDetails",
-		ElementWithNesting(
-			"IDAuthentication",
-			ElementWithText("SenderID", gtm.sender),
+	var sndrDetails *SimpleElement
+	if gtm.opts.IncludeSender {
+		sndrDetails = ElementWithNesting(
+			"SenderDetails",
 			ElementWithNesting(
-				"Authentication",
-				ElementWithText("Method", "clear"),
-				ElementWithText("Role", "Principal"),
-				ElementWithText("Value", gtm.password),
+				"IDAuthentication",
+				ElementWithText("SenderID", gtm.sender),
+				ElementWithNesting(
+					"Authentication",
+					ElementWithText("Method", "clear"),
+					ElementWithText("Role", "Principal"),
+					ElementWithText("Value", gtm.password),
+				),
 			),
-		),
-	)
+		)
+	}
+	var keys *SimpleElement
+	if gtm.opts.IncludeKeys {
+		keys = ElementWithNesting("Keys", Key("UTR", gtm.utr))
+	} else {
+		keys = ElementWithNesting("Keys")
+	}
 	gtDetails := ElementWithNesting(
 		"GovTalkDetails",
-		ElementWithNesting("Keys", Key("UTR", gtm.utr)),
+		keys,
 		ElementWithNesting("TargetDetails", ElementWithText("Organisation", "HMRC")),
 		ElementWithNesting(
 			"ChannelRouting",
@@ -69,10 +84,14 @@ func (gtm *GovTalkMessage) AsXML() any {
 			),
 		),
 	)
+	var body any
+	if gtm.opts.IncludeBody {
+		body = gtm.makeBody()
+	}
 	return MakeGovTalkMessage(env,
 		ElementWithNesting("Header", msgDetails, sndrDetails),
 		gtDetails,
-		gtm.makeBody())
+		body)
 }
 
 func (gtm *GovTalkMessage) makeBody() any {

@@ -23,7 +23,11 @@ func main() {
 			return
 		}
 	case config.LIST_MODE:
-		panic("unimplemented")
+		err := submission.List(conf)
+		if err != nil {
+			fmt.Printf("submission failed: %v\n", err)
+			return
+		}
 	default:
 		log.Fatalf("there is no handler for mode %s\n", mode)
 	}

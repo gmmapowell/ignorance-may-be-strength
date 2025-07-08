@@ -13,8 +13,8 @@ import (
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
 )
 
-func Generate(conf *config.Config) (io.Reader, error) {
-	msg := govtalk.MakeGovTalk()
+func Generate(conf *config.Config, options *govtalk.EnvelopeOptions) (io.Reader, error) {
+	msg := govtalk.MakeGovTalk(options)
 	msg.Identity(conf.Sender, conf.Password)
 	msg.Utr(conf.Utr)
 	msg.Product(conf.Vendor, conf.Product, conf.Version)
