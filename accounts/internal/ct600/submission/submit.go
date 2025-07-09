@@ -27,9 +27,24 @@ func Submit(conf *config.Config) error {
 	for tok, err := decoder.Token(); err == nil; tok, err = decoder.Token() {
 		switch tok := tok.(type) {
 		case xml.StartElement:
+			switch tok.Name.Local {
+			case "ResponseEndPoint":
+				for _, a := range tok.Attr {
+					if a.Name.Local == "PollInterval" {
+						log.Printf("ResponseEndPoint PollInterval: %s\n", a.Value)
+					}
+				}
+			}
 		case xml.EndElement:
-			if tok.Name.Local == "CorrelationID" {
+			switch tok.Name.Local {
+			case "Function":
+				log.Printf("Function: %s\n", data)
+			case "Qualifier":
+				log.Printf("Qualifier: %s\n", data)
+			case "CorrelationID":
 				log.Printf("CorrelationID: %s\n", data)
+			case "ResponseEndPoint":
+				log.Printf("ResponseEndPoint: %s\n", data)
 			}
 		case xml.CharData:
 			data = string(tok)
