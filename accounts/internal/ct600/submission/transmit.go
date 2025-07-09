@@ -9,8 +9,12 @@ import (
 )
 
 func transmit(body io.Reader) ([]byte, error) {
+	return transmitTo("https://test-transaction-engine.tax.service.gov.uk/submission", body)
+}
+
+func transmitTo(uri string, body io.Reader) ([]byte, error) {
 	cli := &http.Client{}
-	resp, err := cli.Post("https://test-transaction-engine.tax.service.gov.uk/submission", "application/x-binary", body)
+	resp, err := cli.Post(uri, "application/x-binary", body)
 	if err != nil {
 		log.Fatalf("error posting xml file: %v", err)
 	}

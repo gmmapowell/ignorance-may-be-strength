@@ -25,7 +25,13 @@ func main() {
 	case config.LIST_MODE:
 		err := submission.List(conf)
 		if err != nil {
-			fmt.Printf("submission failed: %v\n", err)
+			fmt.Printf("listing failed: %v\n", err)
+			return
+		}
+	case config.POLL_MODE:
+		err := submission.Poll(conf)
+		if err != nil {
+			fmt.Printf("polling failed: %v\n", err)
 			return
 		}
 	default:

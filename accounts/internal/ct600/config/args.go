@@ -6,6 +6,7 @@ import (
 
 const SUBMIT_MODE = "--submit"
 const LIST_MODE = "--list"
+const POLL_MODE = "--poll"
 
 func ParseArguments(args []string) (*Config, string, error) {
 	mode := ""
@@ -14,15 +15,24 @@ func ParseArguments(args []string) (*Config, string, error) {
 		switch f {
 		case LIST_MODE:
 			fallthrough
+		case POLL_MODE:
+			fallthrough
 		case SUBMIT_MODE:
 			if mode != "" {
 				return nil, "", fmt.Errorf("cannot specify %s and %s", mode, f)
 			}
 			mode = f
 		default:
-			err := IncludeConfig(conf, f)
-			if err != nil {
-				return nil, "", fmt.Errorf("failed to read config %s: %v", f, err)
+			if mode == POLL_MODE {
+				err := PollParameter(conf, f)
+				if err != nil {
+					return nil, "", err
+				}
+			} else {
+				err := IncludeConfig(conf, f)
+				if err != nil {
+					return nil, "", fmt.Errorf("failed to read config %s: %v", f, err)
+				}
 			}
 		}
 	}
