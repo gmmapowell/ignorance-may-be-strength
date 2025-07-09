@@ -1,15 +1,19 @@
 package govtalk
 
 import (
-	"log"
+	"bytes"
+	"encoding/xml"
+	"fmt"
 	"slices"
+
+	"github.com/ucarion/c14n"
 )
 
 type GovTalk interface {
 	Identity(send, pwd string)
 	Utr(utr string)
 	Product(vendor, product, version string)
-	AsXML() any
+	AsXML() (any, error)
 }
 
 func MakeGovTalk(opts *EnvelopeOptions) GovTalk {
@@ -38,7 +42,7 @@ func (gtm *GovTalkMessage) Product(vendor, product, version string) {
 	gtm.version = version
 }
 
-func (gtm *GovTalkMessage) AsXML() any {
+func (gtm *GovTalkMessage) AsXML() (any, error) {
 	env := ElementWithText("EnvelopeVersion", "2.0")
 	var corrId *SimpleElement
 	if gtm.opts.SendCorrelationID {
@@ -92,12 +96,16 @@ func (gtm *GovTalkMessage) AsXML() any {
 	var body *SimpleElement
 	if gtm.opts.IncludeBody {
 		body = gtm.makeBody()
-		attachIRmark(body, calculateIRmark(body))
+		irmark, err := calculateIRmark(body)
+		if err != nil {
+			return nil, err
+		}
+		attachIRmark(body, irmark)
 	}
 	return MakeGovTalkMessage(env,
 		ElementWithNesting("Header", msgDetails, sndrDetails),
 		gtDetails,
-		body)
+		body), nil
 }
 
 func (gtm *GovTalkMessage) makeBody() *SimpleElement {
@@ -107,12 +115,18 @@ func (gtm *GovTalkMessage) makeBody() *SimpleElement {
 }
 
 func attachIRmark(body *SimpleElement, irmark string) {
-	log.Printf("%p", body)
 	ire := body.Elements[0].(*IRenvelopeXML)
 	irh := ire.Elements[0].(*SimpleElement)
 	irh.Elements = slices.Insert(irh.Elements, len(irh.Elements)-1, any(MakeIRmark(irmark)))
 }
 
-func calculateIRmark(body *SimpleElement) string {
-	return "need to calculate a SHA-1 tag"
+func calculateIRmark(body *SimpleElement) (string, error) {
+	bs, err := xml.MarshalIndent(body, "", "  ")
+	if err != nil {
+		return "", err
+	}
+	decoder := xml.NewDecoder(bytes.NewReader(bs))
+	out, err := c14n.Canonicalize(decoder)
+	fmt.Println(string(out), err)
+	return "hello, world", nil
 }

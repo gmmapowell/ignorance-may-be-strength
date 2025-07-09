@@ -18,7 +18,11 @@ func Generate(conf *config.Config, options *govtalk.EnvelopeOptions) (io.Reader,
 	msg.Identity(conf.Sender, conf.Password)
 	msg.Utr(conf.Utr)
 	msg.Product(conf.Vendor, conf.Product, conf.Version)
-	bs, err := xml.MarshalIndent(msg.AsXML(), "", "  ")
+	m, err := msg.AsXML()
+	if err != nil {
+		return nil, err
+	}
+	bs, err := xml.MarshalIndent(m, "", "  ")
 	if err != nil {
 		return nil, err
 	}
