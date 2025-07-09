@@ -2,6 +2,8 @@ package govtalk
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"encoding/base64"
 	"encoding/xml"
 	"fmt"
 	"slices"
@@ -96,16 +98,22 @@ func (gtm *GovTalkMessage) AsXML() (any, error) {
 	var body *SimpleElement
 	if gtm.opts.IncludeBody {
 		body = gtm.makeBody()
-		irmark, err := calculateIRmark(body)
+	}
+
+	gt := MakeGovTalkMessage(env,
+		ElementWithNesting("Header", msgDetails, sndrDetails),
+		gtDetails,
+		body)
+
+	if body != nil {
+		irmark, err := calculateIRmark(gt)
 		if err != nil {
 			return nil, err
 		}
 		attachIRmark(body, irmark)
 	}
-	return MakeGovTalkMessage(env,
-		ElementWithNesting("Header", msgDetails, sndrDetails),
-		gtDetails,
-		body), nil
+
+	return gt, nil
 }
 
 func (gtm *GovTalkMessage) makeBody() *SimpleElement {
@@ -120,13 +128,37 @@ func attachIRmark(body *SimpleElement, irmark string) {
 	irh.Elements = slices.Insert(irh.Elements, len(irh.Elements)-1, any(MakeIRmark(irmark)))
 }
 
-func calculateIRmark(body *SimpleElement) (string, error) {
+func calculateIRmark(body any) (string, error) {
+	// Generate a text representation
 	bs, err := xml.MarshalIndent(body, "", "  ")
 	if err != nil {
 		return "", err
 	}
+
+	// now canonicalise that
 	decoder := xml.NewDecoder(bytes.NewReader(bs))
 	out, err := c14n.Canonicalize(decoder)
-	fmt.Println(string(out), err)
-	return "hello, world", nil
+	if err != nil {
+		return "", err
+	}
+
+	// Generate a SHA-1 encoding
+	hasher := sha1.New()
+	_, err = hasher.Write(out)
+	if err != nil {
+		return "", err
+	}
+	sha := hasher.Sum(nil)
+
+	// And then turn that into Base64
+	w := new(bytes.Buffer)
+	enc := base64.NewEncoder(base64.StdEncoding, w)
+	enc.Write(sha)
+	enc.Close()
+
+	// The string of this is the IRmark
+	b64sha := w.String()
+	fmt.Printf("IRmark: %d %s\n", len(b64sha), b64sha)
+
+	return b64sha, nil
 }
