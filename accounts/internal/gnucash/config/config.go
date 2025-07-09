@@ -26,6 +26,9 @@ type Business struct {
 	Phone   string
 	TaxNum  string
 	Web     string
+
+	// TODO: what this?
+	CompanyType string
 }
 
 type Account struct {

@@ -12,7 +12,19 @@ import (
 )
 
 func Submit(conf *config.Config) error {
-	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true}
+	utr := conf.Utr
+	if utr == "" {
+		utr = conf.Business.TaxNum
+	}
+	ctr := &govtalk.IRenvelope{Business: conf.Business, ReturnType: "new",
+		Sender: "Company", // the type of business we are, I believe.  The schema limits it to a handful of options
+
+		UTR:         utr,
+		PeriodStart: "2021-04-01", PeriodEnd: "2022-03-31",
+		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
+		CorporationTax: 0,
+	}
+	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}
 	send, err := Generate(conf, submitOptions)
 	if err != nil {
 		return err

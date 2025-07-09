@@ -23,12 +23,16 @@ func Generate(conf *config.Config, options *govtalk.EnvelopeOptions) (io.Reader,
 		return nil, err
 	}
 
-	checkAgainstSchema(bs)
+	err = checkAgainstSchema(bs)
+	if err != nil {
+		return nil, err
+	}
 
 	return bytes.NewReader(bs), nil
 }
 
-func checkAgainstSchema(bs []byte) {
+func checkAgainstSchema(bs []byte) error {
+	fmt.Printf("%s\n", string(bs))
 	file, err := os.Create("submit.xml")
 	if err != nil {
 		panic(err)
@@ -37,15 +41,18 @@ func checkAgainstSchema(bs []byte) {
 	file.Close()
 	cmd := exec.Command("xmllint", "--schema", "ct600/xsd/importer.xsd", "--output", "out.xml", "submit.xml")
 	output, err := cmd.CombinedOutput()
-	if err != nil {
-		panic(err)
-	}
 	result := string(output)
 	fmt.Println("---- xmllint output")
 	fmt.Print(result)
 	fmt.Println("----")
 
-	if result != "submit.xml validates\n" {
-		panic("xml did not validate against schema; not submitting")
+	if err != nil {
+		return err
 	}
+
+	if result != "submit.xml validates\n" {
+		return fmt.Errorf("xml did not validate against schema; not submitting")
+	}
+
+	return nil
 }

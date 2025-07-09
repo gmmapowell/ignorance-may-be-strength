@@ -1,5 +1,10 @@
 package govtalk
 
+import (
+	"log"
+	"slices"
+)
+
 type GovTalk interface {
 	Identity(send, pwd string)
 	Utr(utr string)
@@ -84,9 +89,10 @@ func (gtm *GovTalkMessage) AsXML() any {
 			),
 		),
 	)
-	var body any
+	var body *SimpleElement
 	if gtm.opts.IncludeBody {
 		body = gtm.makeBody()
+		attachIRmark(body, calculateIRmark(body))
 	}
 	return MakeGovTalkMessage(env,
 		ElementWithNesting("Header", msgDetails, sndrDetails),
@@ -94,7 +100,19 @@ func (gtm *GovTalkMessage) AsXML() any {
 		body)
 }
 
-func (gtm *GovTalkMessage) makeBody() any {
+func (gtm *GovTalkMessage) makeBody() *SimpleElement {
 	body := ElementWithNesting("Body")
-	return &body
+	body.Elements = append(body.Elements, gtm.opts.IRenvelope.AsXML())
+	return body
+}
+
+func attachIRmark(body *SimpleElement, irmark string) {
+	log.Printf("%p", body)
+	ire := body.Elements[0].(*IRenvelopeXML)
+	irh := ire.Elements[0].(*SimpleElement)
+	irh.Elements = slices.Insert(irh.Elements, len(irh.Elements)-1, any(MakeIRmark(irmark)))
+}
+
+func calculateIRmark(body *SimpleElement) string {
+	return "need to calculate a SHA-1 tag"
 }

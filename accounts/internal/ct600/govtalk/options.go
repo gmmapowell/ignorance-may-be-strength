@@ -8,4 +8,5 @@ type EnvelopeOptions struct {
 	IncludeSender     bool
 	IncludeKeys       bool
 	IncludeBody       bool
+	IRenvelope        *IRenvelope
 }

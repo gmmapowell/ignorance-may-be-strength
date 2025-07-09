@@ -21,6 +21,24 @@ type GovTalkMessageXML struct {
 	Elements
 }
 
+type IRenvelopeXML struct {
+	XMLName xml.Name `xml:"IRenvelope"`
+	XMLNS   string   `xml:"xmlns,attr"`
+	Elements
+}
+
+type IRmarkXML struct {
+	XMLName xml.Name `xml:"IRmark"`
+	Type    string   `xml:",attr"`
+	Text    string   `xml:",chardata"`
+}
+
+type CompanyTaxReturnXML struct {
+	XMLName    xml.Name `xml:"CompanyTaxReturn"`
+	ReturnType string   `xml:",attr"`
+	Elements
+}
+
 type Elements []any
 
 func ElementWithNesting(tag string, elts ...any) *SimpleElement {
@@ -41,6 +59,27 @@ func MakeGovTalkMessage(nesting ...any) *GovTalkMessageXML {
 		XMLNS:    "http://www.govtalk.gov.uk/CM/envelope",
 		XSI:      "http://www.w3.org/2001/XMLSchema-instance",
 		Elements: nesting,
+	}
+}
+
+func MakeIRenvelopeMessage(nesting ...any) *IRenvelopeXML {
+	return &IRenvelopeXML{
+		XMLNS:    "http://www.govtalk.gov.uk/taxation/CT/5",
+		Elements: nesting,
+	}
+}
+
+func MakeIRmark(irmark string) *IRmarkXML {
+	return &IRmarkXML{
+		Type: "generic",
+		Text: irmark,
+	}
+}
+
+func MakeCompanyTaxReturn(ty string, nested ...any) *CompanyTaxReturnXML {
+	return &CompanyTaxReturnXML{
+		ReturnType: ty,
+		Elements:   nested,
 	}
 }
 
