@@ -34,6 +34,10 @@
 		{
 			"name": "Accounts",
 			"path": "accounts"
+		},
+		{
+			"name": "Neptune",
+			"path": "neptune"
 		}
 	],
 	"settings": {},
@@ -80,6 +84,27 @@
 					"${userHome}/Ziniki/stsd-config"
                                 ],
 				"cwd": "${workspaceFolder:Accounts}"
+                        },
+                        {
+                                "name": "Neptune Create",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Neptune}/cmd/create",
+                                "args": [
+                                ],
+				"env": {
+"AWS_PROFILE": "ziniki-admin"
+},
+				"cwd": "${workspaceFolder:Neptune}"
+                        },
+                        {
+                                "name": "Neptune Clean",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Neptune}/cmd/clean",
+                                "args": [
+                                ],
+				"cwd": "${workspaceFolder:Neptune}"
                         },
                 ],
                 "compounds": []

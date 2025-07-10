@@ -1,0 +1,55 @@
+The purpose of this project is to test out how easy it is to "link" DynamoDB tables
+together using Neptune, and then to see how easily we can navigate the resulting graph.
+
+This obviously requires a lot of AWS infrastructure.
+
+This is the target to put up (and pull down) all the infrastructure.
+
+    target infrastructure
+
+The sample application calls for two core concepts: "stocks" and "users".  Each of these
+requires a table in DynamoDB.
+
+Because DynamoDB tables are relatively simple, we can just use the standard verb "ensure"
+along with the concept of a "DynamoDB.Table".  This one is going to be called "stocks".
+
+        ensure aws.DynamoDB.Table "Stocks"
+            @teardown delete
+
+DynamoDB has a weird thing about AttributeDefinitions and KeySchema which is that there is
+considerable overlap, and only "key" attributes should appear in the AttributeDefinitions.
+This smacks of duplication to me, but the consequence is that any fields (such as price here)
+that are not _key_ fields are not actually used.
+
+            Fields <= aws.DynamoFields
+                Symbol string
+                    @Key hash
+                Price number
+
+And we have a table of users, which (for now) is just a username.
+
+        ensure aws.DynamoDB.Table "Users"
+            @teardown delete
+            Fields <= aws.DynamoFields
+                Username string
+                    @Key hash
+
+Neptune is more complicated.  I expect that when I know more about all the moving parts I will
+add a reductive "neptune" verb that makes sure you create all the necessary parts or gives you
+an error.  But for now, I'm just going to create a cluster.
+
+Neptune has to run "inside" a VPC.  In order to do this, it requires you to create a special
+"SubnetGroup" (specific to Neptune; this is not a VPC thing).  This is quite hard to create,
+so I did it in the UI and I'm just finding it here and assigning it to the variable "subnet".
+
+        find aws.Neptune.SubnetGroup "neptunetest" => subnet
+
+So now we can create the Cluster.  It would seem that you can create a cluster with little more
+than a name and a SubnetGroup.
+
+        ensure aws.Neptune.Cluster "user-stocks"
+            @teardown delete
+            SubnetGroupName <- subnet
+
+That "appears" to be enough to be getting on with, but I suspect we will be back here soon to
+create more elements.

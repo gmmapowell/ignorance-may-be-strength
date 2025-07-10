@@ -1,0 +1,3 @@
+#!/bin/bash
+
+$DEPLOYER/driver/cmd/deployer/deployer -m $DEPLOYER/coremod/plugin/coremod.so -m $DEPLOYER/../deployer-module-aws/plugin/deployer_module_aws.so -e gareth -d dply "$@" infrastructure
