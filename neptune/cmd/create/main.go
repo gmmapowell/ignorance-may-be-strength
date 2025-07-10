@@ -15,31 +15,38 @@ type Stock struct {
 	Price  int
 }
 
-func main() {
+type Inserter struct {
+	svc *dynamodb.Client
+}
+
+func (ins *Inserter) Insert(table string, item any) error {
+	av, err := attributevalue.MarshalMap(item)
+	if err != nil {
+		return err
+	}
+
+	input := &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(table),
+	}
+
+	_, err = ins.svc.PutItem(context.TODO(), input)
+	return err
+}
+
+func NewInserter() *Inserter {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}
-	svc := dynamodb.NewFromConfig(cfg)
+	return &Inserter{svc: dynamodb.NewFromConfig(cfg)}
+}
 
-	tableName := "Stocks"
+func main() {
+	inserter := NewInserter()
 
-	stock := Stock{
+	inserter.Insert("Stocks", Stock{
 		Symbol: "HWX2",
 		Price:  1195,
-	}
-
-	av, err := attributevalue.MarshalMap(stock)
-	if err != nil {
-		log.Fatalf("Got error marshalling new movie item: %s", err)
-	}
-	input := &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String(tableName),
-	}
-
-	_, err = svc.PutItem(context.TODO(), input)
-	if err != nil {
-		log.Fatalf("Got error calling PutItem: %s", err)
-	}
+	})
 }
