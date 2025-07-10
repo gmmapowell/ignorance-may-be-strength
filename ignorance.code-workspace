@@ -93,8 +93,8 @@
                                 "args": [
                                 ],
 				"env": {
-"AWS_PROFILE": "ziniki-admin"
-},
+					"AWS_PROFILE": "ziniki-admin"
+				},
 				"cwd": "${workspaceFolder:Neptune}"
                         },
                         {
@@ -104,6 +104,9 @@
                                 "program": "${workspaceFolder:Neptune}/cmd/clean",
                                 "args": [
                                 ],
+				"env": {
+					"AWS_PROFILE": "ziniki-admin"
+				},
 				"cwd": "${workspaceFolder:Neptune}"
                         },
                 ],
