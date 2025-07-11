@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/neptune"
 	"github.com/aws/aws-sdk-go-v2/service/neptunedata"
 	"github.com/gmmapowell/ignorance/neptune/internal/dynamo"
 )
@@ -30,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	nodeCreator, err := NewNodeCreator("https://user-stocks.cluster-ckgvna81hufy.us-east-1.neptune.amazonaws.com:8182/")
+	nodeCreator, err := NewNodeCreator()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,8 +54,8 @@ func (nc *NodeCreator) Insert(label string) error {
 	return err
 }
 
-func NewNodeCreator(endpoint string) (*NodeCreator, error) {
-	svc, err := openNeptune(endpoint)
+func NewNodeCreator() (*NodeCreator, error) {
+	svc, err := openNeptune()
 	if err != nil {
 		return nil, err
 	} else {
@@ -62,14 +63,22 @@ func NewNodeCreator(endpoint string) (*NodeCreator, error) {
 	}
 }
 
-func openNeptune(endpoint string) (*neptunedata.Client, error) {
+func openNeptune() (*neptunedata.Client, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err
 	}
+	nc := neptune.NewFromConfig(cfg)
+	endpoints, err := nc.DescribeDBClusterEndpoints(context.TODO(), &neptune.DescribeDBClusterEndpointsInput{DBClusterIdentifier: aws.String("user-stocks")})
+	if err != nil {
+		return nil, err
+	}
+	if len(endpoints.DBClusterEndpoints) < 1 {
+		return nil, fmt.Errorf("no cluster endpoints found")
+	}
+	endpoint := *endpoints.DBClusterEndpoints[0].Endpoint
 	cli := neptunedata.NewFromConfig(cfg, func(opts *neptunedata.Options) {
-		opts.BaseEndpoint = aws.String(endpoint)
-		log.Printf("%s\n", *opts.BaseEndpoint)
+		opts.BaseEndpoint = aws.String("https://" + endpoint + ":8182/")
 	})
 	return cli, nil
 }
