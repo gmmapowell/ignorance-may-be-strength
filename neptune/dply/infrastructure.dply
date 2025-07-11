@@ -47,9 +47,20 @@ so I did it in the UI and I'm just finding it here and assigning it to the varia
 So now we can create the Cluster.  It would seem that you can create a cluster with little more
 than a name and a SubnetGroup.
 
-        ensure aws.Neptune.Cluster "user-stocks"
+        ensure aws.Neptune.Cluster "user-stocks" => cluster
             @teardown delete
             SubnetGroupName <- subnet
+            MinCapacity <- 1.0
+            MaxCapacity <- 1.0
 
-That "appears" to be enough to be getting on with, but I suspect we will be back here soon to
-create more elements.
+We need to create Neptune Writer and Reader instances
+
+        ensure aws.Neptune.Instance "writer"
+            @teardown delete
+            Cluster <- cluster
+            InstanceClass <- "serverless"
+
+        ensure aws.Neptune.Instance "reader"
+            @teardown delete
+            Cluster <- cluster
+            InstanceClass <- "serverless"
