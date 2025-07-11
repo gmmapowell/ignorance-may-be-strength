@@ -30,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	nodeCreator, err := NewNodeCreator()
+	nodeCreator, err := NewNodeCreator("https://user-stocks.cluster-ckgvna81hufy.us-east-1.neptune.amazonaws.com:8182/")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,8 +53,8 @@ func (nc *NodeCreator) Insert(label string) error {
 	return err
 }
 
-func NewNodeCreator() (*NodeCreator, error) {
-	svc, err := openNeptune()
+func NewNodeCreator(endpoint string) (*NodeCreator, error) {
+	svc, err := openNeptune(endpoint)
 	if err != nil {
 		return nil, err
 	} else {
@@ -62,10 +62,14 @@ func NewNodeCreator() (*NodeCreator, error) {
 	}
 }
 
-func openNeptune() (*neptunedata.Client, error) {
+func openNeptune(endpoint string) (*neptunedata.Client, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err
 	}
-	return neptunedata.NewFromConfig(cfg), nil
+	cli := neptunedata.NewFromConfig(cfg, func(opts *neptunedata.Options) {
+		opts.BaseEndpoint = aws.String(endpoint)
+		log.Printf("%s\n", *opts.BaseEndpoint)
+	})
+	return cli, nil
 }
