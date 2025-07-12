@@ -47,9 +47,9 @@ type NodeCreator struct {
 }
 
 func (nc *NodeCreator) Insert(label string) error {
-	r1 := "MATCH (n {age: $age}) RETURN n"
-	params := `{"age": 25}`
-	insertQuery := neptunedata.ExecuteOpenCypherQueryInput{OpenCypherQuery: aws.String(r1), Parameters: aws.String(params)}
+	create := "CREATE (n:stock {symbol: $symbol})"
+	params := fmt.Sprintf(`{"symbol": "%s"}`, label)
+	insertQuery := neptunedata.ExecuteOpenCypherQueryInput{OpenCypherQuery: aws.String(create), Parameters: aws.String(params)}
 	out, err := nc.svc.ExecuteOpenCypherQuery(context.TODO(), &insertQuery)
 	if err != nil {
 		return err
