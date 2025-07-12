@@ -47,10 +47,22 @@ type NodeCreator struct {
 }
 
 func (nc *NodeCreator) Insert(label string) error {
-	create := "CREATE (a:stock) {Symbol: $symbol}"
-	params := fmt.Sprintf(`{"name": "%s"}`, label)
-	insertQuery := neptunedata.ExecuteOpenCypherQueryInput{OpenCypherQuery: aws.String(create), Parameters: aws.String(params)}
-	_, err := nc.svc.ExecuteOpenCypherQuery(context.TODO(), &insertQuery)
+	r1 := "RETURN 1"
+	insertQuery := neptunedata.ExecuteOpenCypherQueryInput{OpenCypherQuery: aws.String(r1)}
+	out, err := nc.svc.ExecuteOpenCypherQuery(context.TODO(), &insertQuery)
+	if err != nil {
+		return err
+	}
+	var results []map[string]any = nil
+	err = out.Results.UnmarshalSmithyDocument(&results)
+	if err != nil {
+		return err
+	}
+	for _, m := range results {
+		for k, v := range m {
+			log.Printf("result %s => %s\n", k, v)
+		}
+	}
 	return err
 }
 
