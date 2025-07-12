@@ -1,6 +1,8 @@
 package govtalk
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
 type SimpleElement struct {
 	XMLName xml.Name
@@ -15,7 +17,14 @@ type KeyElement struct {
 }
 
 type GovTalkMessageXML struct {
-	XMLName xml.Name `xml:"GovTalkMessage"`
+	XMLName   xml.Name `xml:"GovTalkMessage"`
+	XMLNS     string   `xml:"xmlns,attr"`
+	canonBody string
+	Elements
+}
+
+type BodySchemaXML struct {
+	XMLName xml.Name `xml:"Body"`
 	XMLNS   string   `xml:"xmlns,attr"`
 	XSI     string   `xml:"xmlns:xsi,attr"`
 	Elements
@@ -54,17 +63,29 @@ func ElementWithText(tag, value string, elts ...any) *SimpleElement {
 	return env
 }
 
-func MakeGovTalkMessage(nesting ...any) *GovTalkMessageXML {
+func MakeGovTalkMessage(canonBody string, nesting ...any) *GovTalkMessageXML {
 	return &GovTalkMessageXML{
-		XMLNS:    "http://www.govtalk.gov.uk/CM/envelope",
-		XSI:      "http://www.w3.org/2001/XMLSchema-instance",
-		Elements: nesting,
+		XMLNS:     "http://www.govtalk.gov.uk/CM/envelope",
+		canonBody: canonBody,
+		Elements:  nesting,
 	}
+}
+
+func (gtx *GovTalkMessageXML) AttachBodyTo(bs []byte) ([]byte, error) {
+	return placeBefore(bs, "</GovTalkMessage>", gtx.canonBody)
 }
 
 func MakeIRenvelopeMessage(nesting ...any) *IRenvelopeXML {
 	return &IRenvelopeXML{
 		XMLNS:    "http://www.govtalk.gov.uk/taxation/CT/5",
+		Elements: nesting,
+	}
+}
+
+func MakeBodyWithSchemaMessage(nesting ...any) *BodySchemaXML {
+	return &BodySchemaXML{
+		XMLNS:    "http://www.govtalk.gov.uk/CM/envelope",
+		XSI:      "http://www.w3.org/2001/XMLSchema-instance",
 		Elements: nesting,
 	}
 }

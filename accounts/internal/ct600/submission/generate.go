@@ -26,6 +26,12 @@ func Generate(conf *config.Config, options *govtalk.EnvelopeOptions) (io.Reader,
 	if err != nil {
 		return nil, err
 	}
+	bs, err = m.AttachBodyTo(bs)
+	if err != nil {
+		return nil, err
+	}
+
+	bs = []byte(string(bs) + "\n")
 
 	err = checkAgainstSchema(bs)
 	if err != nil {
@@ -36,7 +42,6 @@ func Generate(conf *config.Config, options *govtalk.EnvelopeOptions) (io.Reader,
 }
 
 func checkAgainstSchema(bs []byte) error {
-	fmt.Printf("%s\n", string(bs))
 	file, err := os.Create("submit.xml")
 	if err != nil {
 		panic(err)

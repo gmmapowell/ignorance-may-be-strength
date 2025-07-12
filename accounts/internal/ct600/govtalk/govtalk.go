@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
-	"slices"
+	"strings"
 
 	"github.com/ucarion/c14n"
 )
@@ -15,7 +15,7 @@ type GovTalk interface {
 	Identity(send, pwd string)
 	Utr(utr string)
 	Product(vendor, product, version string)
-	AsXML() (any, error)
+	AsXML() (*GovTalkMessageXML, error)
 }
 
 func MakeGovTalk(opts *EnvelopeOptions) GovTalk {
@@ -44,7 +44,7 @@ func (gtm *GovTalkMessage) Product(vendor, product, version string) {
 	gtm.version = version
 }
 
-func (gtm *GovTalkMessage) AsXML() (any, error) {
+func (gtm *GovTalkMessage) AsXML() (*GovTalkMessageXML, error) {
 	env := ElementWithText("EnvelopeVersion", "2.0")
 	var corrId *SimpleElement
 	if gtm.opts.SendCorrelationID {
@@ -96,22 +96,21 @@ func (gtm *GovTalkMessage) AsXML() (any, error) {
 		),
 	)
 	var body *SimpleElement
+	var canonBody string
 	if gtm.opts.IncludeBody {
 		body = gtm.makeBody()
-	}
-
-	gt := MakeGovTalkMessage(env,
-		ElementWithNesting("Header", msgDetails, sndrDetails),
-		gtDetails,
-		body)
-
-	if body != nil {
-		irmark, err := calculateIRmark(gt)
+		var err error
+		canonBody, err = canonicaliseBody(body)
 		if err != nil {
 			return nil, err
 		}
-		attachIRmark(body, irmark)
 	}
+
+	gt := MakeGovTalkMessage(
+		canonBody,
+		env,
+		ElementWithNesting("Header", msgDetails, sndrDetails),
+		gtDetails)
 
 	return gt, nil
 }
@@ -122,15 +121,16 @@ func (gtm *GovTalkMessage) makeBody() *SimpleElement {
 	return body
 }
 
-func attachIRmark(body *SimpleElement, irmark string) {
-	ire := body.Elements[0].(*IRenvelopeXML)
-	irh := ire.Elements[0].(*SimpleElement)
-	irh.Elements = slices.Insert(irh.Elements, len(irh.Elements)-1, any(MakeIRmark(irmark)))
-}
+func canonicaliseBody(from *SimpleElement) (string, error) {
+	body := MakeBodyWithSchemaMessage(from.Elements...)
 
-func calculateIRmark(body any) (string, error) {
 	// Generate a text representation
-	bs, err := xml.MarshalIndent(body, "", "  ")
+	bs, err := xml.MarshalIndent(body, "  ", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	bs, err = placeBefore(bs, "<Sender>", "\n        ")
 	if err != nil {
 		return "", err
 	}
@@ -144,7 +144,7 @@ func calculateIRmark(body any) (string, error) {
 
 	// Generate a SHA-1 encoding
 	hasher := sha1.New()
-	_, err = hasher.Write(out)
+	_, err = hasher.Write([]byte(out))
 	if err != nil {
 		return "", err
 	}
@@ -158,7 +158,44 @@ func calculateIRmark(body any) (string, error) {
 
 	// The string of this is the IRmark
 	b64sha := w.String()
-	fmt.Printf("IRmark: %d %s\n", len(b64sha), b64sha)
 
-	return b64sha, nil
+	// remove the "fake" schema
+	bs, err = deleteBetween(out, "<Body", ">")
+	if err != nil {
+		return "", err
+	}
+
+	// Add the IRmark
+	bs, err = placeBefore(bs, "\n        <Sender>", `<IRmark Type="generic">`+b64sha+"</IRmark>")
+	if err != nil {
+		return "", err
+	}
+
+	// Fix up whitespace around Body
+	ret := "  " + string(bs) + "\n"
+
+	return ret, err
+}
+
+func placeBefore(bs []byte, match string, insert string) ([]byte, error) {
+	str := string(bs)
+	s1 := strings.Index(str, match)
+	if s1 == -1 {
+		return nil, fmt.Errorf("did not find " + match)
+	}
+	str = str[0:s1] + insert + str[s1:]
+	bs = []byte(str)
+	return bs, nil
+}
+
+func deleteBetween(bs []byte, from string, to string) ([]byte, error) {
+	canonBody := string(bs)
+	j := strings.Index(canonBody, from)
+	if j == -1 {
+		return nil, fmt.Errorf("did not find " + from)
+	}
+	j += len(from)
+	j1 := strings.Index(canonBody[j:], to)
+	canonBody = canonBody[0:j] + canonBody[j+j1:]
+	return []byte(canonBody), nil
 }
