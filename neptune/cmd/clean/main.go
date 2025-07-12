@@ -4,12 +4,19 @@ import (
 	"log"
 
 	"github.com/gmmapowell/ignorance/neptune/internal/dynamo"
+	"github.com/gmmapowell/ignorance/neptune/internal/neptune"
 )
 
 func main() {
-	c, err := dynamo.NewCleaner()
+	dc, err := dynamo.NewCleaner()
 	if err != nil {
 		log.Fatal(err)
 	}
-	c.Clean("Stocks", "Symbol")
+	dc.Clean("Stocks", "Symbol")
+
+	nc, err := neptune.NewCleaner("user-stocks")
+	if err != nil {
+		log.Fatal(err)
+	}
+	nc.Clean()
 }
