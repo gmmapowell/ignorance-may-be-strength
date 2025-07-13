@@ -111,6 +111,19 @@
 				"cwd": "${workspaceFolder:Neptune}"
                         },
                         {
+                                "name": "Neptune Find Watchers",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Neptune}/cmd/watchers",
+                                "args": [
+					"UPM6"
+                                ],
+				"env": {
+					"AWS_PROFILE": "ziniki-admin"
+				},
+				"cwd": "${workspaceFolder:Neptune}"
+                        },
+                        {
                                 "name": "Neptune Clean",
                                 "type": "go",
                                 "request": "launch",
