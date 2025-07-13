@@ -19,17 +19,16 @@ func CreateAndInsertStocks(inserter *dynamo.Inserter, creator *neptune.NodeCreat
 		stocks[i] = &s
 		log.Printf("stock %s %d\n", s.Symbol, s.Price)
 
-		/*
-			err := inserter.Insert("Stocks", s)
-			if err != nil {
-				log.Fatal(err)
-			}
+		err := inserter.Insert("Stocks", s)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-			err = creator.Insert("Stock", "symbol", s.Symbol)
-			if err != nil {
-				log.Fatal(err)
-			}
-		*/
+		err = creator.Insert("Stock", "symbol", s.Symbol)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 	}
 	return stocks
 }

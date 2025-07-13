@@ -52,12 +52,21 @@ func NewNodeCreator(db string) (*NodeCreator, error) {
 	}
 }
 
-func showResults(doc document.Interface) error {
+func unpack(doc document.Interface) ([]map[string]any, error) {
 	var results []map[string]any = nil
 	err := doc.UnmarshalSmithyDocument(&results)
 	if err != nil {
+		return nil, err
+	}
+	return results, nil
+}
+
+func showResults(doc document.Interface) error {
+	results, err := unpack(doc)
+	if err != nil {
 		return err
 	}
+	log.Printf("have %d results\n", len(results))
 	for _, m := range results {
 		for k, v := range m {
 			log.Printf("result %s => %s\n", k, v)

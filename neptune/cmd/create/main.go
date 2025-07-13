@@ -19,6 +19,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	stocks := model.CreateAndInsertStocks(inserter, nodeCreator, 20)
-	model.CreateInsertAndLinkUsers(inserter, nodeCreator, stocks, 3, 2, 3)
+	stocks := model.CreateAndInsertStocks(inserter, nodeCreator, 2000)
+	model.CreateInsertAndLinkUsers(inserter, nodeCreator, stocks, 100, 10, 30)
 }
