@@ -23,9 +23,14 @@ func main() {
 		fmt.Printf("no watchers found\n")
 		return
 	}
-	slices.Sort(watchers)
+	slices.SortFunc(watchers, neptune.OrderConnection)
+	curr := ""
 	fmt.Printf("Stock %s watched by:\n", stock)
 	for _, w := range watchers {
-		fmt.Printf("  %s\n", w)
+		if w.User != curr {
+			fmt.Printf("  %s\n", w.User)
+			curr = w.User
+		}
+		fmt.Printf("    connected at %s\n", w.ConnectionId)
 	}
 }
