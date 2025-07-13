@@ -31,6 +31,8 @@ func main() {
 			fmt.Printf("  %s\n", w.User)
 			curr = w.User
 		}
-		fmt.Printf("    connected at %s\n", w.ConnectionId)
+		if w.ConnectionId != "" {
+			fmt.Printf("    connected at %s\n", w.ConnectionId)
+		}
 	}
 }

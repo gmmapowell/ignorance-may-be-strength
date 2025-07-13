@@ -15,7 +15,7 @@ func FindStockWatchers(db string, stock string) ([]*Connection, error) {
 	}
 	query := `
 	MATCH (u:User)-[r]->(s:Stock {symbol:$symbol})
-	MATCH (u)-[]->(e:Endpoint)
+	OPTIONAL MATCH (u)-[]->(e:Endpoint)
 	RETURN u.username, s.symbol, e.connId
 	`
 	params := fmt.Sprintf(`{"symbol": "%s"}`, stock)
@@ -31,7 +31,12 @@ func FindStockWatchers(db string, stock string) ([]*Connection, error) {
 	}
 	var ret []*Connection
 	for _, m := range results {
-		ret = append(ret, &Connection{User: m["u.username"].(string), ConnectionId: m["e.connId"].(string)})
+		connId := ""
+		cid := m["e.connId"]
+		if cid != nil {
+			connId = cid.(string)
+		}
+		ret = append(ret, &Connection{User: m["u.username"].(string), ConnectionId: connId})
 	}
 
 	return ret, nil
