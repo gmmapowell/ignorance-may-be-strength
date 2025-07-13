@@ -111,6 +111,20 @@
 				"cwd": "${workspaceFolder:Neptune}"
                         },
                         {
+                                "name": "Neptune Endpoint",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Neptune}/cmd/endpoint",
+                                "args": [
+					"d",
+					"xx-cc-3"
+                                ],
+				"env": {
+					"AWS_PROFILE": "ziniki-admin"
+				},
+				"cwd": "${workspaceFolder:Neptune}"
+                        },
+                        {
                                 "name": "Neptune Find Watchers",
                                 "type": "go",
                                 "request": "launch",
