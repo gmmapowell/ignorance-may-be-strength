@@ -59,8 +59,3 @@ We need to create Neptune Writer and Reader instances
             @teardown delete
             Cluster <- cluster
             InstanceClass <- "serverless"
-
-        ensure aws.Neptune.Instance "reader"
-            @teardown delete
-            Cluster <- cluster
-            InstanceClass <- "serverless"

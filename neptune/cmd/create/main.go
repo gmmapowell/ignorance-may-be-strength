@@ -4,26 +4,12 @@ import (
 	"log"
 
 	"github.com/gmmapowell/ignorance/neptune/internal/dynamo"
+	"github.com/gmmapowell/ignorance/neptune/internal/model"
 	"github.com/gmmapowell/ignorance/neptune/internal/neptune"
 )
 
-type Stock struct {
-	Symbol string
-	Price  int
-}
-
 func main() {
 	inserter, err := dynamo.NewInserter()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	stock := Stock{
-		Symbol: "HWX2",
-		Price:  1195,
-	}
-
-	err = inserter.Insert("Stocks", stock)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,8 +19,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = nodeCreator.Insert("Stock", stock.Symbol)
-	if err != nil {
-		log.Fatal(err)
-	}
+	stocks := model.CreateAndInsertStocks(inserter, nodeCreator, 2000)
+	model.CreateInsertAndLinkUsers(inserter, nodeCreator, stocks, 100, 10, 30)
 }
