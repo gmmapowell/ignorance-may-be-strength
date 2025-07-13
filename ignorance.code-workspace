@@ -98,6 +98,19 @@
 				"cwd": "${workspaceFolder:Neptune}"
                         },
                         {
+                                "name": "Neptune Find Prices",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Neptune}/cmd/stockprices",
+                                "args": [
+					"user003"
+                                ],
+				"env": {
+					"AWS_PROFILE": "ziniki-admin"
+				},
+				"cwd": "${workspaceFolder:Neptune}"
+                        },
+                        {
                                 "name": "Neptune Clean",
                                 "type": "go",
                                 "request": "launch",
