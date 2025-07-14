@@ -53,9 +53,21 @@ than a name and a SubnetGroup.
             MinCapacity <- 1.0
             MaxCapacity <- 1.0
 
-We need to create Neptune Writer and Reader instances
+We need to create a Neptune instance
 
         ensure aws.Neptune.Instance "writer"
             @teardown delete
+            Cluster <- cluster
+            InstanceClass <- "serverless"
+
+DB Instances cost "a lot" of money just sitting there, so when we're not actively using it,
+tear *just* the instance down.  My belief is that the data will remain in place.
+
+    target dropWriter
+        find aws.Neptune.Cluster "user-stocks" => cluster
+
+        ensure aws.Neptune.Instance "writer"
+            @teardown delete
+            @destroy
             Cluster <- cluster
             InstanceClass <- "serverless"
