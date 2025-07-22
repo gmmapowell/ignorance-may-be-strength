@@ -2,6 +2,9 @@ package govtalk
 
 import (
 	"encoding/xml"
+	"io"
+	"log"
+	"os"
 )
 
 type SimpleElement struct {
@@ -14,6 +17,11 @@ type KeyElement struct {
 	XMLName xml.Name `xml:"Key"`
 	Type    string   `xml:"Type,attr"`
 	Value   string   `xml:",chardata"`
+}
+
+type ContentElement struct {
+	XMLName xml.Name
+	Content []byte `xml:",innerxml"`
 }
 
 type GovTalkMessageXML struct {
@@ -61,6 +69,19 @@ func ElementWithText(tag, value string, elts ...any) *SimpleElement {
 	env.Text = value
 	env.Elements = elts
 	return env
+}
+
+func ContentFromFile(tag, filename string) *ContentElement {
+	fp, err := os.Open(filename)
+	if err != nil {
+		log.Fatalf("Could not read %s: %v", filename, err)
+	}
+	defer fp.Close()
+	bs, err := io.ReadAll(fp)
+	if err != nil {
+		log.Fatalf("Could not read %s: %v", filename, err)
+	}
+	return &ContentElement{XMLName: xml.Name{Local: tag}, Content: bs}
 }
 
 func MakeGovTalkMessage(canonBody string, nesting ...any) *GovTalkMessageXML {

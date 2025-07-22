@@ -2,6 +2,7 @@ package govtalk
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 )
@@ -20,9 +21,26 @@ type IRenvelope struct {
 	LossesBroughtForward float64
 	TradingNetProfits    float64
 	CorporationTax       float64
+
+	NoAccountsReason     string
+	AccountsIXBRL        string
+	NoComputationsReason string
+	ComputationsIXBRL    string
 }
 
 func (ire *IRenvelope) AsXML() any {
+	if ire.NoAccountsReason == "" && ire.AccountsIXBRL == "" {
+		log.Fatalf("Must give accounts or a reason not to")
+	}
+	if ire.NoAccountsReason != "" && ire.AccountsIXBRL != "" {
+		log.Fatalf("Must EITHER give accounts OR a reason not to")
+	}
+	if ire.NoComputationsReason == "" && ire.ComputationsIXBRL == "" {
+		log.Fatalf("Must give computations or a reason not to")
+	}
+	if ire.NoComputationsReason != "" && ire.ComputationsIXBRL != "" {
+		log.Fatalf("Must EITHER give computations OR a reason not to")
+	}
 	keys := ElementWithNesting("Keys", Key("UTR", ire.UTR))
 	pe := ElementWithText("PeriodEnd", ire.PeriodEnd)
 	dc := ElementWithText("DefaultCurrency", "GBP")
@@ -36,12 +54,17 @@ func (ire *IRenvelope) AsXML() any {
 	irh := ElementWithNesting("IRheader", keys, pe, dc, manifest)
 	irh.Elements = append(irh.Elements, ElementWithText("Sender", ire.Sender))
 	ci := ElementWithNesting("CompanyInformation", companyInfo(ire.Business, ire.UTR, ire.PeriodStart, ire.PeriodEnd))
-	summary := ElementWithNesting("ReturnInfoSummary", accounts(), computations())
+	summary := ElementWithNesting("ReturnInfoSummary", ire.accounts(), ire.computations())
 	turnover := ElementWithNesting("Turnover", ElementWithText("Total", fmt.Sprintf("%.2f", ire.Turnover)))
 	calc := ElementWithNesting("CompanyTaxCalculation", ire.taxCalc())
 	too := ElementWithNesting("CalculationOfTaxOutstandingOrOverpaid", ire.cotoo())
 	decl := ElementWithNesting("Declaration", decl())
-	ctr := MakeCompanyTaxReturn(ire.ReturnType, ci, summary, turnover, calc, too, decl)
+	attachments := ire.figureAttachments()
+	var attach any
+	if attachments != nil {
+		attach = ElementWithNesting("AttachedFiles", ElementWithNesting("XBRLsubmission", attachments))
+	}
+	ctr := MakeCompanyTaxReturn(ire.ReturnType, ci, summary, turnover, calc, too, decl, attach)
 	return MakeIRenvelopeMessage(irh, ctr)
 }
 
@@ -58,12 +81,20 @@ func companyInfo(business config.Business, UTR, start, end string) []any {
 	}
 }
 
-func accounts() any {
-	return ElementWithNesting("Accounts", ElementWithText("NoAccountsReason", "Not within charge to CT"))
+func (ire *IRenvelope) accounts() any {
+	if ire.NoAccountsReason != "" {
+		return ElementWithNesting("Accounts", ElementWithText("NoAccountsReason", ire.NoAccountsReason))
+	} else {
+		return ElementWithNesting("Accounts", ElementWithText("ThisPeriodAccounts", "yes"))
+	}
 }
 
-func computations() any {
-	return ElementWithNesting("Computations", ElementWithText("NoComputationsReason", "Not within charge to CT"))
+func (ire *IRenvelope) computations() any {
+	if ire.NoComputationsReason != "" {
+		return ElementWithNesting("Computations", ElementWithText("NoComputationsReason", ire.NoComputationsReason))
+	} else {
+		return ElementWithNesting("Computations", ElementWithText("ThisPeriodComputations", "yes"))
+	}
 }
 
 func (ire *IRenvelope) taxCalc() []any {
@@ -99,4 +130,13 @@ func decl() []any {
 		ElementWithText("Name", "Test"),
 		ElementWithText("Status", "Test"),
 	}
+}
+
+func (ire *IRenvelope) figureAttachments() []any {
+	ret := []any{}
+	if ire.AccountsIXBRL != "" {
+		acxml := ElementWithNesting("Accounts", ElementWithNesting("Instance", ContentFromFile("InlineXBRLDocument", ire.AccountsIXBRL)))
+		ret = append(ret, acxml)
+	}
+	return ret
 }
