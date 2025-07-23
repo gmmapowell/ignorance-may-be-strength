@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ct-types="http://www.hmrc.gov.uk/schemas/ct/comp/types/2023-01-01" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:xlink="http://www.w3.org/1999/xlink" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.hmrc.gov.uk/schemas/ct/comp/types/2023-01-01">
+  <xsd:import namespace="http://www.xbrl.org/2003/instance" schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
+  <xsd:import namespace="http://www.xbrl.org/2003/linkbase" schemaLocation="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd"/>
+  <xsd:complexType name="taxReferenceItemType">
+    <xsd:simpleContent>
+      <xsd:restriction base="xbrli:stringItemType">
+        <xsd:pattern value="[0-9]{10}"/>
+        <xsd:whiteSpace value="collapse"/>
+      </xsd:restriction>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="taxDistrictItemType">
+    <xsd:simpleContent>
+      <xsd:restriction base="xbrli:stringItemType">
+        <xsd:pattern value="[0-9]{3}"/>
+        <xsd:whiteSpace value="collapse"/>
+      </xsd:restriction>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:complexType name="nonEmptyStringItemType">
+    <xsd:simpleContent>
+      <xsd:restriction base="xbrli:stringItemType">
+        <xsd:minLength value="1"/>
+      </xsd:restriction>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:simpleType name="nonEmptyString">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

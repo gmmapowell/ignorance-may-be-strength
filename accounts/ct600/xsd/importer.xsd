@@ -2,4 +2,15 @@
 <schema elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema">
     <import namespace="http://www.govtalk.gov.uk/CM/envelope" schemaLocation="envelope.xsd"/>
     <import namespace="http://www.govtalk.gov.uk/taxation/CT/5" schemaLocation="ct600.xsd"/>
+<!--
+    <import namespace="http://www.xbrl.org/2008/inlineXBRL" schemaLocation="xhtml-inlinexbrl-1_0.xsd"/>
+    -->
+    <!-- import namespace="http://www.xbrl.org/2003/linkbase" schemaLocation="xbrl-linkbase-2003-12-31.xsd"/ -->
+    <!-- import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/ -->
+    <!--import namespace="http://www.hmrc.gov.uk/schemas/ct/comp/2023-01-01" schemaLocation="ct-comp/ct-comp-2023.xsd"/ -->
+
+   <import namespace="http://www.hmrc.gov.uk/schemas/ct/comp/2023-01-01" schemaLocation="ct-comp/ct-comp-2023.xsd"/>
+   <!--
+   <import namespace="http://www.hmrc.gov.uk/schemas/ct/comp/ref/2023-01-01" schemaLocation="ct-comp/ct-comp-ref-2023.xsd"/>
+-->
 </schema>

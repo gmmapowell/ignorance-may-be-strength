@@ -359,17 +359,17 @@
           <tr class="separator">
             <th>Net assets</th>
             <td class="figure total" id="currentNetAssets">
-              <ix:nonFraction name="uk-gaap- pt:NetAssetsLiabilitiesIncludingPensionAssetLiability" contextRef="current-mud" unitRef="currencyUnit" decimals="0">1000</ix:nonFraction>
+              <ix:nonFraction name="uk-gaap-pt:NetAssetsLiabilitiesIncludingPensionAssetLiability" contextRef="current-mud" unitRef="currencyUnit" decimals="0">1000</ix:nonFraction>
             </td>
             <td class="figure total" id="previousNetAssets">
-              <ix:nonFraction name="uk-gaap- pt:NetAssetsLiabilitiesIncludingPensionAssetLiability" contextRef="previous-mud" unitRef="currencyUnit" decimals="0">1000</ix:nonFraction>
+              <ix:nonFraction name="uk-gaap-pt:NetAssetsLiabilitiesIncludingPensionAssetLiability" contextRef="previous-mud" unitRef="currencyUnit" decimals="0">1000</ix:nonFraction>
             </td>
           </tr>
           <tr class="heading">
             <th colspan="3" class="normal">Issued share capital</th>
           </tr>
           <tr id="issuedShareCapital_0">
-            <th class="indent normal"><ix:nonFraction name="uk-gaap-pt:NumberSharesAllotted" contextRef="current-mud-shareclass-ordinary-1" unitRef="shares" decimals="0">1000</ix:nonFraction><ix:nonNumeric name="uk-gaap-cd-bus:DescriptionShareType" contextRef="current-period-shareclass-ordinary- 1">Ordinary</ix:nonNumeric> Shares of £<ix:nonFraction name="uk-gaap-pt:ParValueShare" contextRef="current-period-shareclass-ordinary-1" unitRef="currencyUnit" decimals="0">1</ix:nonFraction> each</th>
+            <th class="indent normal"><ix:nonFraction name="uk-gaap-pt:NumberSharesAllotted" contextRef="current-mud-shareclass-ordinary-1" unitRef="shares" decimals="0">1000</ix:nonFraction><ix:nonNumeric name="uk-gaap-cd-bus:DescriptionShareType" contextRef="current-period-shareclass-ordinary-1">Ordinary</ix:nonNumeric> Shares of £<ix:nonFraction name="uk-gaap-pt:ParValueShare" contextRef="current-period-shareclass-ordinary-1" unitRef="currencyUnit" decimals="0">1</ix:nonFraction> each</th>
             <td class="figure">
               <ix:nonFraction name="uk-gaap-pt:ShareCapitalAllottedCalledUpPaid" contextRef="current-mud-shareclass-ordinary-1" unitRef="currencyUnit" decimals="0">1000</ix:nonFraction>
             </td>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ct-ref="http://www.hmrc.gov.uk/schemas/ct/comp/ref/2023-01-01" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:xlink="http://www.w3.org/1999/xlink" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.hmrc.gov.uk/schemas/ct/comp/ref/2023-01-01">
+   <xsd:import namespace="http://www.xbrl.org/2003/instance" schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
+   <xsd:import namespace="http://www.xbrl.org/2003/linkbase" schemaLocation="http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd"/>
+   <xsd:element id="ct-ref_CT600_Box_Number" name="CT600_Box_Number" substitutionGroup="link:part" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>Number of the box on the CT600 form to which the concept relates, where appropriate</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element id="ct-ref_Statutory_Reference" name="Statutory_Reference" substitutionGroup="link:part" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>References to relevant legislation, where appropriate</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+   <xsd:element id="ct-ref_Comment" name="Comment" substitutionGroup="link:part" type="xsd:string">
+    <xsd:annotation>
+      <xsd:documentation>Additional comment, where appropriate</xsd:documentation>
+    </xsd:annotation>
+   </xsd:element>
+</xsd:schema>
