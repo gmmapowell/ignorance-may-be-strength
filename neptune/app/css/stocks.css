@@ -1,0 +1,45 @@
+div.title {
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+th.ticker, th.price {
+    font-size: 1.3rem;
+}
+
+table.stock-table {
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+}
+
+.ticker {
+    text-align: left;
+    width: 50%;
+}
+
+.price {
+    text-align: right;
+    width: 50%;
+    padding: 5px;
+}
+
+td.ticker {
+    font-weight: bold;
+}
+
+td.price.green {
+    background-color: green;
+}
+
+td.price.faded {
+    background-color: transparent;
+    transition: background-color 1.5s;
+}
+
+td.price {
+    background-color: transparent;
+}
