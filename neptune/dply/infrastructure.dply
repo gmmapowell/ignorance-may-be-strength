@@ -53,15 +53,105 @@ than a name and a SubnetGroup.
             MinCapacity <- 1.0
             MaxCapacity <- 1.0
 
-We need to create a Neptune instance
+We want to have a web app that can access Neptune.  In order for that to work, we need to
+define and declare a lambda, and then connect it through an API Gateway.  We actually need
+multiple units to handle watching prices and updating them
+
+First off, we need an S3 bucket to store our code in
+
+        ensure aws.S3.Bucket "ignorance-bucket.blogger.com" => bucket
+            @teardown preserve
+
+We need to recover the VPC we have put Neptune in
+
+        find aws.VPC.VPC "Test" => vpc
+
+Then we need a lambda
+
+        lambda.function "watch-lambda" => watch_lambda
+            @teardown delete
+            Runtime <- "go"
+            Code <= aws.S3.Location
+                Bucket <- "ignorance-bucket.blogger.com"
+                Key <- "lambda-watch.zip"
+
+The role for the lambda needs to say that it can be assumed by lambda,
+and then needs to have the permissions to set up the VPC, along with
+permissions to access other services we will need.
+
+            Role <= aws.IAM.WithRole "ignorance-lambda-role"
+                assume
+                    allow "sts:AssumeRole"
+                        principal "Service" "lambda.amazonaws.com"
+                policy
+
+These permissions are needed to allow the lambda to configure its VPC
+
+                    allow aws.action.ec2.CreateNetworkInterface "*"
+                    allow aws.action.ec2.DescribeNetworkInterfaces "*"
+                    allow aws.action.ec2.DeleteNetworkInterface "*"
+
+These allow the lambda to write to CloudWatch
+
+                    allow "logs:CreateLogGroup" "*"
+                    allow "logs:CreateLogStream" "*"
+                    allow "logs:PutLogEvents" "*"
+
+This permission is a weird one, and it's hard to track down a definitive reference for the resource API,
+but it's what allows the lambda to send websocket messages.  The resource pattern is:
+
+arn:aws:execute-api:REGION:ACCOUNT:GWID/STAGE/METHOD/@connections/CONNECTION-ID
+
+You obviously stand no chance of guessing the connection ID, but we could generate the rest exactly when
+we create the APIGW below, but it's easier to just do this.  Note that, unlike most resource IDs in permissions,
+something needs to appear in both the REGION and ACCOUNT slots (I have used *); it is not acceptable to
+just leave them blank between colons.
+
+                    allow "execute-api:ManageConnections" "arn:aws:execute-api:*:*:*/development/*/@connections/*"
+
+Lambda has a lot of complicated features, but we will just set up to use
+the basic publication and alias features using the alias "next"
+
+            PublishVersion <- true
+            Alias <- "next"
+
+In order to access Neptune, the Lambda needs to be in the same VPC.  For whatever
+reason, we can't just specify the VPC name, we have to find it (above) and then
+copy across the Subnets and Security Groups.
+
+            VpcConfig <= aws.VPC.Config
+                Subnets <- vpc->subnets
+                SecurityGroups <- vpc->securityGroups
+
+We want to work through the alias, which was just created, so find that specifically
+
+        find aws.Lambda.Alias "next" => nextAlias
+            FunctionName <- "watch-lambda"
+
+Now we need to define a websocket API Gateway to access this lambda:
+
+        api.gatewayV2 "stock-watch"
+            @teardown delete
+            Protocol <- "websocket"
+            RouteSelectionExpression <- "$request.body.action"
+            integration "lambda"
+                Type <- "AWS_PROXY"
+                Uri <- nextAlias->arn
+            route "$default" "lambda"
+            stage "development"
+
+DB Instances cost "a lot" of money just sitting there, so whave a separate target
+to launch it, and then we're not actively using it, tear *just* the instance down.
+My belief is that the data will remain in place along with the cluster.
+
+    target launchWriter
+        find aws.Neptune.Cluster "user-stocks" => cluster
 
         ensure aws.Neptune.Instance "writer"
             @teardown delete
             Cluster <- cluster
             InstanceClass <- "serverless"
 
-DB Instances cost "a lot" of money just sitting there, so when we're not actively using it,
-tear *just* the instance down.  My belief is that the data will remain in place.
 
     target dropWriter
         find aws.Neptune.Cluster "user-stocks" => cluster
