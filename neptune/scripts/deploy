@@ -1,3 +1,29 @@
-#!/bin/bash
+#!/bin/bash -e
+
+if [ -z "$AWS_PROFILE" ] ; then
+  echo "you must specify a profile in \$AWS_PROFILE"
+  exit 1
+fi
+
+if [ -z "$DEPLOYER" ] ; then
+  echo "you must specify a directory to the deployer in \$DEPLOYER"
+  exit 1
+fi
+
+if [ "$1" == "--nobuild" ] ; then
+  echo "not building lambdas..."
+  shift
+else
+  mkdir -p dist
+
+  echo "building watch lambda"
+  (
+    cd lambda/watch/
+    GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o bootstrap
+  )
+  rm dist/lambda-watch.zip
+  zip -o dist/lambda-watch.zip --junk-paths lambda/watch/bootstrap 
+  aws s3 cp dist/lambda-watch.zip s3://ignorance-bucket.blogger.com
+fi
 
 $DEPLOYER/driver/cmd/deployer/deployer -m $DEPLOYER/coremod/plugin/coremod.so -m $DEPLOYER/../deployer-module-aws/plugin/deployer_module_aws.so -e gareth -d dply "$@" infrastructure

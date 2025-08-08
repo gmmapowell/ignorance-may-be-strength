@@ -120,6 +120,7 @@ reason, we can't just specify the VPC name, we have to find it (above) and then
 copy across the Subnets and Security Groups.
 
             VpcConfig <= aws.VPC.Config
+                DualStack <- true
                 Subnets <- vpc->subnets
                 SecurityGroups <- vpc->securityGroups
 
@@ -133,6 +134,7 @@ Now we need to define a websocket API Gateway to access this lambda:
         api.gatewayV2 "stock-watch"
             @teardown delete
             Protocol <- "websocket"
+            IpAddressType <- "dualstack"
             RouteSelectionExpression <- "$request.body.action"
             integration "lambda"
                 Type <- "AWS_PROXY"

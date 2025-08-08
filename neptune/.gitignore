@@ -1,3 +1,4 @@
 cmd/stockprices/stockprices
 cmd/watchers/watchers
 cmd/endpoint/endpoint
+lambda/*/bootstrap
