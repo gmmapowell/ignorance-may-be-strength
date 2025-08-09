@@ -24,6 +24,15 @@ else
   rm dist/lambda-watch.zip
   zip -o dist/lambda-watch.zip --junk-paths lambda/watch/bootstrap 
   aws s3 cp dist/lambda-watch.zip s3://ignorance-bucket.blogger.com
+
+  echo "building publish lambda"
+  (
+    cd lambda/publish/
+    GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o bootstrap
+  )
+  rm dist/lambda-publish.zip
+  zip -o dist/lambda-publish.zip --junk-paths lambda/publish/bootstrap
+  aws s3 cp dist/lambda-publish.zip s3://ignorance-bucket.blogger.com
 fi
 
 $DEPLOYER/driver/cmd/deployer/deployer -m $DEPLOYER/coremod/plugin/coremod.so -m $DEPLOYER/../deployer-module-aws/plugin/deployer_module_aws.so -e gareth -d dply "$@" infrastructure

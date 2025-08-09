@@ -142,6 +142,52 @@ Now we need to define a websocket API Gateway to access this lambda:
             route "$default" "lambda"
             stage "development"
 
+Now we "duplicate" everything for the flow to publish new prices.  Things are
+not quite the same, but close.
+
+        lambda.function "publish-lambda" => publish_lambda
+            @teardown delete
+            Runtime <- "go"
+            Code <= aws.S3.Location
+                Bucket <- "ignorance-bucket.blogger.com"
+                Key <- "lambda-publish.zip"
+            Role <= aws.IAM.WithRole "ignorance-lambda-role"
+                assume
+                    allow "sts:AssumeRole"
+                        principal "Service" "lambda.amazonaws.com"
+                policy
+                    allow aws.action.ec2.CreateNetworkInterface "*"
+                    allow aws.action.ec2.DescribeNetworkInterfaces "*"
+                    allow aws.action.ec2.DeleteNetworkInterface "*"
+                    allow "logs:CreateLogGroup" "*"
+                    allow "logs:CreateLogStream" "*"
+                    allow "logs:PutLogEvents" "*"
+                    allow "execute-api:ManageConnections" "arn:aws:execute-api:*:*:*/development/*/@connections/*"
+            PublishVersion <- true
+            Alias <- "next"
+            VpcConfig <= aws.VPC.Config
+                DualStack <- true
+                Subnets <- vpc->subnets
+                SecurityGroups <- vpc->securityGroups
+
+We want to work through the alias, which was just created, so find that specifically
+
+        find aws.Lambda.Alias "next" => publishAlias
+            FunctionName <- "publish-lambda"
+
+Now we need to define a websocket API Gateway to access this lambda:
+
+        api.gatewayV2 "stock-publish"
+            @teardown delete
+            Protocol <- "http"
+            IpAddressType <- "dualstack"
+            integration "lambda"
+                Type <- "AWS_PROXY"
+                Uri <- publishAlias->arn
+                PayloadFormatVersion <- "2.0"
+            route "$default" "lambda"
+            stage "development"
+
 DB Instances cost "a lot" of money just sitting there, so whave a separate target
 to launch it, and then we're not actively using it, tear *just* the instance down.
 My belief is that the data will remain in place along with the cluster.
