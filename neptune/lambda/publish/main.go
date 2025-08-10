@@ -11,12 +11,35 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/neptunedata"
 	"github.com/gmmapowell/ignorance/neptune/internal/client"
+	"github.com/gmmapowell/ignorance/neptune/internal/dynamo"
+	"github.com/gmmapowell/ignorance/neptune/internal/model"
+	"github.com/gmmapowell/ignorance/neptune/internal/neptune"
 )
 
 var sender *client.Sender
+var nepcli *neptunedata.Client
+var dyncli *dynamodb.Client
 
 func handleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
+	if nepcli == nil {
+		var err error
+		nepcli, err = neptune.OpenNeptune("user-stocks")
+		if err != nil {
+			log.Printf("could not open neptune")
+			return events.APIGatewayV2HTTPResponse{StatusCode: 500, Body: "could not open neptune"}, err
+		}
+	}
+	if dyncli == nil {
+		var err error
+		dyncli, err = dynamo.OpenDynamo()
+		if err != nil {
+			log.Printf("could not open dynamo")
+			return events.APIGatewayV2HTTPResponse{StatusCode: 500, Body: "could not open dynamo"}, err
+		}
+	}
 	if sender == nil {
 		sender = client.NewSender("n2n2psybtd.execute-api.us-east-1.amazonaws.com", "development")
 	}
@@ -31,11 +54,35 @@ func handleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (e
 		return *r, err
 	}
 
-	// a hack right now; will be replaced with neptune
-	connIds := formData["connId"]
-	for _, connId := range connIds {
-		log.Printf("have quotes %v; sending to %s\n", quotes, connId)
-		sender.SendTo(connId, quotes)
+	updater, err := dynamo.NewUpdater(dyncli)
+	if err != nil {
+		log.Printf("could not create updater")
+		return events.APIGatewayV2HTTPResponse{StatusCode: 500, Body: "could not create updater"}, err
+	}
+	for _, q := range quotes {
+		s := model.Stock{Symbol: q.Ticker, Price: q.Price}
+		err := updater.Update("Stocks", s)
+		if err != nil {
+			log.Printf("could not update price for %s: %v\n", q.Ticker, err)
+			continue
+		}
+		conns, err := neptune.FindStockWatchers(nepcli, q.Ticker)
+		if err != nil {
+			log.Printf("could not recover watchers for %s: %v\n", q.Ticker, err)
+			continue
+		}
+
+		for _, conn := range conns {
+			log.Printf("have quotes %v; sending to %s\n", quotes, conn)
+			err := sender.SendTo(conn.ConnectionId, quotes)
+			if err != nil {
+				log.Printf("Failed to send to connection id %s for %s in neptune: %v\n", conn.ConnectionId, conn.User, err)
+				err = neptune.DisconnectEndpoint(nepcli, conn.ConnectionId)
+				if err != nil {
+					log.Printf("Error disconnecting %s for %s: %v\n", conn.ConnectionId, conn.User, err)
+				}
+			}
+		}
 	}
 
 	resp := events.APIGatewayV2HTTPResponse{StatusCode: 200, Body: ""}
