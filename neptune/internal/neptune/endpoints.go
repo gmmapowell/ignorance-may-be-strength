@@ -8,12 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/neptunedata"
 )
 
-func ConnectEndpoint(db string, watcher string, connId string) error {
-	svc, err := openNeptune(db)
-	if err != nil {
-		return err
-	}
-
+func ConnectEndpoint(svc *neptunedata.Client, watcher string, connId string) error {
 	program := `
 		MATCH (u:User {username:$username})
 		CREATE (e:Endpoint {connId:$connId})
@@ -39,12 +34,7 @@ func ConnectEndpoint(db string, watcher string, connId string) error {
 	return nil
 }
 
-func DisconnectEndpoint(db string, connId string) error {
-	svc, err := openNeptune(db)
-	if err != nil {
-		return err
-	}
-
+func DisconnectEndpoint(svc *neptunedata.Client, connId string) error {
 	program := `
 		MATCH (e:Endpoint {connId:$connId})
 		DETACH DELETE (e)

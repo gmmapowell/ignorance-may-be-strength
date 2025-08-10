@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/neptunedata"
 )
 
-func openNeptune(db string) (*neptunedata.Client, error) {
+func OpenNeptune(db string) (*neptunedata.Client, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, err

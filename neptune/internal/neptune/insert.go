@@ -43,13 +43,8 @@ RETURN r
 	return showResults(out.Results)
 }
 
-func NewNodeCreator(db string) (*NodeCreator, error) {
-	svc, err := openNeptune(db)
-	if err != nil {
-		return nil, err
-	} else {
-		return &NodeCreator{svc: svc}, nil
-	}
+func NewNodeCreator(svc *neptunedata.Client) (*NodeCreator, error) {
+	return &NodeCreator{svc: svc}, nil
 }
 
 func unpack(doc document.Interface) ([]map[string]any, error) {

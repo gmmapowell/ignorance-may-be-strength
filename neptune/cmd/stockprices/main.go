@@ -15,8 +15,14 @@ func main() {
 		log.Printf("Usage: stockprices <user>")
 		return
 	}
+
 	user := os.Args[1]
-	stocks, err := neptune.FindWatchedStocks("user-stocks", user)
+	svc, err := neptune.OpenNeptune("user-stocks")
+	if err != nil {
+		panic(err)
+	}
+
+	stocks, err := neptune.FindWatchedStocks(svc, user)
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +31,13 @@ func main() {
 		return
 	}
 	slices.Sort(stocks)
-	prices, err := dynamo.FindStockPrices("Stocks", stocks)
+
+	dyn, err := dynamo.OpenDynamo()
+	if err != nil {
+		panic(err)
+	}
+
+	prices, err := dynamo.FindStockPrices(dyn, "Stocks", stocks)
 	if err != nil {
 		panic(err)
 	}

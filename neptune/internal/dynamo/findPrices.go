@@ -2,17 +2,14 @@ package dynamo
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-func FindStockPrices(table string, stocks []string) (map[string]int, error) {
-	svc, err := openDynamo()
-	if err != nil {
-		return nil, err
-	}
+func FindStockPrices(svc *dynamodb.Client, table string, stocks []string) (map[string]int, error) {
 	var keys []map[string]types.AttributeValue
 	var attrs []string
 	for _, s := range stocks {
@@ -33,6 +30,9 @@ func FindStockPrices(table string, stocks []string) (map[string]int, error) {
 		sym := x["Symbol"].(*types.AttributeValueMemberS).Value
 		price := x["Price"].(*types.AttributeValueMemberN).Value
 		ret[sym], err = strconv.Atoi(price)
+		if err != nil {
+			log.Printf("error in price: %s %v\n", price, err)
+		}
 	}
 	return ret, nil
 }

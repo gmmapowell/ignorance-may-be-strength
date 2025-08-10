@@ -9,12 +9,22 @@ import (
 )
 
 func main() {
-	inserter, err := dynamo.NewInserter()
+	dyn, err := dynamo.OpenDynamo()
+	if err != nil {
+		panic(err)
+	}
+
+	inserter, err := dynamo.NewInserter(dyn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	nodeCreator, err := neptune.NewNodeCreator("user-stocks")
+	svc, err := neptune.OpenNeptune("user-stocks")
+	if err != nil {
+		panic(err)
+	}
+
+	nodeCreator, err := neptune.NewNodeCreator(svc)
 	if err != nil {
 		log.Fatal(err)
 	}

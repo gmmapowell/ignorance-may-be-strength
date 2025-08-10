@@ -15,7 +15,12 @@ func main() {
 		return
 	}
 	stock := os.Args[1]
-	watchers, err := neptune.FindStockWatchers("user-stocks", stock)
+	svc, err := neptune.OpenNeptune("user-stocks")
+	if err != nil {
+		panic(err)
+	}
+
+	watchers, err := neptune.FindStockWatchers(svc, stock)
 	if err != nil {
 		panic(err)
 	}

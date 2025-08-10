@@ -8,11 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/neptunedata"
 )
 
-func FindWatchedStocks(db string, user string) ([]string, error) {
-	svc, err := openNeptune(db)
-	if err != nil {
-		return nil, err
-	}
+func FindWatchedStocks(svc *neptunedata.Client, user string) ([]string, error) {
 	query := `
 	MATCH (u:User {username:$username})-[r]->(s:Stock)
 	RETURN u.username, s.symbol

@@ -14,7 +14,10 @@ func main() {
 		return
 	}
 	command := os.Args[1]
-	var err error
+	svc, err := neptune.OpenNeptune("user-stocks")
+	if err != nil {
+		panic(err)
+	}
 	switch command {
 	case "c":
 		if len(os.Args) != 4 {
@@ -23,10 +26,10 @@ func main() {
 		}
 		watcher := os.Args[2]
 		connId := os.Args[3]
-		err = neptune.ConnectEndpoint("user-stocks", watcher, connId)
+		err = neptune.ConnectEndpoint(svc, watcher, connId)
 	case "d":
 		connId := os.Args[2]
-		err = neptune.DisconnectEndpoint("user-stocks", connId)
+		err = neptune.DisconnectEndpoint(svc, connId)
 	default:
 		log.Printf("Usage: the command must be 'c' or 'd'")
 		return

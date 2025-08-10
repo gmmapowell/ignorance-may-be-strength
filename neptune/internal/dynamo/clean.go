@@ -36,11 +36,6 @@ func (c *Cleaner) Clean(table string, keys ...string) error {
 	return nil
 }
 
-func NewCleaner() (*Cleaner, error) {
-	svc, err := openDynamo()
-	if err != nil {
-		return nil, err
-	} else {
-		return &Cleaner{svc: svc}, nil
-	}
+func NewCleaner(svc *dynamodb.Client) (*Cleaner, error) {
+	return &Cleaner{svc: svc}, nil
 }

@@ -19,11 +19,6 @@ func (c *Cleaner) Clean() error {
 	return err
 }
 
-func NewCleaner(db string) (*Cleaner, error) {
-	svc, err := openNeptune(db)
-	if err != nil {
-		return nil, err
-	} else {
-		return &Cleaner{svc: svc}, nil
-	}
+func NewCleaner(svc *neptunedata.Client) (*Cleaner, error) {
+	return &Cleaner{svc: svc}, nil
 }

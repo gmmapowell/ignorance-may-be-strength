@@ -8,11 +8,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-type Inserter struct {
+type Updater struct {
 	svc *dynamodb.Client
 }
 
-func (ins *Inserter) Insert(table string, item any) error {
+func (ins *Updater) Update(table string, item any) error {
 	av, err := attributevalue.MarshalMap(item)
 	if err != nil {
 		return err
@@ -27,6 +27,6 @@ func (ins *Inserter) Insert(table string, item any) error {
 	return err
 }
 
-func NewInserter(svc *dynamodb.Client) (*Inserter, error) {
-	return &Inserter{svc: svc}, nil
+func NewUpdater(svc *dynamodb.Client) (*Updater, error) {
+	return &Updater{svc: svc}, nil
 }
