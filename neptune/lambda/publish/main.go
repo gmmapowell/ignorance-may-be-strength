@@ -25,6 +25,7 @@ var dyncli *dynamodb.Client
 
 func handleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	if nepcli == nil {
+		log.Printf("attemnpting to connect to neptune")
 		var err error
 		nepcli, err = neptune.OpenNeptune("user-stocks")
 		if err != nil {
@@ -33,6 +34,7 @@ func handleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (e
 		}
 	}
 	if dyncli == nil {
+		log.Printf("attemnpting to connect to dynamo")
 		var err error
 		dyncli, err = dynamo.OpenDynamo()
 		if err != nil {
@@ -41,6 +43,7 @@ func handleRequest(ctx context.Context, event events.APIGatewayV2HTTPRequest) (e
 		}
 	}
 	if sender == nil {
+		log.Printf("creating websocket sender")
 		sender = client.NewSender("n2n2psybtd.execute-api.us-east-1.amazonaws.com", "development")
 	}
 

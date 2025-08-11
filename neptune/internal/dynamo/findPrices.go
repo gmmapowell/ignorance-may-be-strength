@@ -20,11 +20,13 @@ func FindStockPrices(svc *dynamodb.Client, table string, stocks []string) (map[s
 	attrs = append(attrs, "Symbol", "Price")
 	tableRequest := make(map[string]types.KeysAndAttributes)
 	tableRequest[table] = types.KeysAndAttributes{Keys: keys, AttributesToGet: attrs}
+	log.Printf("about to read stocks from dynamo")
 	out, err := svc.BatchGetItem(context.TODO(), &dynamodb.BatchGetItemInput{RequestItems: tableRequest})
 	if err != nil {
 		return nil, err
 	}
 
+	log.Printf("building stock price map")
 	ret := make(map[string]int)
 	for _, x := range out.Responses[table] {
 		sym := x["Symbol"].(*types.AttributeValueMemberS).Value

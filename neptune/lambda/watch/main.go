@@ -25,6 +25,7 @@ var dyncli *dynamodb.Client
 
 func handleRequest(ctx context.Context, event events.APIGatewayWebsocketProxyRequest) error {
 	if nepcli == nil {
+		log.Printf("attemnpting to connect to neptune")
 		var err error
 		nepcli, err = neptune.OpenNeptune("user-stocks")
 		if err != nil {
@@ -33,6 +34,7 @@ func handleRequest(ctx context.Context, event events.APIGatewayWebsocketProxyReq
 		}
 	}
 	if dyncli == nil {
+		log.Printf("attemnpting to connect to dynamo")
 		var err error
 		dyncli, err = dynamo.OpenDynamo()
 		if err != nil {
@@ -41,6 +43,7 @@ func handleRequest(ctx context.Context, event events.APIGatewayWebsocketProxyReq
 		}
 	}
 	if sender == nil {
+		log.Printf("creating websocket sender")
 		sender = client.NewSender(event.RequestContext.DomainName, event.RequestContext.Stage)
 	}
 
@@ -63,11 +66,13 @@ func handleRequest(ctx context.Context, event events.APIGatewayWebsocketProxyReq
 			log.Printf("Failed to record connection id for %s in neptune: %v\n", request.Userid, err)
 			return err
 		}
+		log.Printf("finding neptune watched stocks")
 		stocks, err := neptune.FindWatchedStocks(nepcli, request.Userid)
 		if err != nil {
 			log.Printf("Failed to find stocks for %s: %v\n", request.Userid, err)
 			return err
 		}
+		log.Printf("finding dynamo stock prices")
 		quotes, err := dynamo.FindStockPrices(dyncli, "Stocks", stocks)
 		if err != nil {
 			log.Printf("Failed to find stock prices for %s (%v): %v\n", request.Userid, stocks, err)
@@ -77,6 +82,7 @@ func handleRequest(ctx context.Context, event events.APIGatewayWebsocketProxyReq
 		for t, p := range quotes {
 			payload = append(payload, client.Quote{Ticker: t, Price: p})
 		}
+		log.Printf("sending response")
 		return sender.SendTo(event.RequestContext.ConnectionID, payload)
 	default:
 		log.Printf("cannot handle user request: %s", request.Action)

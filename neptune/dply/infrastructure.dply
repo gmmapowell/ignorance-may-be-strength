@@ -109,6 +109,13 @@ just leave them blank between colons.
 
                     allow "execute-api:ManageConnections" "arn:aws:execute-api:*:*:*/development/*/@connections/*"
 
+Specific things not covered in the managed policies
+
+                    allow "rds:DescribeDBClusterEndpoints" "*"
+
+                policy "NeptuneFullAccess"
+                policy "AmazonDynamoDBFullAccess"
+
 Lambda has a lot of complicated features, but we will just set up to use
 the basic publication and alias features using the alias "next"
 
