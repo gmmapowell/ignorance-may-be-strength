@@ -27,6 +27,10 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/ucarion/c14n v0.1.0 h1:pwYb8DCl4MFu+cpzqvxiQ0oiIePUD1vDIiMmIFmHu9k=
 github.com/ucarion/c14n v0.1.0/go.mod h1:Nqoq+dRn2UgVIejUGiBioSecH/PbJpTghkw4jM50zoM=
+github.com/unix-world/smartgo v0.0.0-20250215034542-88eb583752ae h1:WVedlHRk/gHXRUHRGzSGrUKcbUdkFZOPwD+Wg46EPzs=
+github.com/unix-world/smartgo v0.0.0-20250215034542-88eb583752ae/go.mod h1:8wT2UvqiUy1SuR5gSM7FxSnWCCr3wnV38pqPTLQ89Tg=
+github.com/unix-world/smartgoext v0.0.0-20250215034644-5d8e3e17539d h1:GyX4hQLWGrZ9dS+F5NSZQ4ZQuhFRRenGoRjBzb+ZLZg=
+github.com/unix-world/smartgoext v0.0.0-20250215034644-5d8e3e17539d/go.mod h1:Hm0T+x3HefRm8dWI7eb9+wt/qGNomuCRMQLVH6O47M8=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0 h1:sbiXRNDSWJOTobXh5HyQKjq6wUC5tNybqjIqDpAY4CU=

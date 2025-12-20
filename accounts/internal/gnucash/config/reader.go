@@ -24,7 +24,7 @@ func ReadAConfiguration(config any, file string) error {
 	if err != nil {
 		panic(err)
 	}
-	vc, isConfig := config.(Configuration)
+	vc, isConfig := config.(*Configuration)
 	if isConfig {
 		for _, v := range vc.Verbs {
 			vc.VerbMap[v.Name] = &v

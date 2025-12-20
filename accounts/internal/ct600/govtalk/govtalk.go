@@ -6,9 +6,11 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
+	"log"
 	"strings"
 
-	"github.com/ucarion/c14n"
+	"github.com/unix-world/smartgoext/xml-utils/c14n"
+	"github.com/unix-world/smartgoext/xml-utils/c14n/etree"
 )
 
 type GovTalk interface {
@@ -125,7 +127,7 @@ func canonicaliseBody(from *SimpleElement) (string, error) {
 	body := MakeBodyWithSchemaMessage(from.Elements...)
 
 	// Generate a text representation
-	bs, err := xml.MarshalIndent(body, "  ", "  ")
+	bs, err := xml.MarshalIndent(body, "", "  ")
 	if err != nil {
 		return "", err
 	}
@@ -135,9 +137,26 @@ func canonicaliseBody(from *SimpleElement) (string, error) {
 		return "", err
 	}
 
-	// now canonicalise that
-	decoder := xml.NewDecoder(bytes.NewReader(bs))
-	out, err := c14n.Canonicalize(decoder)
+	/*
+		// now canonicalise that
+		decoder := xml.NewDecoder(bytes.NewReader(bs))
+		out, err := c14n.Canonicalize(decoder)
+		if err != nil {
+			return "", err
+		}
+	*/
+	/*
+		xmldsig := chilkat.NewXmlDSig()
+		canonXml := xmldsig.CanonicalizeXml(strXml, "C14N", false)
+		fmt.Println(*canonXml)
+	*/
+	canon := c14n.MakeC14N11Canonicalizer()
+	doc := etree.Document{}
+	_, err = doc.ReadFrom(bytes.NewReader(bs))
+	if err != nil {
+		return "", err
+	}
+	out, err := canon.Canonicalize(doc.Element.ChildElements()[0])
 	if err != nil {
 		return "", err
 	}
@@ -160,10 +179,10 @@ func canonicaliseBody(from *SimpleElement) (string, error) {
 	b64sha := w.String()
 
 	// remove the "fake" schema
-	bs, err = deleteBetween(out, "<Body", ">")
-	if err != nil {
-		return "", err
-	}
+	// bs, err = deleteBetween(out, "<Body", ">")
+	// if err != nil {
+	// 	return "", err
+	// }
 
 	// Add the IRmark
 	bs, err = placeBefore(bs, "\n        <Sender>", `<IRmark Type="generic">`+b64sha+"</IRmark>")
