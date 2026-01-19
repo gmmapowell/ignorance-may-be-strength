@@ -30,8 +30,6 @@ type GovTalkMessageXML struct {
 	XMLName   xml.Name `xml:"GovTalkMessage"`
 	XMLNS     string   `xml:"xmlns,attr"`
 	XSI       string   `xml:"xmlns:xsi,attr"`
-	ISO4217   string   `xml:"xmlns:iso4217,attr"`
-	CTCOMP    string   `xml:"xmlns:ct-comp,attr"`
 	canonBody string
 	Elements
 }
@@ -40,14 +38,13 @@ type BodySchemaXML struct {
 	XMLName xml.Name `xml:"Body"`
 	XMLNS   string   `xml:"xmlns,attr"`
 	XSI     string   `xml:"xmlns:xsi,attr"`
-	CTCOMP  string   `xml:"xmlns:ct-comp,attr"`
 	Elements
 }
 
 type IRenvelopeXML struct {
 	XMLName xml.Name `xml:"IRenvelope"`
 	XMLNS   string   `xml:"xmlns,attr"`
-	ISO4217 string   `xml:"xmlns:iso4217,attr"`
+	XSI     string   `xml:"xmlns:xsi,attr"`
 	Elements
 }
 
@@ -110,11 +107,8 @@ func EncodeContentFromFile(tag, filename string) *ContentElement {
 
 func MakeGovTalkMessage(canonBody string, nesting ...any) *GovTalkMessageXML {
 	return &GovTalkMessageXML{
-		XMLNS:   "http://www.govtalk.gov.uk/CM/envelope",
-		XSI:     "http://www.w3.org/2001/XMLSchema-instance",
-		ISO4217: "http://www.xbrl.org/2003/iso4217",
-		CTCOMP:  "http://www.hmrc.gov.uk/schemas/ct/comp/2023-01-01",
-		// BUS:       "http://xbrl.frc.org.uk/cd/2025-01-01/business",
+		XMLNS:     "http://www.govtalk.gov.uk/CM/envelope",
+		XSI:       "http://www.w3.org/2001/XMLSchema-instance",
 		canonBody: canonBody,
 		Elements:  nesting,
 	}
@@ -127,7 +121,7 @@ func (gtx *GovTalkMessageXML) AttachBodyTo(bs []byte) ([]byte, error) {
 func MakeIRenvelopeMessage(nesting ...any) *IRenvelopeXML {
 	return &IRenvelopeXML{
 		XMLNS:    "http://www.govtalk.gov.uk/taxation/CT/5",
-		ISO4217:  "http://www.xbrl.org/2003/iso4217",
+		XSI:      "http://www.w3.org/2001/XMLSchema-instance",
 		Elements: nesting,
 	}
 }
@@ -136,7 +130,6 @@ func MakeBodyWithSchemaMessage(nesting ...any) *BodySchemaXML {
 	return &BodySchemaXML{
 		XMLNS:    "http://www.govtalk.gov.uk/CM/envelope",
 		XSI:      "http://www.w3.org/2001/XMLSchema-instance",
-		CTCOMP:   "http://www.hmrc.gov.uk/schemas/ct/comp/2023-01-01",
 		Elements: nesting,
 	}
 }

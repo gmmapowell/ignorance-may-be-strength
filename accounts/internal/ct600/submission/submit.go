@@ -28,7 +28,7 @@ func Submit(conf *config.Config) error {
 		ComputationIXBRL: "ct600/comps-section.xml",
 	}
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}
-	send, err := Generate(conf, submitOptions)
+	send, err := Generate("submit.xml", false, conf, submitOptions)
 	if err != nil {
 		return err
 	}

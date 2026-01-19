@@ -9,7 +9,7 @@ import (
 
 func Poll(conf *config.Config) error {
 	pollOptions := &govtalk.EnvelopeOptions{Qualifier: "poll", Function: "submit", SendCorrelationID: true, CorrelationID: conf.CorrelationID, IncludeSender: false}
-	send, err := Generate(conf, pollOptions)
+	send, err := Generate("", false, conf, pollOptions)
 	if err != nil {
 		return err
 	}
