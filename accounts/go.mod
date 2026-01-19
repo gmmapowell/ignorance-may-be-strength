@@ -4,6 +4,8 @@ go 1.23.4
 
 require google.golang.org/api v0.230.0
 
+require github.com/unix-world/smartgoext v0.0.0-20260114122906-a37d75d60e80 // indirect
+
 require (
 	cloud.google.com/go/auth v0.16.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
@@ -16,9 +18,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
-	github.com/ucarion/c14n v0.1.0 // indirect
-	github.com/unix-world/smartgo v0.0.0-20250215034542-88eb583752ae // indirect
-	github.com/unix-world/smartgoext v0.0.0-20250215034644-5d8e3e17539d // indirect
+	github.com/unix-world/smartgoplus v0.0.0-20260114122814-8852e64c3ecc
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0 // indirect
 	go.opentelemetry.io/otel v1.35.0 // indirect

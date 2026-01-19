@@ -25,7 +25,7 @@ type IRenvelope struct {
 	NoAccountsReason     string
 	AccountsIXBRL        string
 	NoComputationsReason string
-	ComputationsIXBRL    string
+	ComputationIXBRL     string
 }
 
 func (ire *IRenvelope) AsXML() any {
@@ -35,10 +35,10 @@ func (ire *IRenvelope) AsXML() any {
 	if ire.NoAccountsReason != "" && ire.AccountsIXBRL != "" {
 		log.Fatalf("Must EITHER give accounts OR a reason not to")
 	}
-	if ire.NoComputationsReason == "" && ire.ComputationsIXBRL == "" {
+	if ire.NoComputationsReason == "" && ire.ComputationIXBRL == "" {
 		log.Fatalf("Must give computations or a reason not to")
 	}
-	if ire.NoComputationsReason != "" && ire.ComputationsIXBRL != "" {
+	if ire.NoComputationsReason != "" && ire.ComputationIXBRL != "" {
 		log.Fatalf("Must EITHER give computations OR a reason not to")
 	}
 	keys := ElementWithNesting("Keys", Key("UTR", ire.UTR))
@@ -62,7 +62,7 @@ func (ire *IRenvelope) AsXML() any {
 	attachments := ire.figureAttachments()
 	var attach any
 	if attachments != nil {
-		attach = ElementWithNesting("AttachedFiles", ElementWithNesting("XBRLsubmission", attachments))
+		attach = ElementWithNesting("AttachedFiles", attachments)
 	}
 	ctr := MakeCompanyTaxReturn(ire.ReturnType, ci, summary, turnover, calc, too, decl, attach)
 	return MakeIRenvelopeMessage(irh, ctr)
@@ -134,9 +134,13 @@ func decl() []any {
 
 func (ire *IRenvelope) figureAttachments() []any {
 	ret := []any{}
+	if ire.ComputationIXBRL != "" {
+		cxml := ElementWithNesting("Computation", ElementWithNesting("Instance", ContentFromFile("InlineXBRLDocument", ire.ComputationIXBRL)))
+		ret = append(ret, cxml)
+	}
 	if ire.AccountsIXBRL != "" {
 		acxml := ElementWithNesting("Accounts", ElementWithNesting("Instance", ContentFromFile("InlineXBRLDocument", ire.AccountsIXBRL)))
 		ret = append(ret, acxml)
 	}
-	return ret
+	return []any{ElementWithNesting("XBRLsubmission", ret)}
 }

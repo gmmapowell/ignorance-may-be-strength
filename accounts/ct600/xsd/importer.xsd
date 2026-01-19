@@ -13,4 +13,6 @@
    <!--
    <import namespace="http://www.hmrc.gov.uk/schemas/ct/comp/ref/2023-01-01" schemaLocation="ct-comp/ct-comp-ref-2023.xsd"/>
 -->
+  <import namespace="http://www.xbrl.org/2003/instance" schemaLocation="http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd"/>
+  <import namespace="http://www.xbrl.org/uk/gaap/core-full/2009-09-01" schemaLocation="uk-gaap-2009-09-01/gaap/core/2009-09-01/uk-gaap-full-2009-09-01.xsd"/>
 </schema>

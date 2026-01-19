@@ -31,6 +31,10 @@ github.com/unix-world/smartgo v0.0.0-20250215034542-88eb583752ae h1:WVedlHRk/gHX
 github.com/unix-world/smartgo v0.0.0-20250215034542-88eb583752ae/go.mod h1:8wT2UvqiUy1SuR5gSM7FxSnWCCr3wnV38pqPTLQ89Tg=
 github.com/unix-world/smartgoext v0.0.0-20250215034644-5d8e3e17539d h1:GyX4hQLWGrZ9dS+F5NSZQ4ZQuhFRRenGoRjBzb+ZLZg=
 github.com/unix-world/smartgoext v0.0.0-20250215034644-5d8e3e17539d/go.mod h1:Hm0T+x3HefRm8dWI7eb9+wt/qGNomuCRMQLVH6O47M8=
+github.com/unix-world/smartgoext v0.0.0-20260114122906-a37d75d60e80 h1:MSiwjYM3M68owks14ig22V7dA01ZDj3oaRHpOMuK6uo=
+github.com/unix-world/smartgoext v0.0.0-20260114122906-a37d75d60e80/go.mod h1:Hm0T+x3HefRm8dWI7eb9+wt/qGNomuCRMQLVH6O47M8=
+github.com/unix-world/smartgoplus v0.0.0-20260114122814-8852e64c3ecc h1:3/1e7UBTrCWIz0/4mRUDjL8C1qO1+kK6Rk1FMVQXmV8=
+github.com/unix-world/smartgoplus v0.0.0-20260114122814-8852e64c3ecc/go.mod h1:cOj0KC4kxFwCJolp3D/mQJAeErnK1lovVApLuhnkUVk=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
 go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.60.0 h1:sbiXRNDSWJOTobXh5HyQKjq6wUC5tNybqjIqDpAY4CU=

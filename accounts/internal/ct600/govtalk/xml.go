@@ -110,17 +110,17 @@ func EncodeContentFromFile(tag, filename string) *ContentElement {
 
 func MakeGovTalkMessage(canonBody string, nesting ...any) *GovTalkMessageXML {
 	return &GovTalkMessageXML{
-		XMLNS:     "http://www.govtalk.gov.uk/CM/envelope",
-		XSI:       "http://www.w3.org/2001/XMLSchema-instance",
-		ISO4217:   "http://www.xbrl.org/2003/iso4217",
-		CTCOMP:    "http://www.hmrc.gov.uk/schemas/ct/comp/2023-01-01",
-		BUS:       "http://xbrl.frc.org.uk/cd/2025-01-01/business",
+		XMLNS:   "http://www.govtalk.gov.uk/CM/envelope",
+		XSI:     "http://www.w3.org/2001/XMLSchema-instance",
+		ISO4217: "http://www.xbrl.org/2003/iso4217",
+		CTCOMP:  "http://www.hmrc.gov.uk/schemas/ct/comp/2023-01-01",
+		// BUS:       "http://xbrl.frc.org.uk/cd/2025-01-01/business",
 		canonBody: canonBody,
 		Elements:  nesting,
 	}
 }
 
-func (gtx *GovTalkMessageXML) 	AttachBodyTo(bs []byte) ([]byte, error) {
+func (gtx *GovTalkMessageXML) AttachBodyTo(bs []byte) ([]byte, error) {
 	return placeBefore(bs, "</GovTalkMessage>", gtx.canonBody)
 }
 

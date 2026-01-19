@@ -6,11 +6,10 @@ import (
 	"encoding/base64"
 	"encoding/xml"
 	"fmt"
-	"log"
 	"strings"
 
-	"github.com/unix-world/smartgoext/xml-utils/c14n"
-	"github.com/unix-world/smartgoext/xml-utils/c14n/etree"
+	"github.com/unix-world/smartgoext/xml-utils/etree"
+	"github.com/unix-world/smartgoplus/xml-utils/c14n"
 )
 
 type GovTalk interface {
@@ -137,19 +136,6 @@ func canonicaliseBody(from *SimpleElement) (string, error) {
 		return "", err
 	}
 
-	/*
-		// now canonicalise that
-		decoder := xml.NewDecoder(bytes.NewReader(bs))
-		out, err := c14n.Canonicalize(decoder)
-		if err != nil {
-			return "", err
-		}
-	*/
-	/*
-		xmldsig := chilkat.NewXmlDSig()
-		canonXml := xmldsig.CanonicalizeXml(strXml, "C14N", false)
-		fmt.Println(*canonXml)
-	*/
 	canon := c14n.MakeC14N11Canonicalizer()
 	doc := etree.Document{}
 	_, err = doc.ReadFrom(bytes.NewReader(bs))
@@ -178,12 +164,6 @@ func canonicaliseBody(from *SimpleElement) (string, error) {
 	// The string of this is the IRmark
 	b64sha := w.String()
 
-	// remove the "fake" schema
-	// bs, err = deleteBetween(out, "<Body", ">")
-	// if err != nil {
-	// 	return "", err
-	// }
-
 	// Add the IRmark
 	bs, err = placeBefore(bs, "\n        <Sender>", `<IRmark Type="generic">`+b64sha+"</IRmark>")
 	if err != nil {
@@ -205,16 +185,4 @@ func placeBefore(bs []byte, match string, insert string) ([]byte, error) {
 	str = str[0:s1] + insert + str[s1:]
 	bs = []byte(str)
 	return bs, nil
-}
-
-func deleteBetween(bs []byte, from string, to string) ([]byte, error) {
-	canonBody := string(bs)
-	j := strings.Index(canonBody, from)
-	if j == -1 {
-		return nil, fmt.Errorf("did not find " + from)
-	}
-	j += len(from)
-	j1 := strings.Index(canonBody[j:], to)
-	canonBody = canonBody[0:j] + canonBody[j+j1:]
-	return []byte(canonBody), nil
 }
