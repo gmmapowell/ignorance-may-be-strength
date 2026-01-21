@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
 type IRenvelope struct {
@@ -28,7 +29,7 @@ type IRenvelope struct {
 	ComputationIXBRL     string
 }
 
-func (ire *IRenvelope) AsXML() any {
+func (ire *IRenvelope) AsXML() *etree.Element {
 	if ire.NoAccountsReason == "" && ire.AccountsIXBRL == "" {
 		log.Fatalf("Must give accounts or a reason not to")
 	}
@@ -51,16 +52,15 @@ func (ire *IRenvelope) AsXML() any {
 				ElementWithText("SchemaVersion", "2022-v1.99"),
 				ElementWithText("TopElementName", "CompanyTaxReturn"),
 			)))
-	irh := ElementWithNesting("IRheader", keys, pe, dc, manifest)
-	irh.Elements = append(irh.Elements, ElementWithText("Sender", ire.Sender))
-	ci := ElementWithNesting("CompanyInformation", companyInfo(ire.Business, ire.UTR, ire.PeriodStart, ire.PeriodEnd))
+	irh := ElementWithNesting("IRheader", keys, pe, dc, manifest, ElementWithText("Sender", ire.Sender))
+	ci := ElementWithNesting("CompanyInformation", companyInfo(ire.Business, ire.UTR, ire.PeriodStart, ire.PeriodEnd)...)
 	summary := ElementWithNesting("ReturnInfoSummary", ire.accounts(), ire.computations())
 	turnover := ElementWithNesting("Turnover", ElementWithText("Total", fmt.Sprintf("%.2f", ire.Turnover)))
-	calc := ElementWithNesting("CompanyTaxCalculation", ire.taxCalc())
-	too := ElementWithNesting("CalculationOfTaxOutstandingOrOverpaid", ire.cotoo())
-	decl := ElementWithNesting("Declaration", decl())
+	calc := ElementWithNesting("CompanyTaxCalculation", ire.taxCalc()...)
+	too := ElementWithNesting("CalculationOfTaxOutstandingOrOverpaid", ire.cotoo()...)
+	decl := ElementWithNesting("Declaration", decl()...)
 	attachments := ire.figureAttachments()
-	var attach any
+	var attach *etree.Element
 	if attachments != nil {
 		attach = ElementWithNesting("AttachedFiles", attachments)
 	}
@@ -68,8 +68,8 @@ func (ire *IRenvelope) AsXML() any {
 	return MakeIRenvelopeMessage(irh, ctr)
 }
 
-func companyInfo(business config.Business, UTR, start, end string) []any {
-	return []any{
+func companyInfo(business config.Business, UTR, start, end string) []etree.Token {
+	return []etree.Token{
 		ElementWithText("CompanyName", business.Name),
 		ElementWithText("RegistrationNumber", business.ID),
 		ElementWithText("Reference", UTR),
@@ -81,7 +81,7 @@ func companyInfo(business config.Business, UTR, start, end string) []any {
 	}
 }
 
-func (ire *IRenvelope) accounts() any {
+func (ire *IRenvelope) accounts() *etree.Element {
 	if ire.NoAccountsReason != "" {
 		return ElementWithNesting("Accounts", ElementWithText("NoAccountsReason", ire.NoAccountsReason))
 	} else {
@@ -89,7 +89,7 @@ func (ire *IRenvelope) accounts() any {
 	}
 }
 
-func (ire *IRenvelope) computations() any {
+func (ire *IRenvelope) computations() *etree.Element {
 	if ire.NoComputationsReason != "" {
 		return ElementWithNesting("Computations", ElementWithText("NoComputationsReason", ire.NoComputationsReason))
 	} else {
@@ -97,8 +97,8 @@ func (ire *IRenvelope) computations() any {
 	}
 }
 
-func (ire *IRenvelope) taxCalc() []any {
-	return []any{
+func (ire *IRenvelope) taxCalc() []etree.Token {
+	return []etree.Token{
 		ElementWithNesting("Income",
 			ElementWithNesting("Trading",
 				ElementWithText("Profits", fmt.Sprintf("%.2f", ire.TradingProfits)),
@@ -116,31 +116,31 @@ func (ire *IRenvelope) taxCalc() []any {
 	}
 }
 
-func (ire *IRenvelope) cotoo() []any {
-	return []any{
+func (ire *IRenvelope) cotoo() []etree.Token {
+	return []etree.Token{
 		ElementWithText("NetCorporationTaxLiability", fmt.Sprintf("%.2f", ire.CorporationTax)),
 		ElementWithText("TaxChargeable", fmt.Sprintf("%.2f", ire.CorporationTax)),
 		ElementWithText("TaxPayable", fmt.Sprintf("%.2f", ire.CorporationTax)),
 	}
 }
 
-func decl() []any {
-	return []any{
+func decl() []etree.Token {
+	return []etree.Token{
 		ElementWithText("AcceptDeclaration", "yes"),
 		ElementWithText("Name", "Test"),
 		ElementWithText("Status", "Test"),
 	}
 }
 
-func (ire *IRenvelope) figureAttachments() []any {
-	ret := []any{}
+func (ire *IRenvelope) figureAttachments() *etree.Element {
+	ret := []etree.Token{}
 	if ire.ComputationIXBRL != "" {
-		cxml := ElementWithNesting("Computation", ElementWithNesting("Instance", ContentFromFile("InlineXBRLDocument", ire.ComputationIXBRL)))
+		cxml := ElementWithNesting("Computation", ElementWithNesting("Instance", ElementWithNesting("InlineXBRLDocument", ContentFromFile(ire.ComputationIXBRL))))
 		ret = append(ret, cxml)
 	}
 	if ire.AccountsIXBRL != "" {
-		acxml := ElementWithNesting("Accounts", ElementWithNesting("Instance", ContentFromFile("InlineXBRLDocument", ire.AccountsIXBRL)))
+		acxml := ElementWithNesting("Accounts", ElementWithNesting("Instance", ElementWithNesting("InlineXBRLDocument", ContentFromFile(ire.AccountsIXBRL))))
 		ret = append(ret, acxml)
 	}
-	return []any{ElementWithNesting("XBRLsubmission", ret)}
+	return ElementWithNesting("XBRLsubmission", ret...)
 }

@@ -2,16 +2,17 @@ package submission
 
 import (
 	"bytes"
-	"encoding/xml"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"io"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
+	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
 func Generate(file string, runlint bool, conf *config.Config, options *govtalk.EnvelopeOptions) (io.Reader, error) {
@@ -23,11 +24,17 @@ func Generate(file string, runlint bool, conf *config.Config, options *govtalk.E
 	if err != nil {
 		return nil, err
 	}
-	bs, err := xml.MarshalIndent(m, "", "  ")
+
+	body, err := msg.MakeCanonicalBody()
 	if err != nil {
 		return nil, err
 	}
-	bs, err = m.AttachBodyTo(bs)
+
+	m.IndentWithSettings(&etree.IndentSettings{Spaces: 2})
+	w := bytes.Buffer{}
+	ws := etree.WriteSettings{}
+	m.WriteTo(&w, &ws)
+	bs, err := AttachBodyTo(w.Bytes(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +49,21 @@ func Generate(file string, runlint bool, conf *config.Config, options *govtalk.E
 	}
 
 	return bytes.NewReader(bs), nil
+}
+
+func AttachBodyTo(bs []byte, body string) ([]byte, error) {
+	return placeBefore(bs, "</GovTalkMessage>", body)
+}
+
+func placeBefore(bs []byte, match string, insert string) ([]byte, error) {
+	str := string(bs)
+	s1 := strings.Index(str, match)
+	if s1 == -1 {
+		return nil, fmt.Errorf("did not find " + match)
+	}
+	str = str[0:s1] + insert + str[s1:]
+	bs = []byte(str)
+	return bs, nil
 }
 
 func checkAgainstSchema(filename string, runlint bool, bs []byte) error {

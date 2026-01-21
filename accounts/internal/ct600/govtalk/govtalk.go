@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"encoding/base64"
-	"encoding/xml"
 	"fmt"
 	"strings"
 
@@ -16,7 +15,8 @@ type GovTalk interface {
 	Identity(send, pwd string)
 	Utr(utr string)
 	Product(vendor, product, version string)
-	AsXML() (*GovTalkMessageXML, error)
+	AsXML() (*etree.Element, error)
+	MakeCanonicalBody() (string, error)
 }
 
 func MakeGovTalk(opts *EnvelopeOptions) GovTalk {
@@ -45,9 +45,9 @@ func (gtm *GovTalkMessage) Product(vendor, product, version string) {
 	gtm.version = version
 }
 
-func (gtm *GovTalkMessage) AsXML() (*GovTalkMessageXML, error) {
+func (gtm *GovTalkMessage) AsXML() (*etree.Element, error) {
 	env := ElementWithText("EnvelopeVersion", "2.0")
-	var corrId *SimpleElement
+	var corrId *etree.Element
 	if gtm.opts.SendCorrelationID {
 		corrId = ElementWithText("CorrelationID", gtm.opts.CorrelationID)
 	}
@@ -60,7 +60,7 @@ func (gtm *GovTalkMessage) AsXML() (*GovTalkMessageXML, error) {
 		ElementWithText("Transformation", "XML"),
 		ElementWithText("GatewayTest", "1"),
 	)
-	var sndrDetails *SimpleElement
+	var sndrDetails *etree.Element
 	if gtm.opts.IncludeSender {
 		sndrDetails = ElementWithNesting(
 			"SenderDetails",
@@ -76,7 +76,7 @@ func (gtm *GovTalkMessage) AsXML() (*GovTalkMessageXML, error) {
 			),
 		)
 	}
-	var keys *SimpleElement
+	var keys *etree.Element
 	if gtm.opts.IncludeKeys {
 		keys = ElementWithNesting("Keys", Key("UTR", gtm.utr))
 	} else {
@@ -96,19 +96,8 @@ func (gtm *GovTalkMessage) AsXML() (*GovTalkMessageXML, error) {
 			),
 		),
 	)
-	var body *SimpleElement
-	var canonBody string
-	if gtm.opts.IncludeBody {
-		body = gtm.makeBody()
-		var err error
-		canonBody, err = canonicaliseBody(body)
-		if err != nil {
-			return nil, err
-		}
-	}
 
 	gt := MakeGovTalkMessage(
-		canonBody,
 		env,
 		ElementWithNesting("Header", msgDetails, sndrDetails),
 		gtDetails)
@@ -116,33 +105,35 @@ func (gtm *GovTalkMessage) AsXML() (*GovTalkMessageXML, error) {
 	return gt, nil
 }
 
-func (gtm *GovTalkMessage) makeBody() *SimpleElement {
-	body := ElementWithNesting("Body")
-	body.Elements = append(body.Elements, gtm.opts.IRenvelope.AsXML())
+func (gtm *GovTalkMessage) MakeCanonicalBody() (string, error) {
+	var body *etree.Element
+	if gtm.opts.IncludeBody {
+		body = gtm.makeBody()
+		return canonicaliseBody(body)
+	} else {
+		return "", nil
+	}
+}
+
+func (gtm *GovTalkMessage) makeBody() *etree.Element {
+	body := ElementWithNesting("Body", gtm.opts.IRenvelope.AsXML())
+	body.Attr = append(body.Attr, etree.Attr{Key: "xmlns", Value: "http://www.govtalk.gov.uk/CM/envelope"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
 	return body
 }
 
-func canonicaliseBody(from *SimpleElement) (string, error) {
-	body := MakeBodyWithSchemaMessage(from.Elements...)
+func canonicaliseBody(body *etree.Element) (string, error) {
+	body.IndentWithSettings(&etree.IndentSettings{Spaces: 2})
+	w1 := bytes.Buffer{}
+	ws := etree.WriteSettings{}
+	body.WriteTo(&w1, &ws)
 
-	// Generate a text representation
-	bs, err := xml.MarshalIndent(body, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	bs, err = placeBefore(bs, "<Sender>", "\n        ")
+	bs, err := placeBefore(w1.Bytes(), "<Sender>", "\n        ")
 	if err != nil {
 		return "", err
 	}
 
 	canon := c14n.MakeC14N11Canonicalizer()
-	doc := etree.Document{}
-	_, err = doc.ReadFrom(bytes.NewReader(bs))
-	if err != nil {
-		return "", err
-	}
-	out, err := canon.Canonicalize(doc.Element.ChildElements()[0])
+	out, err := canon.Canonicalize(body)
 	if err != nil {
 		return "", err
 	}
