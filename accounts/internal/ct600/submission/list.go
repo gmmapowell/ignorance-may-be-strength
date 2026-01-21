@@ -20,7 +20,7 @@ type Record struct {
 
 func List(conf *config.Config) error {
 	pollOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "list", SendCorrelationID: true, IncludeSender: true}
-	send, err := Generate("", false, conf, pollOptions)
+	send, err := govtalk.Generate("", false, conf, pollOptions)
 	if err != nil {
 		return err
 	}
