@@ -31,6 +31,10 @@ func Generate(file string, runlint bool, conf *config.Config, options *EnvelopeO
 		if err != nil {
 			return nil, err
 		}
+		bs, err = placeBefore(bs, "\n      <Sender>", "\n      ")
+		if err != nil {
+			return nil, err
+		}
 		body, err := insertIRmark(bs)
 		if err != nil {
 			return nil, err
@@ -103,7 +107,7 @@ func insertIRmark(body []byte) (string, error) {
 	b64sha := w.String()
 
 	// Add the IRmark
-	bs, err := placeBefore(body, "\n      <Sender>", "\n"+`      <IRmark Type="generic">`+b64sha+"</IRmark>")
+	bs, err := placeBefore(body, "\n      <Sender>", `<IRmark Type="generic">`+b64sha+"</IRmark>")
 	if err != nil {
 		return "", err
 	}
