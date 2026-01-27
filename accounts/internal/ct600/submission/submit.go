@@ -2,13 +2,13 @@ package submission
 
 import (
 	"bytes"
-	"encoding/xml"
 	"log"
 	"strconv"
 	"time"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
+	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
 func Submit(conf *config.Config) error {
@@ -24,8 +24,8 @@ func Submit(conf *config.Config) error {
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
-		AccountsIXBRL: "ct600/11110000_accounts.html",
-		// AccountsIXBRL:    "ct600/accounts-section.xml",
+		// AccountsIXBRL: "ct600/11110000_accounts.html",
+		AccountsIXBRL: "ct600/accounts-section.xml",
 		// ComputationIXBRL: "ct600/comps-section.xml",
 		// ComputationIXBRL: "ct600/ixbrl-sample-2.xml",
 		NoComputationsReason: "Not within charge to CT",
@@ -42,47 +42,40 @@ func Submit(conf *config.Config) error {
 		return err
 	}
 
-	decoder := xml.NewDecoder(bytes.NewReader(msg))
-	var data string
-	var waitFor time.Duration = 10
-	pollOn := config.MakeBlankConfig()
-	for tok, err := decoder.Token(); err == nil; tok, err = decoder.Token() {
-		switch tok := tok.(type) {
-		case xml.StartElement:
-			switch tok.Name.Local {
-			case "ResponseEndPoint":
-				for _, a := range tok.Attr {
-					if a.Name.Local == "PollInterval" {
-						log.Printf("ResponseEndPoint PollInterval: %s\n", a.Value)
-						tmp, err := strconv.Atoi(a.Value)
-						if err != nil {
-							log.Printf("failed to parse number %s\n", a.Value)
-						} else {
-							waitFor = time.Duration(tmp)
-						}
-					}
-				}
-			}
-		case xml.EndElement:
-			switch tok.Name.Local {
-			case "Function":
-				log.Printf("Function: %s\n", data)
-			case "Qualifier":
-				log.Printf("Qualifier: %s\n", data)
-			case "CorrelationID":
-				log.Printf("CorrelationID: %s\n", data)
-				pollOn.CorrelationID = data
-			case "ResponseEndPoint":
-				log.Printf("ResponseEndPoint: %s\n", data)
-				pollOn.PollURI = data
-			}
-		case xml.CharData:
-			data = string(tok)
+	doc := etree.Document{}
+	doc.ReadFrom(bytes.NewReader(msg))
+	elt := doc.Element.ChildElements()[0]
+	for {
+		var waitFor time.Duration = 1
+		pollOn := config.MakeBlankConfig()
+
+		details := elt.FindElement("/GovTalkMessage/Header/MessageDetails")
+		qualifier := details.FindElement("Qualifier")
+		log.Printf("Qualifier: %s", qualifier.Text())
+		function := details.FindElement("Function")
+		log.Printf("Function: %s", function.Text())
+		pollOn.CorrelationID = details.FindElement("CorrelationID").Text()
+		log.Printf("CorrelationID: %s\n", pollOn.CorrelationID)
+		rep := details.FindElement("ResponseEndPoint")
+		if rep == nil {
+			panic("not found")
+		}
+		a := rep.SelectAttr("PollInterval")
+		tmp, err := strconv.Atoi(a.Value)
+		if err != nil {
+			log.Printf("failed to parse number %s\n", a.Value)
+		} else {
+			log.Printf("ResponseEndPoint PollInterval: %s\n", a.Value)
+			waitFor = time.Duration(tmp)
+		}
+		pollOn.PollURI = rep.Text()
+		log.Printf("ResponseEndPoint: %s\n", rep.Text())
+
+		time.Sleep(waitFor * time.Second)
+		elt, err = Poll(pollOn)
+
+		if elt == nil || err != nil {
+			return err
 		}
 	}
-
-	time.Sleep(waitFor * time.Second)
-	Poll(pollOn)
-
-	return nil
 }

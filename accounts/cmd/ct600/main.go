@@ -29,11 +29,12 @@ func main() {
 			return
 		}
 	case config.POLL_MODE:
-		err := submission.Poll(conf)
+		resp, err := submission.Poll(conf)
 		if err != nil {
 			fmt.Printf("polling failed: %v\n", err)
 			return
 		}
+		fmt.Printf("%v", resp)
 	default:
 		log.Fatalf("there is no handler for mode %s\n", mode)
 	}
