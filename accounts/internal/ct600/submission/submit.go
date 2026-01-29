@@ -24,12 +24,10 @@ func Submit(conf *config.Config) error {
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
-		// AccountsIXBRL: "ct600/11110000_accounts.html",
-		AccountsIXBRL: "ct600/accounts-section.xml",
-		// ComputationIXBRL: "ct600/comps-section.xml",
-		// ComputationIXBRL: "ct600/ixbrl-sample-2.xml",
-		NoComputationsReason: "Not within charge to CT",
+		AccountsIXBRL:    "ct600/micro-accounts.xml",
+		ComputationIXBRL: "ct600/sample-ctcomp.xhtml",
 	}
+
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}
 	send, err := govtalk.Generate("submit.xml", false, conf, submitOptions)
 	if err != nil {

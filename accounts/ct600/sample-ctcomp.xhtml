@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:fn="http://www.w3.org/2005/xpath-functions"
+      xmlns:ix="http://www.xbrl.org/2008/inlineXBRL"
+      xmlns:link="http://www.xbrl.org/2003/linkbase"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:iso4217="http://www.xbrl.org/2003/iso4217"
+      xmlns:xbrli="http://www.xbrl.org/2003/instance"
+      xmlns:xbrldi="http://xbrl.org/2006/xbrldi"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns:ct-comp="http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01"
+      version="-//XBRL International//DTD XHTML Inline XBRL 1.0//EN">
+   <head>
+      <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+      <title>Sample iXBRL instance</title>
+   </head>
+   <body xml:lang="en">
+      <div style="display:none">
+         <ix:header>
+            <ix:references>
+               <link:schemaRef xlink:type="simple"
+                               xlink:href="http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01/ct-comp-2024.xsd"/>
+            </ix:references>
+            <ix:resources>
+               <xbrli:unit id="gbp">
+                  <xbrli:measure>iso4217:GBP</xbrli:measure>
+               </xbrli:unit>
+               <xbrli:context id="now">
+                  <xbrli:entity>
+                     <xbrli:identifier scheme="http://www.example.com/">mySampleCo</xbrli:identifier>
+                     <xbrli:segment>
+                        <xbrldi:explicitMember dimension="ct-comp:BusinessTypeDimension">ct-comp:Company</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:DetailedAnalysisDimension">ct-comp:Item1</xbrldi:explicitMember>
+                     </xbrli:segment>
+                  </xbrli:entity>
+                  <xbrli:period>
+                     <xbrli:instant>2025-12-31</xbrli:instant>
+                  </xbrli:period>
+               </xbrli:context>
+               <xbrli:context id="partnerFirm">
+                  <xbrli:entity>
+                     <xbrli:identifier scheme="http://www.example.com/">mySampleCo</xbrli:identifier>
+                     <xbrli:segment>
+                        <xbrldi:explicitMember dimension="ct-comp:BusinessTypeDimension">ct-comp:Company</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:DetailedAnalysisDimension">ct-comp:Item1</xbrldi:explicitMember>
+                     </xbrli:segment>
+                  </xbrli:entity>
+                  <xbrli:period>
+                     <xbrli:startDate>2025-01-01</xbrli:startDate>
+                     <xbrli:endDate>2025-12-31</xbrli:endDate>
+                  </xbrli:period>
+               </xbrli:context>
+               <xbrli:context id="CurrYear">
+                  <xbrli:entity>
+                     <xbrli:identifier scheme="http://www.example.com/">mySampleCo</xbrli:identifier>
+                     <xbrli:segment>
+                        <xbrldi:explicitMember dimension="ct-comp:BusinessTypeDimension">ct-comp:Company</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:DetailedAnalysisDimension">ct-comp:Item1</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:TerritoryDimension">ct-comp:Overseas</xbrldi:explicitMember>
+                     </xbrli:segment>
+                  </xbrli:entity>
+                  <xbrli:period>
+                     <xbrli:startDate>2025-01-01</xbrli:startDate>
+                     <xbrli:endDate>2025-12-31</xbrli:endDate>
+                  </xbrli:period>
+               </xbrli:context>
+               <xbrli:context id="CurrYear_PL">
+                  <xbrli:entity>
+                     <xbrli:identifier scheme="http://www.example.com/">mySampleCo</xbrli:identifier>
+                     <xbrli:segment>
+                        <xbrldi:typedMember dimension="ct-comp:BusinessNameDimension">
+                           <ct-comp:BusinessNameDomain>string1</ct-comp:BusinessNameDomain>
+                        </xbrldi:typedMember>
+                        <xbrldi:explicitMember dimension="ct-comp:BusinessTypeDimension">ct-comp:Trade</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:DetailedAnalysisDimension">ct-comp:Item1</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:LossReformDimension">ct-comp:Post-lossReform</xbrldi:explicitMember>
+                        <xbrldi:explicitMember dimension="ct-comp:TerritoryDimension">ct-comp:UK</xbrldi:explicitMember>
+                     </xbrli:segment>
+                  </xbrli:entity>
+                  <xbrli:period>
+                     <xbrli:startDate>2025-01-01</xbrli:startDate>
+                     <xbrli:endDate>2025-12-31</xbrli:endDate>
+                  </xbrli:period>
+               </xbrli:context>
+            </ix:resources>
+         </ix:header>
+      </div>
+      <table>
+         <tr>
+            <td>ct-comp:CompanyName</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:CompanyName" contextRef="now">companyname</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:TaxReference</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:TaxReference" contextRef="now">utr</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:PeriodOfAccountStartDate</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:PeriodOfAccountStartDate" contextRef="now">2025-01-01</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:PeriodOfAccountEndDate</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:PeriodOfAccountEndDate" contextRef="now">2025-12-31</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:StartOfPeriodCoveredByReturn</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:StartOfPeriodCoveredByReturn" contextRef="now">2025-01-01</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:EndOfPeriodCoveredByReturn</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:EndOfPeriodCoveredByReturn" contextRef="now">2025-12-31</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:CompanyIsAPartnerInAFirm</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:CompanyIsAPartnerInAFirm" contextRef="partnerFirm">false</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:NameOfProductionSoftware</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:NameOfProductionSoftware" contextRef="now">ZinikiHMRC</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:VersionOfProductionSoftware</td>
+            <td>
+               <ix:nonNumeric name="ct-comp:VersionOfProductionSoftware" contextRef="now">2026-02-01</ix:nonNumeric>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:NetTradingProfits</td>
+            <td>
+               <ix:nonFraction name="ct-comp:NetTradingProfits" unitRef="gbp" contextRef="CurrYear"
+                               decimals="INF">14</ix:nonFraction>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:TotalDeductionsAndReliefs</td>
+            <td>
+               <ix:nonFraction name="ct-comp:TotalDeductionsAndReliefs" unitRef="gbp" contextRef="CurrYear"
+                               decimals="INF">39</ix:nonFraction>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:ProfitsBeforeChargesAndGroupRelief</td>
+            <td>
+               <ix:nonFraction name="ct-comp:ProfitsBeforeChargesAndGroupRelief" unitRef="gbp"
+                               contextRef="CurrYear"
+                               decimals="INF">40</ix:nonFraction>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:NetTaxPayable</td>
+            <td>
+               <ix:nonFraction name="ct-comp:NetTaxPayable" unitRef="gbp" contextRef="CurrYear"
+                               decimals="INF">317</ix:nonFraction>
+            </td>
+         </tr>
+         <tr>
+            <td>ct-comp:ProfitLossPerAccounts</td>
+            <td>
+               <ix:nonFraction name="ct-comp:ProfitLossPerAccounts" unitRef="gbp" contextRef="CurrYear_PL"
+                               decimals="INF">361</ix:nonFraction>
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>
