@@ -57,5 +57,5 @@ func (c *Configuration) ListenOn() string {
 }
 
 func (config *Configuration) AccountsGenerator() AccountsGenerator {
-	return GnuCashAccountsIXBRLGenerator{config: config}
+	return &GnuCashAccountsIXBRLGenerator{config: config}
 }

@@ -1,12 +1,44 @@
 package ixbrl
 
 import (
+	"fmt"
+
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
 type IXBRL struct {
-	title string
+	schema string
+	title  string
+
+	hidden  []*IXProp
+	schemas []*ixSchema
+}
+
+type ixSchema struct {
+	id, schema string
+}
+
+type IXProp struct {
+	Type     int
+	Context  string
+	Name     string
+	Format   string
+	Decimals int
+	Unit     string
+	Text     string
+}
+
+const (
+	NonNumeric = iota
+)
+
+func (i *IXBRL) AddSchema(id, schema string) {
+	i.schemas = append(i.schemas, &ixSchema{id: id, schema: schema})
+}
+
+func (i *IXBRL) AddHidden(h *IXProp) {
+	i.hidden = append(i.hidden, h)
 }
 
 func (i *IXBRL) AsEtree() *etree.Element {
@@ -27,12 +59,22 @@ func (i *IXBRL) AsEtree() *etree.Element {
 	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "xlink", Value: "http://www.w3.org/1999/xlink"})
 	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "iso4217", Value: "http://www.xbrl.org/2003/iso4217"})
 
+	for _, s := range i.schemas {
+		ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: s.id, Value: s.schema})
+	}
+
 	return ret
 }
 
 func (i *IXBRL) ixHeader() *etree.Element {
 	ixhidden := xml.ElementWithNesting("ix:hidden")
-	ixrefs := xml.ElementWithNesting("ix:references")
+	for _, ixp := range i.hidden {
+		ixhidden.AddChild(ixp.AsEtree())
+	}
+	schemaLink := xml.ElementWithNesting("link:schemaRef")
+	schemaLink.Attr = append(schemaLink.Attr, etree.Attr{Space: "xlink", Key: "href", Value: i.schema})
+	schemaLink.Attr = append(schemaLink.Attr, etree.Attr{Space: "xlink", Key: "type", Value: "simple"})
+	ixrefs := xml.ElementWithNesting("ix:references", schemaLink)
 	ixresources := xml.ElementWithNesting("ix:resources")
 	ixheader := xml.ElementWithNesting("ix:header", ixhidden, ixrefs, ixresources)
 	ret := xml.ElementWithNesting("div", ixheader)
@@ -40,6 +82,20 @@ func (i *IXBRL) ixHeader() *etree.Element {
 	return ret
 }
 
-func NewIXBRL() *IXBRL {
-	return &IXBRL{}
+func NewIXBRL(title, schema string) *IXBRL {
+	return &IXBRL{title: title, schema: schema}
+}
+
+func (ixp *IXProp) AsEtree() *etree.Element {
+	var ty string
+	switch ixp.Type {
+	case NonNumeric:
+		ty = "ix:nonNumeric"
+	default:
+		panic(fmt.Sprintf("invalid type: %d", ixp.Type))
+	}
+	ret := xml.ElementWithNesting(ty)
+	ret.Attr = append(ret.Attr, etree.Attr{Key: "contextRef", Value: ixp.Context})
+	ret.Attr = append(ret.Attr, etree.Attr{Key: "name", Value: ixp.Name})
+	return ret
 }
