@@ -1,4 +1,4 @@
-package govtalk
+package xml
 
 import (
 	"log"

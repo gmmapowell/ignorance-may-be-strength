@@ -1,6 +1,7 @@
 package govtalk
 
 import (
+	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
@@ -38,60 +39,60 @@ func (gtm *GovTalkMessage) Product(vendor, product, version string) {
 }
 
 func (gtm *GovTalkMessage) AsXML() (*etree.Element, error) {
-	env := ElementWithText("EnvelopeVersion", "2.0")
+	env := xml.ElementWithText("EnvelopeVersion", "2.0")
 	var corrId *etree.Element
 	if gtm.opts.SendCorrelationID {
-		corrId = ElementWithText("CorrelationID", gtm.opts.CorrelationID)
+		corrId = xml.ElementWithText("CorrelationID", gtm.opts.CorrelationID)
 	}
-	msgDetails := ElementWithNesting(
+	msgDetails := xml.ElementWithNesting(
 		"MessageDetails",
-		ElementWithText("Class", "HMRC-CT-CT600"),
-		ElementWithText("Qualifier", gtm.opts.Qualifier),
-		ElementWithText("Function", gtm.opts.Function),
+		xml.ElementWithText("Class", "HMRC-CT-CT600"),
+		xml.ElementWithText("Qualifier", gtm.opts.Qualifier),
+		xml.ElementWithText("Function", gtm.opts.Function),
 		corrId,
-		ElementWithText("Transformation", "XML"),
-		ElementWithText("GatewayTest", "1"),
+		xml.ElementWithText("Transformation", "XML"),
+		xml.ElementWithText("GatewayTest", "1"),
 	)
 	var sndrDetails *etree.Element
 	if gtm.opts.IncludeSender {
-		sndrDetails = ElementWithNesting(
+		sndrDetails = xml.ElementWithNesting(
 			"SenderDetails",
-			ElementWithNesting(
+			xml.ElementWithNesting(
 				"IDAuthentication",
-				ElementWithText("SenderID", gtm.sender),
-				ElementWithNesting(
+				xml.ElementWithText("SenderID", gtm.sender),
+				xml.ElementWithNesting(
 					"Authentication",
-					ElementWithText("Method", "clear"),
-					ElementWithText("Role", "Principal"),
-					ElementWithText("Value", gtm.password),
+					xml.ElementWithText("Method", "clear"),
+					xml.ElementWithText("Role", "Principal"),
+					xml.ElementWithText("Value", gtm.password),
 				),
 			),
 		)
 	}
 	var keys *etree.Element
 	if gtm.opts.IncludeKeys {
-		keys = ElementWithNesting("Keys", Key("UTR", gtm.utr))
+		keys = xml.ElementWithNesting("Keys", xml.Key("UTR", gtm.utr))
 	} else {
-		keys = ElementWithNesting("Keys")
+		keys = xml.ElementWithNesting("Keys")
 	}
-	gtDetails := ElementWithNesting(
+	gtDetails := xml.ElementWithNesting(
 		"GovTalkDetails",
 		keys,
-		ElementWithNesting("TargetDetails", ElementWithText("Organisation", "HMRC")),
-		ElementWithNesting(
+		xml.ElementWithNesting("TargetDetails", xml.ElementWithText("Organisation", "HMRC")),
+		xml.ElementWithNesting(
 			"ChannelRouting",
-			ElementWithNesting(
+			xml.ElementWithNesting(
 				"Channel",
-				ElementWithText("URI", gtm.vendor),
-				ElementWithText("Product", gtm.product),
-				ElementWithText("Version", gtm.version),
+				xml.ElementWithText("URI", gtm.vendor),
+				xml.ElementWithText("Product", gtm.product),
+				xml.ElementWithText("Version", gtm.version),
 			),
 		),
 	)
 
-	gt := MakeGovTalkMessage(
+	gt := xml.MakeGovTalkMessage(
 		env,
-		ElementWithNesting("Header", msgDetails, sndrDetails),
+		xml.ElementWithNesting("Header", msgDetails, sndrDetails),
 		gtDetails)
 
 	return gt, nil

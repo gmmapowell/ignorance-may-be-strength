@@ -1,4 +1,5 @@
 ixbrl/
+!internal/ct600/ixbrl/
 submits/
 cmd/ct600/ct600
 submit.xml

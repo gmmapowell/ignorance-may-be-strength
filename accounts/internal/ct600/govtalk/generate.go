@@ -13,6 +13,7 @@ import (
 	"io"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
+	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 	"github.com/unix-world/smartgoplus/xml-utils/c14n"
 )
@@ -65,7 +66,7 @@ func assembleGovTalkXML(conf *config.Config, options *EnvelopeOptions) (*etree.E
 }
 
 func makeBody(env *IRenvelope) *etree.Element {
-	body := ElementWithNesting("Body", env.AsXML())
+	body := xml.ElementWithNesting("Body", env.AsXML())
 	body.Attr = append(body.Attr, etree.Attr{Key: "xmlns", Value: "http://www.govtalk.gov.uk/CM/envelope"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
 	return body
 }

@@ -55,3 +55,7 @@ func (c *Configuration) RedirectURI() string {
 func (c *Configuration) ListenOn() string {
 	return fmt.Sprintf(":%d", c.RedirectPort)
 }
+
+func (config *Configuration) AccountsGenerator() AccountsGenerator {
+	return GnuCashAccountsIXBRLGenerator{config: config}
+}
