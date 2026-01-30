@@ -11,6 +11,7 @@ type Configuration struct {
 	Output       string
 
 	Business Business
+	Ranges   map[string]DateRange
 	Accounts []Account
 	Verbs    []Verb
 	VerbMap  map[string]*Verb
@@ -29,6 +30,11 @@ type Business struct {
 
 	// TODO: what this?
 	CompanyType string
+}
+
+type DateRange struct {
+	Start string
+	End   string
 }
 
 type Account struct {

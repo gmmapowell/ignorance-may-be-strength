@@ -11,8 +11,9 @@ type IXBRL struct {
 	schema string
 	title  string
 
-	hidden  []*IXProp
-	schemas []*ixSchema
+	hidden   []*IXProp
+	schemas  []*ixSchema
+	contexts []*Context
 }
 
 type ixSchema struct {
@@ -29,6 +30,18 @@ type IXProp struct {
 	Text     string
 }
 
+type Date struct {
+	isoDate string
+}
+
+type Context struct {
+	ID               string
+	IdentifierScheme string
+	Identifier       string
+	FromDate         Date
+	ToDate           Date
+}
+
 const (
 	NonNumeric = iota
 )
@@ -39,6 +52,10 @@ func (i *IXBRL) AddSchema(id, schema string) {
 
 func (i *IXBRL) AddHidden(h *IXProp) {
 	i.hidden = append(i.hidden, h)
+}
+
+func (i *IXBRL) AddContext(c *Context) {
+	i.contexts = append(i.contexts, c)
 }
 
 func (i *IXBRL) AsEtree() *etree.Element {
@@ -76,6 +93,9 @@ func (i *IXBRL) ixHeader() *etree.Element {
 	schemaLink.Attr = append(schemaLink.Attr, etree.Attr{Space: "xlink", Key: "type", Value: "simple"})
 	ixrefs := xml.ElementWithNesting("ix:references", schemaLink)
 	ixresources := xml.ElementWithNesting("ix:resources")
+	for _, cx := range i.contexts {
+		ixresources.AddChild(cx.AsEtree())
+	}
 	ixheader := xml.ElementWithNesting("ix:header", ixhidden, ixrefs, ixresources)
 	ret := xml.ElementWithNesting("div", ixheader)
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "style", Value: "display: none"})
@@ -98,4 +118,26 @@ func (ixp *IXProp) AsEtree() *etree.Element {
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "contextRef", Value: ixp.Context})
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "name", Value: ixp.Name})
 	return ret
+}
+
+func (cx *Context) AsEtree() *etree.Element {
+	ret := xml.ElementWithNesting("xbrli:context")
+	ret.Attr = append(ret.Attr, etree.Attr{Key: "id", Value: cx.ID})
+	entity := xml.ElementWithNesting("xbrli:entity")
+	identifier := xml.ElementWithNesting("xbrli:identifier")
+	identifier.Attr = append(identifier.Attr, etree.Attr{Key: "scheme", Value: cx.IdentifierScheme})
+	entity.AddChild(identifier)
+	ret.AddChild(entity)
+	period := xml.ElementWithNesting("xbrli:period")
+	sd := xml.ElementWithText("xbrli:startDate", cx.FromDate.isoDate)
+	period.AddChild(sd)
+	ed := xml.ElementWithText("xbrli:endDate", cx.ToDate.isoDate)
+	period.AddChild(ed)
+	ret.AddChild(period)
+	return ret
+}
+
+func NewDate(iso string) Date {
+	// TODO: check it is a valid date
+	return Date{isoDate: iso}
 }

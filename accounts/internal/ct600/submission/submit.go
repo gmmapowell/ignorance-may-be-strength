@@ -20,7 +20,7 @@ func Submit(conf *config.Config) error {
 		Sender: "Company", // the type of business we are, I believe.  The schema limits it to a handful of options
 
 		UTR:         utr,
-		PeriodStart: "2025-01-01", PeriodEnd: "2025-12-31",
+		PeriodStart: conf.Ranges["Curr"].Start, PeriodEnd: conf.Ranges["Curr"].End,
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
