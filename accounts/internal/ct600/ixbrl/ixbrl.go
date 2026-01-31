@@ -38,8 +38,15 @@ type Context struct {
 	ID               string
 	IdentifierScheme string
 	Identifier       string
+	Instant          Date
 	FromDate         Date
 	ToDate           Date
+	Segment          *Segment
+}
+
+type Segment struct {
+	Dimension string
+	Member    string
 }
 
 const (
@@ -56,6 +63,11 @@ func (i *IXBRL) AddHidden(h *IXProp) {
 
 func (i *IXBRL) AddContext(c *Context) {
 	i.contexts = append(i.contexts, c)
+}
+
+func ExplicitMember(dim, member string) *Segment {
+	ret := Segment{Dimension: dim, Member: member}
+	return &ret
 }
 
 func (i *IXBRL) AsEtree() *etree.Element {
@@ -114,9 +126,12 @@ func (ixp *IXProp) AsEtree() *etree.Element {
 	default:
 		panic(fmt.Sprintf("invalid type: %d", ixp.Type))
 	}
-	ret := xml.ElementWithNesting(ty)
+	ret := xml.ElementWithText(ty, ixp.Text)
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "contextRef", Value: ixp.Context})
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "name", Value: ixp.Name})
+	if ixp.Format != "" {
+		ret.Attr = append(ret.Attr, etree.Attr{Key: "format", Value: ixp.Format})
+	}
 	return ret
 }
 
@@ -124,15 +139,28 @@ func (cx *Context) AsEtree() *etree.Element {
 	ret := xml.ElementWithNesting("xbrli:context")
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "id", Value: cx.ID})
 	entity := xml.ElementWithNesting("xbrli:entity")
-	identifier := xml.ElementWithNesting("xbrli:identifier")
+	identifier := xml.ElementWithText("xbrli:identifier", cx.Identifier)
 	identifier.Attr = append(identifier.Attr, etree.Attr{Key: "scheme", Value: cx.IdentifierScheme})
 	entity.AddChild(identifier)
+	if cx.Segment != nil {
+		segment := xml.ElementWithNesting("xbrli:segment")
+		expMember := xml.ElementWithText("xbrldi:explicitMember", cx.Segment.Member)
+		expMember.Attr = append(expMember.Attr, etree.Attr{Key:"dimension", Value:cx.Segment.Dimension})
+		segment.AddChild(expMember)
+		entity.AddChild(segment)
+	}
 	ret.AddChild(entity)
 	period := xml.ElementWithNesting("xbrli:period")
-	sd := xml.ElementWithText("xbrli:startDate", cx.FromDate.isoDate)
-	period.AddChild(sd)
-	ed := xml.ElementWithText("xbrli:endDate", cx.ToDate.isoDate)
-	period.AddChild(ed)
+	if cx.Instant.isoDate != "" {
+		instant := xml.ElementWithText("xbrli:instant", cx.Instant.isoDate)
+		period.AddChild(instant)
+	}
+	if cx.FromDate.isoDate != "" {
+		sd := xml.ElementWithText("xbrli:startDate", cx.FromDate.isoDate)
+		period.AddChild(sd)
+		ed := xml.ElementWithText("xbrli:endDate", cx.ToDate.isoDate)
+		period.AddChild(ed)
+	}
 	ret.AddChild(period)
 	return ret
 }
