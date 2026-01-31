@@ -47,5 +47,11 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	front.Front = append(front.Front, &ixbrl.Div{Class: "company-name", Text: g.config.Business.Name})
 	front.Front = append(front.Front, &ixbrl.Div{Class: "document-type", Text: "Financial Statements"})
 	front.Front = append(front.Front, &ixbrl.Div{Class: "period", Text: fmt.Sprintf("For the Year Ended %s", g.config.Ranges["Curr"].End)})
+
+	details := ret.AddPage()
+	details.Header = append(details.Header, &ixbrl.Div{Tag: "h1", Text: g.config.Business.Name})
+	details.Header = append(details.Header, &ixbrl.Div{Class: "company-details", Text: fmt.Sprintf("Company No. %s", g.config.Business.ID)})
+	details.Header = append(details.Header, &ixbrl.Div{Tag: "h2", Text: fmt.Sprintf("Statement of income for the year ended %s", g.config.Ranges["Curr"].End)})
+
 	return ret
 }

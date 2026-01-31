@@ -55,8 +55,9 @@ type ExplicitMember struct {
 }
 
 type Page struct {
-	Front []*Div
-	Rows  []*Row
+	Front  []*Div
+	Header []*Div
+	Rows   []*Row
 }
 
 type Row struct {
@@ -222,6 +223,14 @@ func (pg *Page) AsEtree() *etree.Element {
 		fpc.Attr = append(fpc.Attr, etree.Attr{Key: "class", Value: "frontpage-content"})
 		front = xml.ElementWithNesting("div", fpc)
 		front.Attr = append(front.Attr, etree.Attr{Key: "class", Value: "frontpage"})
+	}
+	if pg.Header != nil {
+		var divs []etree.Token
+		for _, d := range pg.Header {
+			divs = append(divs, d.AsEtree())
+		}
+		header = xml.ElementWithNesting("div", divs...)
+		header.Attr = append(header.Attr, etree.Attr{Key: "class", Value: "page-header"})
 	}
 	if pg.Rows != nil {
 		var rows []etree.Token
