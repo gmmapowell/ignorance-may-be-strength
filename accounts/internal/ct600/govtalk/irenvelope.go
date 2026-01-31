@@ -161,8 +161,10 @@ func (ire *IRenvelope) figureAttachments() *etree.Element {
 		cxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", xml.ContentFromFile(ire.ComputationIXBRL))))
 		ret = append(ret, cxml)
 	}
-	if ire.AccountsGenerator != nil {
-		acxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", ire.ComputationsGenerator.Generate().AsEtree())))
+	if ire.ComputationsGenerator != nil {
+		compsXML := ire.ComputationsGenerator.Generate().AsEtree()
+		xml.WriteEtree("comps.xhtml", compsXML)
+		acxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", compsXML)))
 		ret = append(ret, acxml)
 	}
 	if ire.AccountsIXBRL != "" {
@@ -170,7 +172,9 @@ func (ire *IRenvelope) figureAttachments() *etree.Element {
 		ret = append(ret, acxml)
 	}
 	if ire.AccountsGenerator != nil {
-		acxml := xml.ElementWithNesting("Accounts", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", ire.AccountsGenerator.Generate().AsEtree())))
+		accountsXML := ire.AccountsGenerator.Generate().AsEtree()
+		xml.WriteEtree("accounts.xhtml", accountsXML)
+		acxml := xml.ElementWithNesting("Accounts", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", accountsXML)))
 		ret = append(ret, acxml)
 	}
 	return xml.ElementWithNesting("XBRLsubmission", ret...)

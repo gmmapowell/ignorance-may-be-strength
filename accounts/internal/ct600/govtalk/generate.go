@@ -24,7 +24,7 @@ func Generate(file string, runlint bool, conf *config.Config, options *EnvelopeO
 		return nil, err
 	}
 
-	gtbs := writeXML(gtxml)
+	gtbs := xml.WriteXML(gtxml)
 
 	if options.IncludeBody {
 		bd := makeBody(options.IRenvelope)
@@ -69,14 +69,6 @@ func makeBody(env *IRenvelope) *etree.Element {
 	body := xml.ElementWithNesting("Body", env.AsXML())
 	body.Attr = append(body.Attr, etree.Attr{Key: "xmlns", Value: "http://www.govtalk.gov.uk/CM/envelope"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
 	return body
-}
-
-func writeXML(elt *etree.Element) []byte {
-	elt.IndentWithSettings(&etree.IndentSettings{Spaces: 2})
-	w := bytes.Buffer{}
-	ws := etree.WriteSettings{}
-	elt.WriteTo(&w, &ws)
-	return w.Bytes()
 }
 
 func attachBodyTo(bs []byte, body string) ([]byte, error) {

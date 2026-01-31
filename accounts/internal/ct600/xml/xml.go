@@ -1,6 +1,7 @@
 package xml
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"reflect"
@@ -69,4 +70,22 @@ func Key(ty, value string) *etree.Element {
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "Type", Value: ty})
 	ret.AddChild(ret.CreateText(value))
 	return ret
+}
+
+func WriteXML(elt *etree.Element) []byte {
+	elt.IndentWithSettings(&etree.IndentSettings{Spaces: 2})
+	w := bytes.Buffer{}
+	ws := etree.WriteSettings{}
+	elt.WriteTo(&w, &ws)
+	return w.Bytes()
+}
+
+func WriteEtree(filename string, elt *etree.Element) {
+	bs := WriteXML(elt)
+	file, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	file.Write(bs)
+	file.Close()
 }

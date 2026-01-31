@@ -55,11 +55,18 @@ type ExplicitMember struct {
 }
 
 type Page struct {
-	Rows []*Row
+	Front []*Div
+	Rows  []*Row
 }
 
 type Row struct {
 	Items []any
+}
+
+type Div struct {
+	Tag   string
+	Class string
+	Text  string
 }
 
 const (
@@ -83,6 +90,7 @@ func (i *IXBRL) AddPage() *Page {
 	i.pages = append(i.pages, ret)
 	return ret
 }
+
 func MakeExplicitMember(dim, member string) *ExplicitMember {
 	ret := ExplicitMember{Dimension: dim, Member: member}
 	return &ret
@@ -205,6 +213,16 @@ func (pg *Page) AddRow(items ...any) {
 
 func (pg *Page) AsEtree() *etree.Element {
 	var front, header, table *etree.Element
+	if pg.Front != nil {
+		var divs []etree.Token
+		for _, d := range pg.Front {
+			divs = append(divs, d.AsEtree())
+		}
+		fpc := xml.ElementWithNesting("div", divs...)
+		fpc.Attr = append(fpc.Attr, etree.Attr{Key: "class", Value: "frontpage-content"})
+		front = xml.ElementWithNesting("div", fpc)
+		front.Attr = append(front.Attr, etree.Attr{Key: "class", Value: "frontpage"})
+	}
 	if pg.Rows != nil {
 		var rows []etree.Token
 		for _, row := range pg.Rows {
@@ -214,6 +232,18 @@ func (pg *Page) AsEtree() *etree.Element {
 	}
 	ret := xml.ElementWithNesting("div", front, header, table)
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "class", Value: "page"})
+	return ret
+}
+
+func (d *Div) AsEtree() *etree.Element {
+	tag := "div"
+	if d.Tag != "" {
+		tag = d.Tag
+	}
+	ret := xml.ElementWithText(tag, d.Text)
+	if d.Class != "" {
+		ret.Attr = append(ret.Attr, etree.Attr{Key: "class", Value: d.Class})
+	}
 	return ret
 }
 
