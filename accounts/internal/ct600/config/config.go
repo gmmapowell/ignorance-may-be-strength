@@ -6,27 +6,7 @@ import (
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 )
 
-type Config struct {
-	config.Configuration
-	Sender, Password         string
-	Utr                      string
-	Vendor, Product, Version string
-
-	// Arguments for Polling
-	PollURI, CorrelationID string
-}
-
-func MakeBlankConfig() *Config {
-	ret := Config{Configuration: config.MakeConfiguration()}
-	return &ret
-}
-
-func IncludeConfig(conf *Config, file string) error {
-	err := config.ReadAConfiguration(conf, file)
-	return err
-}
-
-func PollParameter(conf *Config, arg string) error {
+func PollParameter(conf *config.Configuration, arg string) error {
 	if conf.PollURI == "" {
 		conf.PollURI = arg
 		return nil

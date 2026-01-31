@@ -12,13 +12,14 @@ import (
 
 	"io"
 
-	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
+	conf "github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 	"github.com/unix-world/smartgoplus/xml-utils/c14n"
 )
 
-func Generate(file string, runlint bool, conf *config.Config, options *EnvelopeOptions) (io.Reader, error) {
+func Generate(file string, runlint bool, conf *conf.Configuration, options *EnvelopeOptions) (io.Reader, error) {
 	gtxml, err := assembleGovTalkXML(conf, options)
 	if err != nil {
 		return nil, err
@@ -57,7 +58,7 @@ func Generate(file string, runlint bool, conf *config.Config, options *EnvelopeO
 	return bytes.NewReader(gtbs), nil
 }
 
-func assembleGovTalkXML(conf *config.Config, options *EnvelopeOptions) (*etree.Element, error) {
+func assembleGovTalkXML(conf *conf.Configuration, options *EnvelopeOptions) (*etree.Element, error) {
 	msg := MakeGovTalk(options)
 	msg.Identity(conf.Sender, conf.Password)
 	msg.Utr(conf.Utr)

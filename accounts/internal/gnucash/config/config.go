@@ -15,6 +15,14 @@ type Configuration struct {
 	Accounts []Account
 	Verbs    []Verb
 	VerbMap  map[string]*Verb
+
+	// Fpr ct600
+	Sender, Password         string
+	Utr                      string
+	Vendor, Product, Version string
+
+	// Arguments for Polling
+	PollURI, CorrelationID string
 }
 
 type Business struct {
@@ -50,8 +58,8 @@ type Verb struct {
 	Dest   string
 }
 
-func MakeConfiguration() Configuration {
-	return Configuration{VerbMap: make(map[string]*Verb)}
+func MakeConfiguration() *Configuration {
+	return &Configuration{VerbMap: make(map[string]*Verb)}
 }
 
 func (c *Configuration) RedirectURI() string {

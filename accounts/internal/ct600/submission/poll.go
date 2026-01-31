@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"log"
 
-	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
-func Poll(conf *config.Config) (*etree.Element, error) {
+func Poll(conf *config.Configuration) (*etree.Element, error) {
 	pollOptions := &govtalk.EnvelopeOptions{Qualifier: "poll", Function: "submit", SendCorrelationID: true, CorrelationID: conf.CorrelationID, IncludeSender: false}
 	send, err := govtalk.Generate("", false, conf, pollOptions)
 	if err != nil {

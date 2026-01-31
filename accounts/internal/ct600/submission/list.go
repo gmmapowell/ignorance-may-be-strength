@@ -8,7 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
 )
 
@@ -18,7 +19,7 @@ type Record struct {
 	status string
 }
 
-func List(conf *config.Config) error {
+func List(conf *config.Configuration) error {
 	pollOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "list", SendCorrelationID: true, IncludeSender: true}
 	send, err := govtalk.Generate("", false, conf, pollOptions)
 	if err != nil {

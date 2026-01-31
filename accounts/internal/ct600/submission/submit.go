@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gmmapowell/ignorance/accounts/internal/ct600/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
-func Submit(conf *config.Config) error {
+func Submit(conf *config.Configuration) error {
 	utr := conf.Utr
 	if utr == "" {
 		utr = conf.Business.TaxNum
@@ -47,7 +47,7 @@ func Submit(conf *config.Config) error {
 	elt := doc.Element.ChildElements()[0]
 	for {
 		var waitFor time.Duration = 1
-		pollOn := config.MakeBlankConfig()
+		pollOn := config.MakeConfiguration()
 
 		details := elt.FindElement("/GovTalkMessage/Header/MessageDetails")
 		qualifier := details.FindElement("Qualifier")

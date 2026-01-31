@@ -2,15 +2,17 @@ package config
 
 import (
 	"fmt"
+
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 )
 
 const SUBMIT_MODE = "--submit"
 const LIST_MODE = "--list"
 const POLL_MODE = "--poll"
 
-func ParseArguments(args []string) (*Config, string, error) {
+func ParseArguments(args []string) (*config.Configuration, string, error) {
 	mode := ""
-	conf := MakeBlankConfig()
+	conf := config.MakeConfiguration()
 	for _, f := range args {
 		switch f {
 		case LIST_MODE:
@@ -29,7 +31,7 @@ func ParseArguments(args []string) (*Config, string, error) {
 					return nil, "", err
 				}
 			} else {
-				err := IncludeConfig(conf, f)
+				err := config.ReadAConfiguration(conf, f)
 				if err != nil {
 					return nil, "", fmt.Errorf("failed to read config %s: %v", f, err)
 				}

@@ -7,15 +7,15 @@ import (
 
 func ReadConfig(file string) (*Configuration, error) {
 	ret := MakeConfiguration()
-	err := ReadAConfiguration(&ret, file)
+	err := ReadAConfiguration(ret, file)
 	if err != nil {
 		return nil, err
 	} else {
-		return &ret, nil
+		return ret, nil
 	}
 }
 
-func ReadAConfiguration(config any, file string) error {
+func ReadAConfiguration(config *Configuration, file string) error {
 	bs, err := os.ReadFile(file)
 	if err != nil {
 		return err
@@ -24,11 +24,8 @@ func ReadAConfiguration(config any, file string) error {
 	if err != nil {
 		panic(err)
 	}
-	vc, isConfig := config.(*Configuration)
-	if isConfig {
-		for _, v := range vc.Verbs {
-			vc.VerbMap[v.Name] = &v
-		}
+	for _, v := range config.Verbs {
+		config.VerbMap[v.Name] = &v
 	}
 	return nil
 }
