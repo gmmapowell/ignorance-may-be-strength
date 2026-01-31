@@ -27,7 +27,7 @@ func Submit(conf *config.Config) error {
 		AccountsGenerator: conf.AccountsGenerator(),
 		// AccountsIXBRL:     "ct600/micro-accounts.xml",
 		// ComputationIXBRL: "ct600/sample-ctcomp.xhtml",
-		ComputationsGenerator: conf.ComputationsGenerator(),
+		ComputationsGenerator: conf.ComputationsGenerator(utr),
 	}
 
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}

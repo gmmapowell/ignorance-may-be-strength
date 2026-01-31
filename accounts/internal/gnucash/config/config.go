@@ -66,6 +66,6 @@ func (config *Configuration) AccountsGenerator() IXBRLGenerator {
 	return &GnuCashAccountsIXBRLGenerator{config: config}
 }
 
-func (config *Configuration) ComputationsGenerator() IXBRLGenerator {
-	return &GnuCashComputationsIXBRLGenerator{config: config}
+func (config *Configuration) ComputationsGenerator(utr string) IXBRLGenerator {
+	return &GnuCashComputationsIXBRLGenerator{config: config, utr: utr}
 }

@@ -46,10 +46,10 @@ type Context struct {
 	Instant          Date
 	FromDate         Date
 	ToDate           Date
-	Segment          *Segment
+	Segment          []*ExplicitMember
 }
 
-type Segment struct {
+type ExplicitMember struct {
 	Dimension string
 	Member    string
 }
@@ -83,8 +83,8 @@ func (i *IXBRL) AddPage() *Page {
 	i.pages = append(i.pages, ret)
 	return ret
 }
-func ExplicitMember(dim, member string) *Segment {
-	ret := Segment{Dimension: dim, Member: member}
+func MakeExplicitMember(dim, member string) *ExplicitMember {
+	ret := ExplicitMember{Dimension: dim, Member: member}
 	return &ret
 }
 
@@ -176,9 +176,11 @@ func (cx *Context) AsEtree() *etree.Element {
 	entity.AddChild(identifier)
 	if cx.Segment != nil {
 		segment := xml.ElementWithNesting("xbrli:segment")
-		expMember := xml.ElementWithText("xbrldi:explicitMember", cx.Segment.Member)
-		expMember.Attr = append(expMember.Attr, etree.Attr{Key: "dimension", Value: cx.Segment.Dimension})
-		segment.AddChild(expMember)
+		for _, sg := range cx.Segment {
+			expMember := xml.ElementWithText("xbrldi:explicitMember", sg.Member)
+			expMember.Attr = append(expMember.Attr, etree.Attr{Key: "dimension", Value: sg.Dimension})
+			segment.AddChild(expMember)
+		}
 		entity.AddChild(segment)
 	}
 	ret.AddChild(entity)
