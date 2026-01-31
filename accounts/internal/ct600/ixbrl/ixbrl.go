@@ -7,6 +7,10 @@ import (
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
+type MakeEtree interface {
+	AsEtree() *etree.Element
+}
+
 type IXBRL struct {
 	schema string
 	title  string
@@ -14,6 +18,7 @@ type IXBRL struct {
 	hidden   []*IXProp
 	schemas  []*ixSchema
 	contexts []*Context
+	pages    []*Page
 }
 
 type ixSchema struct {
@@ -49,6 +54,14 @@ type Segment struct {
 	Member    string
 }
 
+type Page struct {
+	Rows []*Row
+}
+
+type Row struct {
+	Items []any
+}
+
 const (
 	NonNumeric = iota
 )
@@ -65,6 +78,11 @@ func (i *IXBRL) AddContext(c *Context) {
 	i.contexts = append(i.contexts, c)
 }
 
+func (i *IXBRL) AddPage() *Page {
+	ret := &Page{}
+	i.pages = append(i.pages, ret)
+	return ret
+}
 func ExplicitMember(dim, member string) *Segment {
 	ret := Segment{Dimension: dim, Member: member}
 	return &ret
@@ -76,6 +94,9 @@ func (i *IXBRL) AsEtree() *etree.Element {
 	title := xml.ElementWithText("title", i.title)
 	head := xml.ElementWithNesting("head", metaContent, title)
 	body := xml.ElementWithNesting("body", i.ixHeader())
+	for _, pg := range i.Pages() {
+		body.AddChild(pg)
+	}
 	ret := xml.ElementWithNesting("html", head, body)
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "xmlns", Value: "http://www.w3.org/1999/xhtml"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
 
@@ -96,9 +117,12 @@ func (i *IXBRL) AsEtree() *etree.Element {
 }
 
 func (i *IXBRL) ixHeader() *etree.Element {
-	ixhidden := xml.ElementWithNesting("ix:hidden")
-	for _, ixp := range i.hidden {
-		ixhidden.AddChild(ixp.AsEtree())
+	var ixhidden *etree.Element
+	if len(i.hidden) > 0 {
+		ixhidden = xml.ElementWithNesting("ix:hidden")
+		for _, ixp := range i.hidden {
+			ixhidden.AddChild(ixp.AsEtree())
+		}
 	}
 	schemaLink := xml.ElementWithNesting("link:schemaRef")
 	schemaLink.Attr = append(schemaLink.Attr, etree.Attr{Space: "xlink", Key: "href", Value: i.schema})
@@ -111,6 +135,14 @@ func (i *IXBRL) ixHeader() *etree.Element {
 	ixheader := xml.ElementWithNesting("ix:header", ixhidden, ixrefs, ixresources)
 	ret := xml.ElementWithNesting("div", ixheader)
 	ret.Attr = append(ret.Attr, etree.Attr{Key: "style", Value: "display: none"})
+	return ret
+}
+
+func (i *IXBRL) Pages() []*etree.Element {
+	var ret []*etree.Element
+	for _, pg := range i.pages {
+		ret = append(ret, pg.AsEtree())
+	}
 	return ret
 }
 
@@ -145,7 +177,7 @@ func (cx *Context) AsEtree() *etree.Element {
 	if cx.Segment != nil {
 		segment := xml.ElementWithNesting("xbrli:segment")
 		expMember := xml.ElementWithText("xbrldi:explicitMember", cx.Segment.Member)
-		expMember.Attr = append(expMember.Attr, etree.Attr{Key:"dimension", Value:cx.Segment.Dimension})
+		expMember.Attr = append(expMember.Attr, etree.Attr{Key: "dimension", Value: cx.Segment.Dimension})
 		segment.AddChild(expMember)
 		entity.AddChild(segment)
 	}
@@ -163,6 +195,41 @@ func (cx *Context) AsEtree() *etree.Element {
 	}
 	ret.AddChild(period)
 	return ret
+}
+
+func (pg *Page) AddRow(items ...any) {
+	pg.Rows = append(pg.Rows, &Row{Items: items})
+}
+
+func (pg *Page) AsEtree() *etree.Element {
+	var front, header, table *etree.Element
+	if pg.Rows != nil {
+		var rows []etree.Token
+		for _, row := range pg.Rows {
+			rows = append(rows, row.AsEtree())
+		}
+		table = xml.ElementWithNesting("table", rows...)
+	}
+	ret := xml.ElementWithNesting("div", front, header, table)
+	ret.Attr = append(ret.Attr, etree.Attr{Key: "class", Value: "page"})
+	return ret
+}
+
+func (r *Row) AsEtree() *etree.Element {
+	var tds []etree.Token
+	for _, i := range r.Items {
+		var val etree.Token
+		switch ti := i.(type) {
+		case string:
+			val = etree.NewText(ti)
+		case MakeEtree:
+			val = ti.AsEtree()
+		default:
+			panic(fmt.Sprintf("cannot handle %T", i))
+		}
+		tds = append(tds, xml.ElementWithNesting("td", val))
+	}
+	return xml.ElementWithNesting("tr", tds...)
 }
 
 func NewDate(iso string) Date {

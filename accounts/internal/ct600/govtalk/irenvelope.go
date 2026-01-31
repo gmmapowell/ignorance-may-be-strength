@@ -24,11 +24,12 @@ type IRenvelope struct {
 	TradingNetProfits    float64
 	CorporationTax       float64
 
-	NoAccountsReason     string
-	AccountsIXBRL        string
-	AccountsGenerator    config.AccountsGenerator
-	NoComputationsReason string
-	ComputationIXBRL     string
+	NoAccountsReason      string
+	AccountsIXBRL         string
+	AccountsGenerator     config.IXBRLGenerator
+	NoComputationsReason  string
+	ComputationIXBRL      string
+	ComputationsGenerator config.IXBRLGenerator
 }
 
 func (ire *IRenvelope) AsXML() *etree.Element {
@@ -48,10 +49,20 @@ func (ire *IRenvelope) AsXML() *etree.Element {
 	if ac > 1 {
 		log.Fatalf("Must EITHER give accounts OR a reason not to")
 	}
-	if ire.NoComputationsReason == "" && ire.ComputationIXBRL == "" {
+	cc := 0
+	if ire.NoComputationsReason != "" {
+		cc++
+	}
+	if ire.ComputationIXBRL != "" {
+		cc++
+	}
+	if ire.ComputationsGenerator != nil {
+		cc++
+	}
+	if cc == 0 {
 		log.Fatalf("Must give computations or a reason not to")
 	}
-	if ire.NoComputationsReason != "" && ire.ComputationIXBRL != "" {
+	if cc > 1 {
 		log.Fatalf("Must EITHER give computations OR a reason not to")
 	}
 	keys := xml.ElementWithNesting("Keys", xml.Key("UTR", ire.UTR))
@@ -149,6 +160,10 @@ func (ire *IRenvelope) figureAttachments() *etree.Element {
 	if ire.ComputationIXBRL != "" {
 		cxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", xml.ContentFromFile(ire.ComputationIXBRL))))
 		ret = append(ret, cxml)
+	}
+	if ire.AccountsGenerator != nil {
+		acxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", ire.ComputationsGenerator.Generate().AsEtree())))
+		ret = append(ret, acxml)
 	}
 	if ire.AccountsIXBRL != "" {
 		acxml := xml.ElementWithNesting("Accounts", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", xml.ContentFromFile(ire.AccountsIXBRL))))

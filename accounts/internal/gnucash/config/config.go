@@ -62,6 +62,10 @@ func (c *Configuration) ListenOn() string {
 	return fmt.Sprintf(":%d", c.RedirectPort)
 }
 
-func (config *Configuration) AccountsGenerator() AccountsGenerator {
+func (config *Configuration) AccountsGenerator() IXBRLGenerator {
 	return &GnuCashAccountsIXBRLGenerator{config: config}
+}
+
+func (config *Configuration) ComputationsGenerator() IXBRLGenerator {
+	return &GnuCashComputationsIXBRLGenerator{config: config}
 }
