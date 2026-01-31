@@ -14,6 +14,7 @@ type MakeEtree interface {
 type IXBRL struct {
 	schema string
 	title  string
+	styles string
 
 	hidden   []*IXProp
 	schemas  []*ixSchema
@@ -101,7 +102,9 @@ func (i *IXBRL) AsEtree() *etree.Element {
 	metaContent := xml.ElementWithNesting("meta")
 	metaContent.Attr = append(metaContent.Attr, etree.Attr{Key: "content", Value: "application/xhtml+xml; charset=UTF-8"}, etree.Attr{Key: "http-equiv", Value: "Content-Type"})
 	title := xml.ElementWithText("title", i.title)
-	head := xml.ElementWithNesting("head", metaContent, title)
+	styles := xml.ElementWithText("style", xml.ReadFile(i.styles))
+	styles.Attr = append(styles.Attr, etree.Attr{Key: "type", Value: "text/css"})
+	head := xml.ElementWithNesting("head", metaContent, title, styles)
 	body := xml.ElementWithNesting("body", i.ixHeader())
 	for _, pg := range i.Pages() {
 		body.AddChild(pg)
@@ -155,8 +158,8 @@ func (i *IXBRL) Pages() []*etree.Element {
 	return ret
 }
 
-func NewIXBRL(title, schema string) *IXBRL {
-	return &IXBRL{title: title, schema: schema}
+func NewIXBRL(title, schema, styles string) *IXBRL {
+	return &IXBRL{title: title, schema: schema, styles: styles}
 }
 
 func (ixp *IXProp) AsEtree() *etree.Element {

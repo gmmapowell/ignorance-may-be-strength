@@ -70,10 +70,10 @@ func (c *Configuration) ListenOn() string {
 	return fmt.Sprintf(":%d", c.RedirectPort)
 }
 
-func (config *Configuration) AccountsGenerator() IXBRLGenerator {
-	return &GnuCashAccountsIXBRLGenerator{config: config}
+func (config *Configuration) AccountsGenerator(styles string) IXBRLGenerator {
+	return &GnuCashAccountsIXBRLGenerator{config: config, styles: styles}
 }
 
-func (config *Configuration) ComputationsGenerator(utr string) IXBRLGenerator {
-	return &GnuCashComputationsIXBRLGenerator{config: config, utr: utr}
+func (config *Configuration) ComputationsGenerator(styles string) IXBRLGenerator {
+	return &GnuCashComputationsIXBRLGenerator{config: config, styles: styles}
 }

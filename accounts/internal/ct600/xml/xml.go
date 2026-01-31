@@ -2,6 +2,7 @@ package xml
 
 import (
 	"bytes"
+	"io"
 	"log"
 	"os"
 	"reflect"
@@ -42,6 +43,19 @@ func ContentFromFile(filename string) *etree.Element {
 		log.Fatalf("Could not read %s: %v", filename, err)
 	}
 	return doc.Element.ChildElements()[0]
+}
+
+func ReadFile(filename string) string {
+	fp, err := os.Open(filename)
+	if err != nil {
+		log.Fatalf("Could not read %s: %v", filename, err)
+	}
+	defer fp.Close()
+	bs, err := io.ReadAll(fp)
+	if err != nil {
+		log.Fatalf("Could not read %s: %v", filename, err)
+	}
+	return string(bs)
 }
 
 func MakeGovTalkMessage(nesting ...etree.Token) *etree.Element {

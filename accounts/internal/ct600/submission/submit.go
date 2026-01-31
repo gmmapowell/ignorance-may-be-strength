@@ -13,8 +13,8 @@ import (
 
 func Submit(conf *config.Configuration) error {
 	utr := conf.Utr
-	if utr == "" {
-		utr = conf.Business.TaxNum
+	if conf.Utr == "" {
+		conf.Utr = conf.Business.TaxNum
 	}
 	ctr := &govtalk.IRenvelope{Business: conf.Business, ReturnType: "new",
 		Sender: "Company", // the type of business we are, I believe.  The schema limits it to a handful of options
@@ -24,10 +24,10 @@ func Submit(conf *config.Configuration) error {
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
-		AccountsGenerator: conf.AccountsGenerator(),
+		AccountsGenerator: conf.AccountsGenerator("ct600/acct-styles.xml"),
 		// AccountsIXBRL:     "ct600/micro-accounts.xml",
 		// ComputationIXBRL: "ct600/sample-ctcomp.xhtml",
-		ComputationsGenerator: conf.ComputationsGenerator(utr),
+		ComputationsGenerator: conf.ComputationsGenerator("ct600/comp-styles.xml"),
 	}
 
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}

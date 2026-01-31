@@ -8,11 +8,12 @@ import (
 
 type GnuCashAccountsIXBRLGenerator struct {
 	config *Configuration
+	styles string
 }
 
 // Generate implements AccountsGenerator.
 func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
-	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Financial Statements", "https://xbrl.frc.org.uk/FRS-102/2025-01-01/FRS-102-2025-01-01.xsd")
+	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Financial Statements", "https://xbrl.frc.org.uk/FRS-102/2025-01-01/FRS-102-2025-01-01.xsd", g.styles)
 	ret.AddSchema("bus", "http://xbrl.frc.org.uk/cd/2025-01-01/business")
 	ret.AddSchema("core", "http://xbrl.frc.org.uk/fr/2025-01-01/core")
 	ret.AddSchema("uk-bus", "http://www.xbrl.org/uk/cd/business/2009-09-01")
