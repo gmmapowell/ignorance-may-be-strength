@@ -1,4 +1,19 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xml:lang="en" xmlns:curr="http://www.xbrl.org/uk/cd/currencies/2009-09-01" xmlns:countries="http://www.xbrl.org/uk/cd/countries/2009-09-01" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2010-04-20" xmlns:uk-bus="http://www.xbrl.org/uk/cd/business/2009-09-01" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:ixt2="http://www.xbrl.org/inlineXBRL/transformation/2011-07-31" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:bus="http://xbrl.frc.org.uk/cd/2025-01-01/business" xmlns:core="http://xbrl.frc.org.uk/fr/2025-01-01/core" xmlns:direp="http://xbrl.frc.org.uk/reports/2025-01-01/direp" xmlns:dpl="http://www.hmrc.gov.uk/schemas/ct/dpl/2025-01-01">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xml:lang="en" xmlns:curr="http://www.xbrl.org/uk/cd/currencies/2009-09-01"
+ xmlns:countries="http://www.xbrl.org/uk/cd/countries/2009-09-01"
+  xmlns:uk-bus="http://www.xbrl.org/uk/cd/business/2009-09-01" 
+  xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" 
+  xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2010-04-20"
+  xmlns:ixt2="http://www.xbrl.org/inlineXBRL/transformation/2011-07-31" 
+  xmlns:xbrli="http://www.xbrl.org/2003/instance" 
+  xmlns:xbrldi="http://xbrl.org/2006/xbrldi" 
+  xmlns:link="http://www.xbrl.org/2003/linkbase" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:iso4217="http://www.xbrl.org/2003/iso4217" 
+  xmlns:bus="http://xbrl.frc.org.uk/cd/2025-01-01/business"
+   xmlns:core="http://xbrl.frc.org.uk/fr/2025-01-01/core"
+   xmlns:direp="http://xbrl.frc.org.uk/reports/2025-01-01/direp"
+   xmlns:dpl="http://www.hmrc.gov.uk/schemas/ct/dpl/2025-01-01">
   <head>
     <meta content="application/xhtml+xml; charset=UTF-8" http-equiv="Content-Type"/>
     <title>Ziniki Ltd - Financial statements</title>
