@@ -1,11 +1,12 @@
-package config
+package ixbrlgens
 
 import (
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrl"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 )
 
 type GnuCashComputationsIXBRLGenerator struct {
-	config *Configuration
+	config *config.Configuration
 	styles string
 }
 
@@ -28,4 +29,8 @@ func (g *GnuCashComputationsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	pg.AddRow("ct-comp:EndOfPeriodCoveredByReturn", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:EndOfPeriodCoveredByReturn", Text: cyEnd.IsoDate()})
 	pg.AddRow("ct-comp:CompanyIsAPartnerInAFirm", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "ct-comp:CompanyIsAPartnerInAFirm", Text: "false"})
 	return ret
+}
+
+func ComputationsGenerator(config *config.Configuration, styles string) config.IXBRLGenerator {
+	return &GnuCashComputationsIXBRLGenerator{config: config, styles: styles}
 }

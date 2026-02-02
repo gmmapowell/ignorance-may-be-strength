@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
+	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrlgens"
+
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
@@ -24,10 +26,10 @@ func Submit(conf *config.Configuration) error {
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
-		AccountsGenerator: conf.AccountsGenerator("ct600/acct-styles.xml"),
+		AccountsGenerator: ixbrlgens.AccountsGenerator(conf, "ct600/acct-styles.xml"),
 		// AccountsIXBRL:     "ct600/micro-accounts.xml",
 		// ComputationIXBRL: "ct600/sample-ctcomp.xhtml",
-		ComputationsGenerator: conf.ComputationsGenerator("ct600/comp-styles.xml"),
+		ComputationsGenerator: ixbrlgens.ComputationsGenerator(conf, "ct600/comp-styles.xml"),
 	}
 
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}

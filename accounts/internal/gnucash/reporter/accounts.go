@@ -4,9 +4,10 @@ import (
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 )
 
-type account interface {
+type Account interface {
 	Credit(date writer.DateInfo, amount writer.Money)
 	Debit(date writer.DateInfo, amount writer.Money)
+	Type() string
 	HasBalance() bool
 	Balance() writer.Money
 	IsPL() bool
@@ -18,6 +19,7 @@ type actor struct {
 	justYear                  bool
 	year                      int
 	balance                   writer.Money
+	ty                        string
 }
 
 func (a *actor) Credit(date writer.DateInfo, amount writer.Money) {
@@ -58,20 +60,24 @@ func (a *actor) PLEffect() int {
 	return -a.creditEffect
 }
 
-func makeAccount(yr int, ty string) account {
+func (a *actor) Type() string {
+	return a.ty
+}
+
+func MakeAccount(yr int, ty string) Account {
 	switch ty {
 	case "ASSET":
 		fallthrough
 	case "BANK":
-		return &actor{debitEffect: -1, creditEffect: 1, justYear: false, year: yr}
+		return &actor{ty: ty, debitEffect: -1, creditEffect: 1, justYear: false, year: yr}
 	case "EXPENSE":
-		return &actor{debitEffect: -1, creditEffect: 1, justYear: true, year: yr}
+		return &actor{ty: ty, debitEffect: -1, creditEffect: 1, justYear: true, year: yr}
 	case "INCOME":
-		return &actor{debitEffect: 1, creditEffect: -1, justYear: true, year: yr}
+		return &actor{ty: ty, debitEffect: 1, creditEffect: -1, justYear: true, year: yr}
 	case "EQUITY":
-		return &actor{debitEffect: 1, creditEffect: -1, justYear: false, year: yr}
+		return &actor{ty: ty, debitEffect: 1, creditEffect: -1, justYear: false, year: yr}
 	case "LIABILITY":
-		return &actor{debitEffect: 1, creditEffect: -1, justYear: false, year: yr}
+		return &actor{ty: ty, debitEffect: 1, creditEffect: -1, justYear: false, year: yr}
 	default:
 		panic("no such account type: " + ty)
 	}

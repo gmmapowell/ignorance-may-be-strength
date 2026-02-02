@@ -69,11 +69,3 @@ func (c *Configuration) RedirectURI() string {
 func (c *Configuration) ListenOn() string {
 	return fmt.Sprintf(":%d", c.RedirectPort)
 }
-
-func (config *Configuration) AccountsGenerator(styles string) IXBRLGenerator {
-	return &GnuCashAccountsIXBRLGenerator{config: config, styles: styles}
-}
-
-func (config *Configuration) ComputationsGenerator(styles string) IXBRLGenerator {
-	return &GnuCashComputationsIXBRLGenerator{config: config, styles: styles}
-}

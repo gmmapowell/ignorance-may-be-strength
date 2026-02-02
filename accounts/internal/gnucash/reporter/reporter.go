@@ -8,14 +8,14 @@ import (
 )
 
 type reporter struct {
-	Accounts map[string]account
+	Accounts map[string]Account
 	Year     int
 }
 
 func (r *reporter) Configure(accts []config.Account) {
 	for _, acc := range accts {
 		// log.Printf("Configuring %s of %s\n", acc.Name, acc.Type)
-		r.Accounts[acc.Name] = makeAccount(r.Year, acc.Type)
+		r.Accounts[acc.Name] = MakeAccount(r.Year, acc.Type)
 		r.Configure(acc.Accounts)
 	}
 }
@@ -31,7 +31,7 @@ func (r *reporter) Debit(c writer.AccountDebit) {
 }
 
 func NewReporter(conf *config.Configuration, yr int) *reporter {
-	ret := reporter{Year: yr, Accounts: make(map[string]account)}
+	ret := reporter{Year: yr, Accounts: make(map[string]Account)}
 	ret.Configure(conf.Accounts)
 	return &ret
 }

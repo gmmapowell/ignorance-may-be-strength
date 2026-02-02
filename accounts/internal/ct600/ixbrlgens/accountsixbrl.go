@@ -1,17 +1,24 @@
-package config
+package ixbrlgens
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrl"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/accounts"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/reporter"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/sheets"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 )
 
 type GnuCashAccountsIXBRLGenerator struct {
-	config *Configuration
+	config     *config.Configuration
+	acctranges map[int]map[string]reporter.Account
+
 	styles string
 }
 
-// Generate implements AccountsGenerator.
 func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Financial Statements", "https://xbrl.frc.org.uk/FRS-102/2025-01-01/FRS-102-2025-01-01.xsd", g.styles)
 	ret.AddSchema("bus", "http://xbrl.frc.org.uk/cd/2025-01-01/business")
@@ -57,5 +64,58 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	details.Header = append(details.Header, &ixbrl.Div{Class: "company-details", Text: fmt.Sprintf("Company No. %s", g.config.Business.ID)})
 	details.Header = append(details.Header, &ixbrl.Div{Tag: "h2", Text: fmt.Sprintf("Statement of income for the year ended %s", cyEnd.UKFullDate())})
 
+	w := writer.MakeWriter(g.config)
+	accts := accounts.MakeAccounts(g.config, w)
+	sheets.ReadSpreadsheet(g.config, accts)
+
+	g.acctranges = make(map[int]map[string]reporter.Account)
+	for _, fy := range g.config.Ranges {
+		compiler := &Compiler{accounts: make(map[string]reporter.Account)}
+		compiler.Configure(g.acctranges, fy, g.config.Accounts)
+		accts.Regurgitate(compiler)
+	}
+
+	g.GenerateAccountsPages(ret)
+
 	return ret
+}
+
+func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) {
+	for fy, accts := range g.acctranges {
+		fmt.Printf("FY %d\n", fy)
+		for acctName, acct := range accts {
+			fmt.Printf("  Acct %s %s %v\n", acctName, acct.Type(), acct.Balance())
+		}
+	}
+}
+
+func AccountsGenerator(config *config.Configuration, styles string) config.IXBRLGenerator {
+	return &GnuCashAccountsIXBRLGenerator{config: config, styles: styles}
+}
+
+type Compiler struct {
+	accounts map[string]reporter.Account
+}
+
+func (c *Compiler) Configure(acctranges map[int]map[string]reporter.Account, fy config.DateRange, accts []config.Account) {
+	yr, err := strconv.Atoi(fy.End[0:4])
+	if err != nil {
+		panic(err)
+	}
+
+	for _, acc := range accts {
+		c.accounts[acc.Name] = reporter.MakeAccount(yr, acc.Type)
+		c.Configure(acctranges, fy, acc.Accounts)
+	}
+
+	acctranges[yr] = c.accounts
+
+}
+
+func (c *Compiler) Credit(ac writer.AccountCredit) {
+	c.accounts[ac.Acct].Credit(ac.When, ac.Amount)
+}
+
+func (c *Compiler) Debit(ad writer.AccountDebit) {
+	c.accounts[ad.Acct].Debit(ad.When, ad.Amount)
 }
