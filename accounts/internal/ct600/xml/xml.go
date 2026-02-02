@@ -60,28 +60,30 @@ func ReadFile(filename string) string {
 
 func MakeGovTalkMessage(nesting ...etree.Token) *etree.Element {
 	ret := etree.NewElement("GovTalkMessage")
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "xmlns", Value: "http://www.govtalk.gov.uk/CM/envelope"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
+	AddAttr(ret, "xmlns", "http://www.govtalk.gov.uk/CM/envelope")
+	AddNSAttr(ret, "xmlns", "xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	addElements(ret, nesting)
 	return ret
 }
 
 func MakeIRenvelopeMessage(nesting ...etree.Token) *etree.Element {
 	ret := etree.NewElement("IRenvelope")
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "xmlns", Value: "http://www.govtalk.gov.uk/taxation/CT/5"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
+	AddAttr(ret, "xmlns", "http://www.govtalk.gov.uk/taxation/CT/5")
+	AddNSAttr(ret, "xmlns", "xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	addElements(ret, nesting)
 	return ret
 }
 
 func MakeCompanyTaxReturn(ty string, nested ...etree.Token) *etree.Element {
 	ret := etree.NewElement("CompanyTaxReturn")
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "ReturnType", Value: ty})
+	AddAttr(ret, "ReturnType", ty)
 	addElements(ret, nested)
 	return ret
 }
 
 func Key(ty, value string) *etree.Element {
 	ret := etree.NewElement("Key")
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "Type", Value: ty})
+	AddAttr(ret, "Type", ty)
 	ret.AddChild(ret.CreateText(value))
 	return ret
 }
@@ -102,4 +104,12 @@ func WriteEtree(filename string, elt *etree.Element) {
 	}
 	file.Write(bs)
 	file.Close()
+}
+
+func AddAttr(elt *etree.Element, key, value string) {
+	elt.Attr = append(elt.Attr, etree.Attr{Key: key, Value: value})
+}
+
+func AddNSAttr(elt *etree.Element, space, key, value string) {
+	elt.Attr = append(elt.Attr, etree.Attr{Space: space, Key: key, Value: value})
 }

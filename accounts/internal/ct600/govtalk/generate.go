@@ -68,7 +68,8 @@ func assembleGovTalkXML(conf *conf.Configuration, options *EnvelopeOptions) (*et
 
 func makeBody(env *IRenvelope) *etree.Element {
 	body := xml.ElementWithNesting("Body", env.AsXML())
-	body.Attr = append(body.Attr, etree.Attr{Key: "xmlns", Value: "http://www.govtalk.gov.uk/CM/envelope"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
+	xml.AddAttr(body, "xmlns", "http://www.govtalk.gov.uk/CM/envelope")
+	xml.AddNSAttr(body, "xmlns", "xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	return body
 }
 

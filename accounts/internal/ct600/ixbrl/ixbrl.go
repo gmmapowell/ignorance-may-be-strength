@@ -2,6 +2,7 @@ package ixbrl
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
@@ -37,7 +38,7 @@ type IXProp struct {
 }
 
 type Date struct {
-	isoDate string
+	isoDate time.Time
 }
 
 type Context struct {
@@ -100,29 +101,31 @@ func MakeExplicitMember(dim, member string) *ExplicitMember {
 
 func (i *IXBRL) AsEtree() *etree.Element {
 	metaContent := xml.ElementWithNesting("meta")
-	metaContent.Attr = append(metaContent.Attr, etree.Attr{Key: "content", Value: "application/xhtml+xml; charset=UTF-8"}, etree.Attr{Key: "http-equiv", Value: "Content-Type"})
+	xml.AddAttr(metaContent, "content", "application/xhtml+xml; charset=UTF-8")
+	xml.AddAttr(metaContent, "http-equiv", "Content-Type")
 	title := xml.ElementWithText("title", i.title)
 	styles := xml.ElementWithText("style", xml.ReadFile(i.styles))
-	styles.Attr = append(styles.Attr, etree.Attr{Key: "type", Value: "text/css"})
+	xml.AddAttr(styles, "type", "text/css")
 	head := xml.ElementWithNesting("head", metaContent, title, styles)
 	body := xml.ElementWithNesting("body", i.ixHeader())
 	for _, pg := range i.Pages() {
 		body.AddChild(pg)
 	}
 	ret := xml.ElementWithNesting("html", head, body)
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "xmlns", Value: "http://www.w3.org/1999/xhtml"}, etree.Attr{Space: "xmlns", Key: "xsi", Value: "http://www.w3.org/2001/XMLSchema-instance"})
+	xml.AddAttr(ret, "xmlns", "http://www.w3.org/1999/xhtml")
+	xml.AddNSAttr(ret, "xmlns", "xsi", "http://www.w3.org/2001/XMLSchema-instance")
 
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "ix", Value: "http://www.xbrl.org/2013/inlineXBRL"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "ixt", Value: "http://www.xbrl.org/inlineXBRL/transformation/2010-04-20"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "ixt2", Value: "http://www.xbrl.org/inlineXBRL/transformation/2011-07-31"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "xbrli", Value: "http://www.xbrl.org/2003/instance"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "xbrldi", Value: "http://xbrl.org/2006/xbrldi"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "link", Value: "http://www.xbrl.org/2003/linkbase"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "xlink", Value: "http://www.w3.org/1999/xlink"})
-	ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: "iso4217", Value: "http://www.xbrl.org/2003/iso4217"})
+	xml.AddNSAttr(ret, "xmlns", "ix", "http://www.xbrl.org/2013/inlineXBRL")
+	xml.AddNSAttr(ret, "xmlns", "ixt", "http://www.xbrl.org/inlineXBRL/transformation/2010-04-20")
+	xml.AddNSAttr(ret, "xmlns", "ixt2", "http://www.xbrl.org/inlineXBRL/transformation/2011-07-31")
+	xml.AddNSAttr(ret, "xmlns", "xbrli", "http://www.xbrl.org/2003/instance")
+	xml.AddNSAttr(ret, "xmlns", "xbrldi", "http://xbrl.org/2006/xbrldi")
+	xml.AddNSAttr(ret, "xmlns", "link", "http://www.xbrl.org/2003/linkbase")
+	xml.AddNSAttr(ret, "xmlns", "xlink", "http://www.w3.org/1999/xlink")
+	xml.AddNSAttr(ret, "xmlns", "iso4217", "http://www.xbrl.org/2003/iso4217")
 
 	for _, s := range i.schemas {
-		ret.Attr = append(ret.Attr, etree.Attr{Space: "xmlns", Key: s.id, Value: s.schema})
+		xml.AddNSAttr(ret, "xmlns", s.id, s.schema)
 	}
 
 	return ret
@@ -137,8 +140,8 @@ func (i *IXBRL) ixHeader() *etree.Element {
 		}
 	}
 	schemaLink := xml.ElementWithNesting("link:schemaRef")
-	schemaLink.Attr = append(schemaLink.Attr, etree.Attr{Space: "xlink", Key: "href", Value: i.schema})
-	schemaLink.Attr = append(schemaLink.Attr, etree.Attr{Space: "xlink", Key: "type", Value: "simple"})
+	xml.AddNSAttr(schemaLink, "xlink", "href", i.schema)
+	xml.AddNSAttr(schemaLink, "xlink", "type", "simple")
 	ixrefs := xml.ElementWithNesting("ix:references", schemaLink)
 	ixresources := xml.ElementWithNesting("ix:resources")
 	for _, cx := range i.contexts {
@@ -146,14 +149,14 @@ func (i *IXBRL) ixHeader() *etree.Element {
 	}
 	ixheader := xml.ElementWithNesting("ix:header", ixhidden, ixrefs, ixresources)
 	ret := xml.ElementWithNesting("div", ixheader)
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "style", Value: "display: none"})
+	xml.AddAttr(ret, "style", "display: none")
 	return ret
 }
 
 func (i *IXBRL) Pages() []*etree.Element {
 	var ret []*etree.Element
-	for _, pg := range i.pages {
-		ret = append(ret, pg.AsEtree())
+	for pn, pg := range i.pages {
+		ret = append(ret, pg.AsEtree(pn+1))
 	}
 	return ret
 }
@@ -171,40 +174,40 @@ func (ixp *IXProp) AsEtree() *etree.Element {
 		panic(fmt.Sprintf("invalid type: %d", ixp.Type))
 	}
 	ret := xml.ElementWithText(ty, ixp.Text)
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "contextRef", Value: ixp.Context})
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "name", Value: ixp.Name})
+	xml.AddAttr(ret, "contextRef", ixp.Context)
+	xml.AddAttr(ret, "name", ixp.Name)
 	if ixp.Format != "" {
-		ret.Attr = append(ret.Attr, etree.Attr{Key: "format", Value: ixp.Format})
+		xml.AddAttr(ret, "format", ixp.Format)
 	}
 	return ret
 }
 
 func (cx *Context) AsEtree() *etree.Element {
 	ret := xml.ElementWithNesting("xbrli:context")
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "id", Value: cx.ID})
+	xml.AddAttr(ret, "id", cx.ID)
 	entity := xml.ElementWithNesting("xbrli:entity")
 	identifier := xml.ElementWithText("xbrli:identifier", cx.Identifier)
-	identifier.Attr = append(identifier.Attr, etree.Attr{Key: "scheme", Value: cx.IdentifierScheme})
+	xml.AddAttr(identifier, "scheme", cx.IdentifierScheme)
 	entity.AddChild(identifier)
 	if cx.Segment != nil {
 		segment := xml.ElementWithNesting("xbrli:segment")
 		for _, sg := range cx.Segment {
 			expMember := xml.ElementWithText("xbrldi:explicitMember", sg.Member)
-			expMember.Attr = append(expMember.Attr, etree.Attr{Key: "dimension", Value: sg.Dimension})
+			xml.AddAttr(expMember, "dimension", sg.Dimension)
 			segment.AddChild(expMember)
 		}
 		entity.AddChild(segment)
 	}
 	ret.AddChild(entity)
 	period := xml.ElementWithNesting("xbrli:period")
-	if cx.Instant.isoDate != "" {
-		instant := xml.ElementWithText("xbrli:instant", cx.Instant.isoDate)
+	if cx.Instant.IsValid() {
+		instant := xml.ElementWithText("xbrli:instant", cx.Instant.IsoDate())
 		period.AddChild(instant)
 	}
-	if cx.FromDate.isoDate != "" {
-		sd := xml.ElementWithText("xbrli:startDate", cx.FromDate.isoDate)
+	if cx.FromDate.IsValid() {
+		sd := xml.ElementWithText("xbrli:startDate", cx.FromDate.IsoDate())
 		period.AddChild(sd)
-		ed := xml.ElementWithText("xbrli:endDate", cx.ToDate.isoDate)
+		ed := xml.ElementWithText("xbrli:endDate", cx.ToDate.IsoDate())
 		period.AddChild(ed)
 	}
 	ret.AddChild(period)
@@ -215,7 +218,7 @@ func (pg *Page) AddRow(items ...any) {
 	pg.Rows = append(pg.Rows, &Row{Items: items})
 }
 
-func (pg *Page) AsEtree() *etree.Element {
+func (pg *Page) AsEtree(pn int) *etree.Element {
 	var front, header, table *etree.Element
 	if pg.Front != nil {
 		var divs []etree.Token
@@ -223,9 +226,9 @@ func (pg *Page) AsEtree() *etree.Element {
 			divs = append(divs, d.AsEtree())
 		}
 		fpc := xml.ElementWithNesting("div", divs...)
-		fpc.Attr = append(fpc.Attr, etree.Attr{Key: "class", Value: "frontpage-content"})
+		xml.AddAttr(fpc, "class", "frontpage-content")
 		front = xml.ElementWithNesting("div", fpc)
-		front.Attr = append(front.Attr, etree.Attr{Key: "class", Value: "frontpage"})
+		xml.AddAttr(front, "class", "frontpage")
 	}
 	if pg.Header != nil {
 		var divs []etree.Token
@@ -233,7 +236,7 @@ func (pg *Page) AsEtree() *etree.Element {
 			divs = append(divs, d.AsEtree())
 		}
 		header = xml.ElementWithNesting("div", divs...)
-		header.Attr = append(header.Attr, etree.Attr{Key: "class", Value: "page-header"})
+		xml.AddAttr(header, "class", "page-header")
 	}
 	if pg.Rows != nil {
 		var rows []etree.Token
@@ -242,8 +245,14 @@ func (pg *Page) AsEtree() *etree.Element {
 		}
 		table = xml.ElementWithNesting("table", rows...)
 	}
-	ret := xml.ElementWithNesting("div", front, header, table)
-	ret.Attr = append(ret.Attr, etree.Attr{Key: "class", Value: "page"})
+	pageNum := xml.ElementWithText("p", fmt.Sprintf("Page %d", pn))
+	xml.AddAttr(pageNum, "class", "center")
+	hr := xml.ElementWithNesting("hr")
+	xml.AddAttr(hr, "class", "_hr")
+	footer := xml.ElementWithNesting("div", pageNum, hr)
+	xml.AddAttr(footer, "class", "page-footer")
+	ret := xml.ElementWithNesting("div", front, header, table, footer)
+	xml.AddAttr(ret, "class", "page")
 	return ret
 }
 
@@ -254,7 +263,7 @@ func (d *Div) AsEtree() *etree.Element {
 	}
 	ret := xml.ElementWithText(tag, d.Text)
 	if d.Class != "" {
-		ret.Attr = append(ret.Attr, etree.Attr{Key: "class", Value: d.Class})
+		xml.AddAttr(ret, "class", d.Class)
 	}
 	return ret
 }
@@ -277,6 +286,21 @@ func (r *Row) AsEtree() *etree.Element {
 }
 
 func NewDate(iso string) Date {
-	// TODO: check it is a valid date
-	return Date{isoDate: iso}
+	d, err := time.Parse(time.DateOnly, iso)
+	if err != nil {
+		panic(fmt.Sprintf("error parsing date '%s': %v", iso, err))
+	}
+	return Date{isoDate: d}
+}
+
+func (d Date) IsValid() bool {
+	return !d.isoDate.IsZero()
+}
+
+func (d Date) IsoDate() string {
+	return d.isoDate.Format(time.DateOnly)
+}
+
+func (d Date) UKFullDate() string {
+	return d.isoDate.Format("2 January 2006")
 }
