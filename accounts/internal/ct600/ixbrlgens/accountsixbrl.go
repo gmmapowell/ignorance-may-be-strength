@@ -15,7 +15,7 @@ import (
 
 type GnuCashAccountsIXBRLGenerator struct {
 	config     *config.Configuration
-	acctranges map[int]map[string]reporter.Account
+	acctranges map[string]map[string]reporter.Account
 
 	styles string
 }
@@ -26,10 +26,10 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret.AddSchema("core", "http://xbrl.frc.org.uk/fr/2025-01-01/core")
 	ret.AddSchema("uk-bus", "http://www.xbrl.org/uk/cd/business/2009-09-01")
 
-	cyStart := ixbrl.NewDate(g.config.Ranges["Curr"].Start)
-	cyEnd := ixbrl.NewDate(g.config.Ranges["Curr"].End)
-	pyStart := ixbrl.NewDate(g.config.Ranges["Prev"].Start)
-	pyEnd := ixbrl.NewDate(g.config.Ranges["Prev"].End)
+	cyStart := ixbrl.NewDate(g.config.Ranges["CY"].Start)
+	cyEnd := ixbrl.NewDate(g.config.Ranges["CY"].End)
+	pyStart := ixbrl.NewDate(g.config.Ranges["PY"].Start)
+	pyEnd := ixbrl.NewDate(g.config.Ranges["PY"].End)
 
 	ret.AddContext(&ixbrl.Context{ID: "CY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "PY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: pyStart, ToDate: pyEnd})
@@ -74,11 +74,13 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	accts := accounts.MakeAccounts(g.config, w)
 	sheets.ReadSpreadsheet(g.config, accts)
 
-	g.acctranges = make(map[int]map[string]reporter.Account)
-	for _, fy := range g.config.Ranges {
+	g.acctranges = make(map[string]map[string]reporter.Account)
+	for name, fy := range g.config.Ranges {
 		compiler := &Compiler{accounts: make(map[string]reporter.Account)}
-		compiler.Configure(g.acctranges, fy, g.config.Accounts)
+		compiler.Configure(fy, g.config.Accounts)
 		accts.Regurgitate(compiler)
+
+		g.acctranges[name] = compiler.accounts
 	}
 
 	g.GenerateAccountsPages(ret)
@@ -88,7 +90,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 
 func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) {
 	for fy, accts := range g.acctranges {
-		fmt.Printf("FY %d\n", fy)
+		fmt.Printf("FY %s\n", fy)
 		for acctName, acct := range accts {
 			fmt.Printf("  Acct %s %s %v\n", acctName, acct.Type(), acct.Balance())
 		}
@@ -105,16 +107,16 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 				if col.Label != "" {
 					cols = append(cols, col.Label)
 				} else if col.Value != "" {
-					if g.acctranges[2025][col.Value] != nil {
-						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: g.acctranges[2025][col.Value].Balance().String()})
+					if g.acctranges[col.Year][col.Value] != nil {
+						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: g.acctranges[col.Year][col.Value].Balance().String()})
 					} else {
-						log.Printf("there is no value for %s for %d", col.Value, 2025)
+						log.Printf("there is no value for %s for %s", col.Value, col.Year)
 					}
 				} else if col.GBP != "" {
-					if g.acctranges[2025][col.GBP] != nil {
-						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: col.Year, Unit: "GBP", Text: strconv.Itoa(g.acctranges[2025][col.GBP].Balance().Units)})
+					if g.acctranges[col.Year][col.GBP] != nil {
+						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: col.Year, Unit: "GBP", Text: strconv.Itoa(g.acctranges[col.Year][col.GBP].Balance().Units)})
 					} else {
-						log.Printf("there is no value for %s for %d", col.GBP, 2025)
+						log.Printf("there is no value for %s for %s", col.GBP, col.Year)
 					}
 				} else {
 					panic("not a label, value or GBP")
@@ -133,7 +135,7 @@ type Compiler struct {
 	accounts map[string]reporter.Account
 }
 
-func (c *Compiler) Configure(acctranges map[int]map[string]reporter.Account, fy config.DateRange, accts []config.Account) {
+func (c *Compiler) Configure(fy config.DateRange, accts []config.Account) {
 	yr, err := strconv.Atoi(fy.End[0:4])
 	if err != nil {
 		panic(err)
@@ -141,11 +143,8 @@ func (c *Compiler) Configure(acctranges map[int]map[string]reporter.Account, fy 
 
 	for _, acc := range accts {
 		c.accounts[acc.Name] = reporter.MakeAccount(yr, acc.Type)
-		c.Configure(acctranges, fy, acc.Accounts)
+		c.Configure(fy, acc.Accounts)
 	}
-
-	acctranges[yr] = c.accounts
-
 }
 
 func (c *Compiler) Credit(ac writer.AccountCredit) {

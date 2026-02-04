@@ -22,13 +22,11 @@ func Submit(conf *config.Configuration) error {
 		Sender: "Company", // the type of business we are, I believe.  The schema limits it to a handful of options
 
 		UTR:         utr,
-		PeriodStart: conf.Ranges["Curr"].Start, PeriodEnd: conf.Ranges["Curr"].End,
+		PeriodStart: conf.Ranges["CY"].Start, PeriodEnd: conf.Ranges["CY"].End,
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
-		AccountsGenerator: ixbrlgens.AccountsGenerator(conf, "ct600/acct-styles.xml"),
-		// AccountsIXBRL:     "ct600/micro-accounts.xml",
-		// ComputationIXBRL: "ct600/sample-ctcomp.xhtml",
+		AccountsGenerator:     ixbrlgens.AccountsGenerator(conf, "ct600/acct-styles.xml"),
 		ComputationsGenerator: ixbrlgens.ComputationsGenerator(conf, "ct600/comp-styles.xml"),
 	}
 

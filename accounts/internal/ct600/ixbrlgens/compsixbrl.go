@@ -14,8 +14,8 @@ func (g *GnuCashComputationsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Tax Computations", "http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01/ct-comp-2024.xsd", g.styles)
 	ret.AddSchema("ct-comp", "http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01")
 
-	cyStart := ixbrl.NewDate(g.config.Ranges["Curr"].Start)
-	cyEnd := ixbrl.NewDate(g.config.Ranges["Curr"].End)
+	cyStart := ixbrl.NewDate(g.config.Ranges["CY"].Start)
+	cyEnd := ixbrl.NewDate(g.config.Ranges["CY"].End)
 
 	ret.AddContext(&ixbrl.Context{ID: "CYEnd", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, Instant: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("ct-comp:BusinessTypeDimension", "ct-comp:Company"), ixbrl.MakeExplicitMember("ct-comp:DetailedAnalysisDimension", "ct-comp:Item1")}})
 	ret.AddContext(&ixbrl.Context{ID: "CY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyEnd, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("ct-comp:BusinessTypeDimension", "ct-comp:Company"), ixbrl.MakeExplicitMember("ct-comp:DetailedAnalysisDimension", "ct-comp:Item1")}})
