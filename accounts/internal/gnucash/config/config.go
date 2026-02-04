@@ -15,6 +15,7 @@ type Configuration struct {
 	Accounts []Account
 	Verbs    []Verb
 	VerbMap  map[string]*Verb
+	Pages    []PageDefn
 
 	// Fpr ct600
 	Sender, Password         string
@@ -56,6 +57,25 @@ type Verb struct {
 	Name   string
 	Source string
 	Dest   string
+}
+
+type PageDefn struct {
+	Title string
+	Rows  []RowDefn
+}
+
+type RowDefn struct {
+	Columns []ColumnDefn
+}
+
+type ColumnDefn struct {
+	Label string
+	Value string
+	GBP   string
+
+	Unit string
+	Year string
+	Tag  string
 }
 
 func MakeConfiguration() *Configuration {

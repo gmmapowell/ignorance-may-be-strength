@@ -2,6 +2,7 @@ package ixbrlgens
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrl"
@@ -27,14 +28,19 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 
 	cyStart := ixbrl.NewDate(g.config.Ranges["Curr"].Start)
 	cyEnd := ixbrl.NewDate(g.config.Ranges["Curr"].End)
+	pyStart := ixbrl.NewDate(g.config.Ranges["Prev"].Start)
+	pyEnd := ixbrl.NewDate(g.config.Ranges["Prev"].End)
 
 	ret.AddContext(&ixbrl.Context{ID: "CY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd})
+	ret.AddContext(&ixbrl.Context{ID: "PY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: pyStart, ToDate: pyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "CYEnd", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, Instant: cyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "CYAccountsType", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountsTypeDimension", "bus:FullAccounts")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYAccountsStatus", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountsStatusDimension", "bus:AuditExempt-NoAccountantsReport")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYAccountingStandards", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountingStandardsDimension", "bus:Micro-entities")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYLegalFormEntity", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:LegalFormEntityDimension", "bus:PrivateLimitedCompanyLtd")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYDirector", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:EntityOfficersDimension", "bus:Director1")}})
+
+	ret.AddUnit(&ixbrl.Unit{ID: "GBP", Measure: "iso4217:GBP"})
 
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:NameProductionSoftware", Text: "Ziniki HMRC"})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:VersionProductionSoftware", Text: "2026-01-31"})
@@ -85,6 +91,36 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 		fmt.Printf("FY %d\n", fy)
 		for acctName, acct := range accts {
 			fmt.Printf("  Acct %s %s %v\n", acctName, acct.Type(), acct.Balance())
+		}
+	}
+	for _, pd := range g.config.Pages {
+		page := ret.AddPage()
+		if pd.Title != "" {
+			page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: pd.Title})
+		}
+
+		for _, r := range pd.Rows {
+			var cols []any
+			for _, col := range r.Columns {
+				if col.Label != "" {
+					cols = append(cols, col.Label)
+				} else if col.Value != "" {
+					if g.acctranges[2025][col.Value] != nil {
+						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: g.acctranges[2025][col.Value].Balance().String()})
+					} else {
+						log.Printf("there is no value for %s for %d", col.Value, 2025)
+					}
+				} else if col.GBP != "" {
+					if g.acctranges[2025][col.GBP] != nil {
+						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: col.Year, Unit: "GBP", Text: strconv.Itoa(g.acctranges[2025][col.GBP].Balance().Units)})
+					} else {
+						log.Printf("there is no value for %s for %d", col.GBP, 2025)
+					}
+				} else {
+					panic("not a label, value or GBP")
+				}
+			}
+			page.AddRow(cols...)
 		}
 	}
 }

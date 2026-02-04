@@ -20,6 +20,7 @@ type IXBRL struct {
 	hidden   []*IXProp
 	schemas  []*ixSchema
 	contexts []*Context
+	units    []*Unit
 	pages    []*Page
 }
 
@@ -32,7 +33,7 @@ type IXProp struct {
 	Context  string
 	Name     string
 	Format   string
-	Decimals int
+	Decimals string
 	Unit     string
 	Text     string
 }
@@ -49,6 +50,11 @@ type Context struct {
 	FromDate         Date
 	ToDate           Date
 	Segment          []*ExplicitMember
+}
+
+type Unit struct {
+	ID      string
+	Measure string
 }
 
 type ExplicitMember struct {
@@ -74,6 +80,7 @@ type Div struct {
 
 const (
 	NonNumeric = iota
+	NonFraction
 )
 
 func (i *IXBRL) AddSchema(id, schema string) {
@@ -86,6 +93,10 @@ func (i *IXBRL) AddHidden(h *IXProp) {
 
 func (i *IXBRL) AddContext(c *Context) {
 	i.contexts = append(i.contexts, c)
+}
+
+func (i *IXBRL) AddUnit(u *Unit) {
+	i.units = append(i.units, u)
 }
 
 func (i *IXBRL) AddPage() *Page {
@@ -147,6 +158,9 @@ func (i *IXBRL) ixHeader() *etree.Element {
 	for _, cx := range i.contexts {
 		ixresources.AddChild(cx.AsEtree())
 	}
+	for _, u := range i.units {
+		ixresources.AddChild(u.AsEtree())
+	}
 	ixheader := xml.ElementWithNesting("ix:header", ixhidden, ixrefs, ixresources)
 	ret := xml.ElementWithNesting("div", ixheader)
 	xml.AddAttr(ret, "style", "display: none")
@@ -170,6 +184,8 @@ func (ixp *IXProp) AsEtree() *etree.Element {
 	switch ixp.Type {
 	case NonNumeric:
 		ty = "ix:nonNumeric"
+	case NonFraction:
+		ty = "ix:nonFraction"
 	default:
 		panic(fmt.Sprintf("invalid type: %d", ixp.Type))
 	}
@@ -178,6 +194,13 @@ func (ixp *IXProp) AsEtree() *etree.Element {
 	xml.AddAttr(ret, "name", ixp.Name)
 	if ixp.Format != "" {
 		xml.AddAttr(ret, "format", ixp.Format)
+	}
+	if ixp.Unit != "" {
+		xml.AddAttr(ret, "unitRef", ixp.Unit)
+	}
+	if ixp.Decimals != "" {
+		xml.AddAttr(ret, "decimals", ixp.Decimals)
+
 	}
 	return ret
 }
@@ -211,6 +234,13 @@ func (cx *Context) AsEtree() *etree.Element {
 		period.AddChild(ed)
 	}
 	ret.AddChild(period)
+	return ret
+}
+
+func (u *Unit) AsEtree() *etree.Element {
+	measure := xml.ElementWithText("xbrli:measure", u.Measure)
+	ret := xml.ElementWithNesting("xbrli:unit", measure)
+	xml.AddAttr(ret, "id", u.ID)
 	return ret
 }
 
