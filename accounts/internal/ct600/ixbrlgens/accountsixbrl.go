@@ -115,7 +115,21 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 					}
 				} else if col.GBP != "" {
 					if g.acctranges[col.Year][col.GBP] != nil {
-						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: col.Year, Unit: "GBP", Text: strconv.Itoa(g.acctranges[col.Year][col.GBP].Balance().Units)})
+						acct := g.acctranges[col.Year][col.GBP]
+						gbp := acct.Balance().Units
+						var column ixbrl.MakeEtree
+						wantNeg := acct.ShowBrackets()
+						if gbp < 0 {
+							wantNeg = !wantNeg
+							gbp = -gbp
+						}
+						ixp := &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: col.Year, Unit: "GBP", Text: strconv.Itoa(gbp)}
+						column = ixp
+						if wantNeg {
+							ixp.Sign = "-"
+							column = &ixbrl.Div{Tag: "span", Class: "negative", Nest: column}
+						}
+						cols = append(cols, column)
 					} else {
 						log.Printf("there is no value for %s for %s", col.GBP, col.Year)
 					}
@@ -226,4 +240,8 @@ func (c CalcAccount) PLEffect() int {
 
 func (c CalcAccount) Type() string {
 	return c.ty
+}
+
+func (c CalcAccount) ShowBrackets() bool {
+	return c.ty == "EXPENSE"
 }

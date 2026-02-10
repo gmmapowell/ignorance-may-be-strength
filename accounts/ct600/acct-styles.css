@@ -1,0 +1,11 @@
+.page {
+  font-weight: bold;
+}
+
+.negative::before {
+  content: "("
+}
+
+.negative::after {
+  content: ")"
+}

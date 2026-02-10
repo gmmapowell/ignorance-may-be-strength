@@ -12,6 +12,7 @@ type Account interface {
 	Balance() writer.Money
 	IsPL() bool
 	PLEffect() int
+	ShowBrackets() bool
 }
 
 type actor struct {
@@ -62,6 +63,10 @@ func (a *actor) PLEffect() int {
 
 func (a *actor) Type() string {
 	return a.ty
+}
+
+func (a *actor) ShowBrackets() bool {
+	return a.ty == "EXPENSE"
 }
 
 func MakeAccount(yr int, ty string) Account {

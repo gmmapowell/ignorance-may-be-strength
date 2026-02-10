@@ -26,8 +26,8 @@ func Submit(conf *config.Configuration) error {
 		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
 		CorporationTax: 0,
 
-		AccountsGenerator:     ixbrlgens.AccountsGenerator(conf, "ct600/acct-styles.xml"),
-		ComputationsGenerator: ixbrlgens.ComputationsGenerator(conf, "ct600/comp-styles.xml"),
+		AccountsGenerator:     ixbrlgens.AccountsGenerator(conf, "ct600/acct-styles.css"),
+		ComputationsGenerator: ixbrlgens.ComputationsGenerator(conf, "ct600/comp-styles.css"),
 	}
 
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}

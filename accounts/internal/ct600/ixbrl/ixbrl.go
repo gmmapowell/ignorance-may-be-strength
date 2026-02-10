@@ -33,6 +33,7 @@ type IXProp struct {
 	Context  string
 	Name     string
 	Format   string
+	Sign     string
 	Decimals string
 	Unit     string
 	Text     string
@@ -76,6 +77,7 @@ type Div struct {
 	Tag   string
 	Class string
 	Text  string
+	Nest  MakeEtree
 }
 
 const (
@@ -200,7 +202,9 @@ func (ixp *IXProp) AsEtree() *etree.Element {
 	}
 	if ixp.Decimals != "" {
 		xml.AddAttr(ret, "decimals", ixp.Decimals)
-
+	}
+	if ixp.Sign != "" {
+		xml.AddAttr(ret, "sign", ixp.Sign)
 	}
 	return ret
 }
@@ -294,6 +298,9 @@ func (d *Div) AsEtree() *etree.Element {
 	ret := xml.ElementWithText(tag, d.Text)
 	if d.Class != "" {
 		xml.AddAttr(ret, "class", d.Class)
+	}
+	if d.Nest != nil {
+		ret.AddChild(d.Nest.AsEtree())
 	}
 	return ret
 }
