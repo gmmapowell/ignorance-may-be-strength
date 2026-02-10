@@ -104,12 +104,14 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 
 		for _, r := range pd.Rows {
 			var cols []any
+			elide := r.ElideIfAllZero
 			for _, col := range r.Columns {
 				if col.Label != "" {
 					cols = append(cols, col.Label)
 				} else if col.Value != "" {
 					if g.acctranges[col.Year][col.Value] != nil {
 						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: g.acctranges[col.Year][col.Value].Balance().String()})
+						elide = false
 					} else {
 						log.Printf("there is no value for %s for %s", col.Value, col.Year)
 					}
@@ -119,6 +121,9 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 						gbp := acct.Balance().Units
 						var column ixbrl.MakeEtree
 						wantNeg := acct.ShowBrackets()
+						if gbp != 0 {
+							elide = false
+						}
 						if gbp < 0 {
 							wantNeg = !wantNeg
 							gbp = -gbp
@@ -137,7 +142,9 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 					panic("not a label, value or GBP")
 				}
 			}
-			page.AddRow(cols...)
+			if !elide {
+				page.AddRow(cols...)
+			}
 		}
 	}
 }

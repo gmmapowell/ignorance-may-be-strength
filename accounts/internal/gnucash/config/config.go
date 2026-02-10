@@ -10,13 +10,13 @@ type Configuration struct {
 	Spreadsheet  string
 	Output       string
 
-	Business Business
-	Ranges   map[string]DateRange
-	Accounts []Account
-	Verbs    []Verb
-	VerbMap  map[string]*Verb
+	Business     Business
+	Ranges       map[string]DateRange
+	Accounts     []Account
+	Verbs        []Verb
+	VerbMap      map[string]*Verb
 	Calculations []Calculation
-	Pages    []PageDefn
+	Pages        []PageDefn
 
 	// Fpr ct600
 	Sender, Password         string
@@ -62,7 +62,7 @@ type Verb struct {
 
 type Calculation struct {
 	AssignTo string
-	Add []string
+	Add      []string
 	Subtract []string
 }
 
@@ -72,7 +72,8 @@ type PageDefn struct {
 }
 
 type RowDefn struct {
-	Columns []ColumnDefn
+	ElideIfAllZero bool
+	Columns        []ColumnDefn
 }
 
 type ColumnDefn struct {
