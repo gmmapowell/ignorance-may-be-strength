@@ -80,6 +80,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 		compiler.Configure(fy, g.config.Accounts)
 		accts.Regurgitate(compiler)
 
+		compiler.DoCalculations(g.config.Calculations)
 		g.acctranges[name] = compiler.accounts
 	}
 
@@ -153,4 +154,76 @@ func (c *Compiler) Credit(ac writer.AccountCredit) {
 
 func (c *Compiler) Debit(ad writer.AccountDebit) {
 	c.accounts[ad.Acct].Debit(ad.When, ad.Amount)
+}
+
+func (c *Compiler) DoCalculations(calculations []config.Calculation) {
+	for _, calc := range calculations {
+		acct := calc.AssignTo
+		if c.accounts[acct] != nil {
+			panic(fmt.Sprintf("duplicate acct in calculation: %s", acct))
+		}
+		ty, total := c.processItems(acct, "", writer.Money{}, 1, calc.Add)
+		_, total = c.processItems(acct, invert(ty), total, -1, calc.Subtract)
+		c.accounts[acct] = CalcAccount{ty: ty, balance: total}
+	}
+}
+
+func (c *Compiler) processItems(acct string, ty string, total writer.Money, pm int, accts []string) (string, writer.Money) {
+	for _, ac := range accts {
+		adding := c.accounts[ac]
+		if adding == nil {
+			panic(fmt.Sprintf("in calc %s, there is no account %s", acct, ac))
+		}
+		if ty == "" {
+			ty = adding.Type()
+		} else if ty != adding.Type() {
+			panic(fmt.Sprintf("in calc %s, there are mismatched types %s and %s", acct, ty, adding.Type()))
+		}
+		total.Incorporate(pm, adding.Balance())
+	}
+	return ty, total
+}
+
+func invert(ty string) string {
+	switch ty {
+	case "INCOME":
+		return "EXPENSE"
+	case "EXPENSE":
+		return "INCOME"
+	default:
+		panic(fmt.Sprintf("invalid type to invert: %s", ty))
+	}
+}
+
+type CalcAccount struct {
+	ty      string
+	balance writer.Money
+}
+
+func (c CalcAccount) Balance() writer.Money {
+	return c.balance
+}
+
+func (c CalcAccount) Credit(date writer.DateInfo, amount writer.Money) {
+	panic("unimplemented")
+}
+
+func (c CalcAccount) Debit(date writer.DateInfo, amount writer.Money) {
+	panic("unimplemented")
+}
+
+func (c CalcAccount) HasBalance() bool {
+	panic("unimplemented")
+}
+
+func (c CalcAccount) IsPL() bool {
+	panic("unimplemented")
+}
+
+func (c CalcAccount) PLEffect() int {
+	panic("unimplemented")
+}
+
+func (c CalcAccount) Type() string {
+	return c.ty
 }

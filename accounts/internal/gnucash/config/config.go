@@ -15,6 +15,7 @@ type Configuration struct {
 	Accounts []Account
 	Verbs    []Verb
 	VerbMap  map[string]*Verb
+	Calculations []Calculation
 	Pages    []PageDefn
 
 	// Fpr ct600
@@ -57,6 +58,12 @@ type Verb struct {
 	Name   string
 	Source string
 	Dest   string
+}
+
+type Calculation struct {
+	AssignTo string
+	Add []string
+	Subtract []string
 }
 
 type PageDefn struct {
