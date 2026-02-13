@@ -68,8 +68,15 @@ type Calculation struct {
 }
 
 type PageDefn struct {
-	Title string
-	Rows  []RowDefn
+	Title     string
+	TitleArgs []ArgDefn
+	Rows      []RowDefn
+}
+
+type ArgDefn struct {
+	Year   string
+	Scope  string
+	Format string
 }
 
 type RowDefn struct {

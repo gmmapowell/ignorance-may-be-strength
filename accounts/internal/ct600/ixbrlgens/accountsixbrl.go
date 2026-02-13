@@ -68,11 +68,6 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	front.Front = append(front.Front, &ixbrl.Div{Class: "document-type", Text: "Financial Statements"})
 	front.Front = append(front.Front, &ixbrl.Div{Class: "period", Text: fmt.Sprintf("For the Year Ended %s", cyEnd.IsoDate())})
 
-	details := ret.AddPage()
-	details.Header = append(details.Header, &ixbrl.Div{Tag: "h1", Text: g.config.Business.Name})
-	details.Header = append(details.Header, &ixbrl.Div{Class: "company-details", Text: fmt.Sprintf("Company No. %s", g.config.Business.ID)})
-	details.Header = append(details.Header, &ixbrl.Div{Tag: "h2", Text: fmt.Sprintf("Statement of income for the year ended %s", cyEnd.UKFullDate())})
-
 	w := writer.MakeWriter(g.config)
 	accts := accounts.MakeAccounts(g.config, w)
 	sheets.ReadSpreadsheet(g.config, accts)
@@ -103,8 +98,16 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 	}
 	for _, pd := range g.config.Pages {
 		page := ret.AddPage()
+		page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: g.config.Business.Name})
+		page.Header = append(page.Header, &ixbrl.Div{Class: "company-details", Text: fmt.Sprintf("Company No. %s", g.config.Business.ID)})
+
 		if pd.Title != "" {
-			page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: pd.Title})
+			title := pd.Title
+			if pd.TitleArgs != nil {
+				args := g.MapArgs(pd.TitleArgs)
+				title = fmt.Sprintf(title, args...)
+			}
+			page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: title})
 		}
 
 		for _, r := range pd.Rows {
@@ -168,6 +171,31 @@ func (g *GnuCashAccountsIXBRLGenerator) DeclarationsPage(pg *ixbrl.Page) {
 
 func (g *GnuCashAccountsIXBRLGenerator) Statement(pg *ixbrl.Page, code string, msg string) {
 	pg.AddRow(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: code, Text: msg})
+}
+
+func (g *GnuCashAccountsIXBRLGenerator) MapArgs(args []config.ArgDefn) []any {
+	ret := []any{}
+	for _, a := range args {
+		if a.Year != "" {
+			rng := g.config.Ranges[a.Year]
+			var dt ixbrl.Date
+			switch a.Scope {
+			case "Start":
+				dt = ixbrl.NewDate(rng.Start)
+			case "End":
+				dt = ixbrl.NewDate(rng.End)
+			default:
+				panic(fmt.Sprintf("unrecognized scope: %s", a.Scope))
+			}
+			switch a.Format {
+			case "UKFull":
+				ret = append(ret, dt.UKFullDate())
+			default:
+				panic(fmt.Sprintf("Unrecognized format: %s", a.Format))
+			}
+		}
+	}
+	return ret
 }
 
 func AccountsGenerator(config *config.Configuration, styles string) config.IXBRLGenerator {
