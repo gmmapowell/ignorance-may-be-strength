@@ -25,6 +25,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret.AddSchema("bus", "http://xbrl.frc.org.uk/cd/2025-01-01/business")
 	ret.AddSchema("core", "http://xbrl.frc.org.uk/fr/2025-01-01/core")
 	ret.AddSchema("uk-bus", "http://www.xbrl.org/uk/cd/business/2009-09-01")
+	ret.AddSchema("direp", "http://xbrl.frc.org.uk/reports/2025-01-01/direp")
 
 	cyStart := ixbrl.NewDate(g.config.Ranges["CY"].Start)
 	cyEnd := ixbrl.NewDate(g.config.Ranges["CY"].End)
@@ -41,6 +42,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret.AddContext(&ixbrl.Context{ID: "CYDirector", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:EntityOfficersDimension", "bus:Director1")}})
 
 	ret.AddUnit(&ixbrl.Unit{ID: "GBP", Measure: "iso4217:GBP"})
+	ret.AddUnit(&ixbrl.Unit{ID: "Pure", Measure: "xbrli:pure"})
 
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:NameProductionSoftware", Text: "Ziniki HMRC"})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:VersionProductionSoftware", Text: "2026-01-31"})
@@ -50,6 +52,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "bus:EndDateForPeriodCoveredByReport", Text: cyEnd.IsoDate()})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "bus:BalanceSheetDate", Text: cyEnd.IsoDate()})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "core:DateAuthorisationFinancialStatementsForIssue", Text: cyEnd.IsoDate()})
+	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonFraction, Context: "CY", Name: "core:AverageNumberEmployeesDuringPeriod", Unit: "Pure", Text: strconv.Itoa(g.config.Business.AvgEmployees), Decimals: "0"})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:EntityDormantTruefalse", Text: "false", Format: "ixt2:booleanfalse"})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:DescriptionPrincipalActivities", Text: "No description of principal activity"})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:EntityTradingStatus", Format: "ixt2:nocontent"})
@@ -85,6 +88,8 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	}
 
 	g.GenerateAccountsPages(ret)
+	dp := ret.AddPage()
+	g.DeclarationsPage(dp)
 
 	return ret
 }
@@ -147,6 +152,22 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 			}
 		}
 	}
+}
+
+func (g *GnuCashAccountsIXBRLGenerator) DeclarationsPage(pg *ixbrl.Page) {
+	cyEnd := ixbrl.NewDate(g.config.Ranges["CY"].End)
+
+	pg.Header = append(pg.Header, &ixbrl.Div{Tag: "h2", Text: "Notes to the financial statements"})
+	pg.AddRow("Company Details")
+	pg.AddRow(fmt.Sprintf("%s, incorporated in England and Wales, registration number %s, is a private company limited by shares.", g.config.Business.Name, g.config.Business.ID))
+	g.Statement(pg, "direp:StatementThatAccountsHaveBeenPreparedInAccordanceWithProvisionsSmallCompaniesRegime", "The accounts have been prepared in accordance with the micro-entity provisions and have been delivered in accordance with the provisions applicable to companies subject to the small companies regime.")
+	g.Statement(pg, "direp:StatementThatCompanyEntitledToExemptionFromAuditUnderSection477CompaniesAct2006RelatingToSmallCompanies", fmt.Sprintf("For the year ended %s the company was entitled to exemption from audit under section 477 of the Companies Act 2006 relating to small companies.", cyEnd.UKFullDate()))
+	g.Statement(pg, "direp:StatementThatDirectorsAcknowledgeTheirResponsibilitiesUnderCompaniesAct", "The directors acknowledge their responsibilities for complying with the requirements of the Companies Act 2006 with respect to accounting records and the preparation of accounts.")
+	g.Statement(pg, "direp:StatementThatMembersHaveNotRequiredCompanyToObtainAnAudit", "The members have not required the company to obtain an audit of its accounts for the year in question in accordance with section 476 of the Companies Act 2006.")
+}
+
+func (g *GnuCashAccountsIXBRLGenerator) Statement(pg *ixbrl.Page, code string, msg string) {
+	pg.AddRow(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: code, Text: msg})
 }
 
 func AccountsGenerator(config *config.Configuration, styles string) config.IXBRLGenerator {

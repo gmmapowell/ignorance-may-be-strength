@@ -28,15 +28,16 @@ type Configuration struct {
 }
 
 type Business struct {
-	Address string
-	Contact string
-	Email   string
-	Fax     string
-	ID      string
-	Name    string
-	Phone   string
-	TaxNum  string
-	Web     string
+	Address      string
+	AvgEmployees int
+	Contact      string
+	Email        string
+	Fax          string
+	ID           string
+	Name         string
+	Phone        string
+	TaxNum       string
+	Web          string
 
 	// TODO: what this?
 	CompanyType string
