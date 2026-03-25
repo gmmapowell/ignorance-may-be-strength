@@ -9,7 +9,6 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Download;
-import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Page.WaitForCloseOptions;
 import com.microsoft.playwright.Page.WaitForDownloadOptions;
@@ -36,9 +35,11 @@ class FBAR {
 		}
 		AccountInfo user = portfolio.getUser();
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(System.in));
+		
+		int slowMo = 0; // 500;
 
 		try (Playwright playwright = Playwright.create()) {
-			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(500));
+			Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(slowMo));
 			BrowserContext cxt = browser.newContext();
 			
 			Page page = cxt.newPage();
@@ -46,121 +47,137 @@ class FBAR {
 			page.navigate("https://bsaefiling.fincen.gov/PublicAccess");
 			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("AGREE AND CONTINUE")).click();
 			
-			page.locator("div.usa-button").click();
+			page.getByTestId("button").click();
 
 			page.locator("button").nth(0).click();
+			
+			page.getByTitle("Sign in or Create Account").click();
 
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Email address").setExact(true)).fill(portfolio.email());
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Password").setExact(true)).fill(password);
-			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Sign in")).click();
+			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Submit")).click();
 
 			System.out.print("Login.gov one-time code, please, from Authenticator: ");
 			String otc = lnr.readLine();
+			
+			page.bringToFront();
 			
 			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("One-time code").setExact(true)).fill(otc);
 			page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Submit")).click();
 			
 			// Now wait to be fully logged in ...
-			page.getByAltText("File Now Button").click();
+			page.getByTestId("file-now-button").click();
+
+			Page form = cxt.newPage();
 			
-			Page form = cxt.waitForPage(() -> {
-				page.navigate("https://bsaefiling.fincen.treas.gov/NoRegFBARFiler.html");
-				page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(" Prepare & Submit ")).click();
-			});
-			
-			if (form == null) {
-				System.out.println("new page did not open");
-				return;
-			}
+			form.navigate("https://bsaefiling.fincen.treas.gov/NoRegFBARFiler.html");
+			Thread.sleep(2000);
+			form.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName(" Prepare & Submit ")).click();
 
 			System.out.println("New Page: " + form.url() + " -- " + form.title());
-			
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your email address.").setExact(true)).fill(portfolio.email());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Re-enter your email address.")).fill(portfolio.email());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your first name.")).fill(user.getFirstName());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your last name.")).fill(user.getLastName());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Enter your telephone number. Do not include formatting such as spaces, dashes, or other punctuation.")).fill(portfolio.phone());
-			
-			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Please click this button to begin preparing your FBAR.")).click();
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Filing name")).fill(portfolio.filingName());
-//			page.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("reason")).selectOption("A");
-//			page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Explanation")).fill("I keep forgetting the deadline has changed.");
-			
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 1")).fill(Integer.toString(portfolio.getFilingYear()));
-			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("* 2")).selectOption("A");
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 3")).fill(user.getTin());
-			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName(" 3a")).selectOption("B");
+			form.getByTestId("agree-button").click();
 
-			Locator dob = form.locator("div.subform.DobLastSub");
-			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Month")).selectOption(portfolio.getMonth());
-			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Day")).selectOption(portfolio.getDate());
-			dob.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("Year")).selectOption(portfolio.getYear());
+			form.getByTestId("textInput").fill(portfolio.filingName());
+			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Next")).click();
 
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("* 6 Last")).fill(user.getLastName());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("7 First name").setExact(true)).fill(user.getFirstName());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8 Middle name").setExact(true)).fill(user.getMiddleName());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("8a Suffix").setExact(true)).fill(user.getSuffix());
+			form.locator("input[name='filerInfo.calendarYear']").fill(Integer.toString(portfolio.getFilingYear()));
 
-			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).selectOption(user.getCountry());
-			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("13")).dispatchEvent("blur");
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("9 Address").setExact(true)).fill(user.getAddress());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("10")).fill(user.getCity());
-			form.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("12 ZIP")).fill(user.getPostCode());
-			form.getByRole(AriaRole.COMBOBOX, new Page.GetByRoleOptions().setName("11")).selectOption(user.getState());
+			form.getByTitle("Item 2").click();
+			form.locator("ul[id='filerInfo.filerType--list'] li[value='A']").click();
 
-			form.locator("div.subform.InterestAccts").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
-			form.locator("div.subform.SigAuthAcctns").getByRole(AriaRole.CHECKBOX, new Locator.GetByRoleOptions().setName(" No")).check();
+			form.getByTitle("Item 3a").click();
+			form.locator("ul[id='filerInfo.domesticTinType--list'] li[value='B']").click();
+			form.locator("input[name='filerInfo.domesticTin']").fill(user.getTin());
+
+			form.getByTestId("lastNameInput").fill(user.getLastName());
+			form.getByTestId("firstNameInput").fill(user.getFirstName());
+			form.getByTestId("middleNameInput").fill(user.getMiddleName());
+			form.getByTestId("suffixInput").fill(user.getSuffix());
+			form.locator("input[id='filerInfo.dob']").fill(portfolio.getMonth() + "/" + portfolio.getDate() + "/" + portfolio.getYear());
+
+			form.getByTitle("Item 13 -").click();
+			form.locator("ul[id='filerInfo.country--list'] li[value='US']").click();
+
+			form.getByTitle("Item 11 -").click();
+			form.locator("ul[id='filerInfo.state--list'] li[value='" + user.getState().trim() + "']").click();
+
+			form.locator("input[name='filerInfo.address']").fill(user.getAddress());
+			form.locator("input[name='filerInfo.city']").fill(user.getCity());
+			form.locator("input[name='filerInfo.zipCode']").fill(user.getPostCode());
+
+			form.locator("input[id='filerInfo.hasFinancialInterest.no']").dispatchEvent("click");
+			form.locator("input[id='filerInfo.hasFinancialSignatureNoInterest.no']").dispatchEvent("click");
 			
-			boolean first = true;
+			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Next")).click();
+
+			int which = 0;
 			for (Asset solo : portfolio.solos()) {
-				Locator mypage2 = form.locator("div.subform.Part2");
-				if (!first) {
-					mypage2.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).last().click();
-					mypage2 = mypage2.last();
-				}
-				first = false;
-
-				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(solo.getMaximumValue()));
-				mypage2.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(solo.getType());
-				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*17")).fill(solo.getInstitution());
-				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Item 18")).fill(solo.getAccountNo());
+				throw new RuntimeException("cannot handle solos anymore: " + solo);
+				
+				// TODO: we basically need to copy the code from down below, but without the fillJoint() bit and replace "jointAccounts" with "soloAccounts"
+				/*
+				form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(solo.getMaximumValue()));
+				form.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(solo.getType());
+				form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*17")).fill(solo.getInstitution());
+				form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Item 18")).fill(solo.getAccountNo());
 				if (solo.hasAddress())
-					mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("19")).fill(solo.getAddress());
+					form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("19")).fill(solo.getAddress());
 				if (solo.hasCity())
-					mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("20")).fill(solo.getCity());
+					form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("20")).fill(solo.getCity());
 				if (solo.hasState())
-				mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("21")).fill(solo.getState());
+				form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("21")).fill(solo.getState());
 				if (solo.hasPostCode())
-					mypage2.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("22")).fill(solo.getPostCode());
-				mypage2.locator("div.choicelist.Country select").selectOption(solo.getCountry());
+					form.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("22")).fill(solo.getPostCode());
+				form.locator("div.choicelist.Country select").selectOption(solo.getCountry());
+				*/
 			}
 			
-			first = true;
+			which = 0;
 			for (JointAsset joint : portfolio.joints()) {
-				Locator mypage3 = form.locator("div.subform.Part3");
-				if (!first) {
-					mypage3.getByRole(AriaRole.BUTTON, new Locator.GetByRoleOptions().setName("+").setExact(true)).last().click();
-					mypage3 = mypage3.last();
-				}
-				first = false;
-
-				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*15")).fill(Integer.toString(joint.getMaximumValue()));
-				mypage3.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("*16")).selectOption(joint.getType());
-				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*17")).fill(joint.getInstitution());
-				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("Item 18")).fill(joint.getAccountNo());
+				form.getByTestId("joint-account-add").click();
+				
+				form.locator("input[name='jointAccounts[" + which + "].maximumAccountValue']").fill(Integer.toString(joint.getMaximumValue()));
+				form.locator("input[name='jointAccounts[" + which + "].financialInstituteName']").fill(joint.getInstitution());
+				form.locator("input[name='jointAccounts[" + which + "].accountNumber']").fill(joint.getAccountNo());
 				if (joint.hasAddress())
-					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("19")).fill(joint.getAddress());
+					form.locator("input[name='jointAccounts[" + which + "].address']").fill(joint.getAddress());
 				if (joint.hasCity())
-					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("20")).fill(joint.getCity());
-				if (joint.hasState())
-				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("21")).fill(joint.getState());
+					form.locator("input[name='jointAccounts[" + which + "].city']").fill(joint.getCity());
 				if (joint.hasPostCode())
-					mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("22")).fill(joint.getPostCode());
-				mypage3.locator("div.partSub div.choicelist.Country select").selectOption(joint.getCountry());
-				mypage3.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("*24")).fill(Integer.toString(joint.getNumOthers()));
-				fillJoint(mypage3.locator("div.PrincipalJointOwner"), joint.getOther());
+					form.locator("input[name='jointAccounts[" + which + "].zipCode']").fill(joint.getPostCode());
+
+				form.locator("input[id='jointAccounts[" + which + "].typeOfAccount']").click();
+				form.locator("ul[id='jointAccounts[" + which + "].typeOfAccount--list'] li[value='" + joint.getType() +"']").click();
+
+				form.locator("input[id='jointAccounts[" + which + "].country']").click();
+				form.locator("ul[id='jointAccounts[" + which + "].country--list'] li[value='" + joint.getCountry() +"']").click();
+
+				if (joint.hasState()) {
+					form.locator("input[id='jointAccounts[" + which + "].state']").click();
+					form.locator("ul[id='jointAccounts[" + which + "].state--list'] li[value='" + joint.getState() +"']").click();
+				}
+
+				form.locator("input[name='jointAccounts[" + which + "].numberOfOwners']").fill(Integer.toString(joint.getNumOthers()));
+
+				fillJoint(form, which, joint.getOther());
+
+				which ++;
 			}
 
+			// move onto 3rd party preparer page ...
+			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Next")).click();
+
+			// and then onto signature page
+			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Next")).click();
+
+			form.getByTestId("email-address-input").fill(portfolio.email());
+			form.getByTestId("confirm-email-address-input").fill(portfolio.email());
+			form.locator("input[name='lastName']").fill(user.getLastName());
+			form.locator("input[name='firstName']").fill(user.getFirstName());
+			form.locator("input[name='phone']").fill(portfolio.phone());
+			
+			form.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Finalize")).click();
+			
 			form.onDialog(dialog -> {
 				System.out.println("Dialog message: " + dialog.message());
 				System.out.println("Dialog prompt: " + dialog.defaultValue());
@@ -191,18 +208,23 @@ class FBAR {
 		}
 	}
 
-	private static void fillJoint(Locator with, AccountInfo other) {
-		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("25 a")).selectOption(other.getTinType());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("25")).fill(other.getTin());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("26")).fill(other.getLastName());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("27")).fill(other.getFirstName());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("28 M")).fill(other.getMiddleName());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("28a")).fill(other.getSuffix());
-		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("33")).selectOption(other.getCountry());
-		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("33")).dispatchEvent("blur");
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("29")).fill(other.getAddress());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("30")).fill(other.getCity());
-		with.getByRole(AriaRole.TEXTBOX, new Locator.GetByRoleOptions().setName("32")).fill(other.getPostCode());
-		with.getByRole(AriaRole.COMBOBOX, new Locator.GetByRoleOptions().setName("31")).selectOption(other.getState());
+	private static void fillJoint(Page form, int which, AccountInfo other) {
+		form.getByTitle("Item 25a").nth(which).click();
+		form.locator("ul[id='jointAccounts[" + which + "].principalJointOwner.tinType--list'] li[value='B']").click();
+		form.locator("input[name='jointAccounts[" + which +"].principalJointOwner.tin']").fill(other.getTin());
+
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.lastNameOrOrgName']").fill(other.getLastName());
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.firstName']").fill(other.getFirstName());
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.middleName']").fill(other.getMiddleName());
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.suffix']").fill(other.getSuffix());
+
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.address']").fill(other.getAddress());
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.city']").fill(other.getCity());
+		form.locator("input[name='jointAccounts[" + which + "].principalJointOwner.zipCode']").fill(other.getPostCode());
+
+		form.locator("input[id='jointAccounts[" + which + "].principalJointOwner.country']").click();
+		form.locator("ul[id='jointAccounts[" + which + "].principalJointOwner.country--list'] li[value='" + other.getCountry() +"']").click();
+		form.locator("input[id='jointAccounts[" + which + "].principalJointOwner.state']").click();
+		form.locator("ul[id='jointAccounts[" + which + "].principalJointOwner.state--list'] li[value='" + other.getState() +"']").click();
 	}
 }

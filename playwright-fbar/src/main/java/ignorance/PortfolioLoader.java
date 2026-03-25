@@ -103,9 +103,9 @@ public class PortfolioLoader {
 			ai.setLastName(u.getString("lastName"));
 			ai.setAddress(u.getString("address"));
 			ai.setCity(u.getString("city"));
-			ai.setState(u.getString("state") + " ");
+			ai.setState(u.getString("state"));
 			ai.setPostCode(u.getString("postCode"));
-			ai.setCountry(u.getString("country") + " ");
+			ai.setCountry(u.getString("country"));
 			ret.user(ai);
 		}
 		JSONArray solos = json.getJSONArray("solos");
@@ -119,7 +119,7 @@ public class PortfolioLoader {
 			sa.setAddress(j.getString("address"));
 			sa.setCity(j.getString("city"));
 			sa.setPostCode(j.getString("postCode"));
-			sa.setCountry(j.getString("country") + " ");
+			sa.setCountry(j.getString("country"));
 			ret.solo(sa);
 		}
 		JSONArray js = json.getJSONArray("joints");
@@ -135,7 +135,7 @@ public class PortfolioLoader {
 			ja.setAddress(j.getString("address"));
 			ja.setCity(j.getString("city"));
 			ja.setPostCode(j.getString("postCode"));
-			ja.setCountry(j.getString("country") + " ");
+			ja.setCountry(j.getString("country"));
 			ret.joint(ja);
 		}
 		return ret;
