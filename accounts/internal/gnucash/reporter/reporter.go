@@ -21,12 +21,12 @@ func (r *reporter) Configure(accts []config.Account) {
 }
 
 func (r *reporter) Credit(c writer.AccountCredit) {
-	// fmt.Printf("%s: Credit %s with %s\n", c.When.JustDate(), c.Acct, c.Amount)
+	// log.Printf("%s: Credit %s with %s\n", c.When.JustDate(), c.Acct, c.Amount)
 	r.Accounts[c.Acct].Credit(c.When, c.Amount)
 }
 
 func (r *reporter) Debit(c writer.AccountDebit) {
-	// fmt.Printf("%s: Debit %s by %s\n", c.When.JustDate(), c.Acct, c.Amount)
+	// log.Printf("%s: Debit %s by %s\n", c.When.JustDate(), c.Acct, c.Amount)
 	r.Accounts[c.Acct].Debit(c.When, c.Amount)
 }
 

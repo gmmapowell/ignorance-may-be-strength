@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -36,14 +37,14 @@ func ReadSpreadsheet(conf *config.Configuration, rcvr Receiver) {
 
 	var tabs []Tab
 	for _, sheet := range info.Sheets {
-		tab := gatherTabData(sheetsService, conf.Spreadsheet, sheet.Properties.Title, sheet.Properties.GridProperties.RowCount, sheet.Properties.GridProperties.ColumnCount)
+		tab := gatherTabData(conf, sheetsService, conf.Spreadsheet, sheet.Properties.Title, sheet.Properties.GridProperties.RowCount, sheet.Properties.GridProperties.ColumnCount)
 		tabs = append(tabs, tab)
 	}
 
 	rcvr.DeliverSheet(tabs)
 }
 
-func gatherTabData(svc *sheets.Service, sheetId, title string, rc, cc int64) Tab {
+func gatherTabData(conf *config.Configuration, svc *sheets.Service, sheetId, title string, rc, cc int64) Tab {
 	cells, err := svc.Spreadsheets.Values.Get(sheetId, fmt.Sprintf("%s!R1C1:R%dC%d", title, rc, cc)).Do()
 	if err != nil {
 		panic(err)
@@ -61,6 +62,9 @@ func gatherTabData(svc *sheets.Service, sheetId, title string, rc, cc int64) Tab
 			for j, c := range r {
 				if heads[j] != "" {
 					row.Columns[heads[j]] = c
+					if conf.Debug.GatherTabs {
+						log.Printf("%s %s %v\n", title, heads[j], c)
+					}
 				}
 			}
 			tab.Rows = append(tab.Rows, row)

@@ -1,6 +1,8 @@
 package reporter
 
 import (
+	"log"
+
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 )
 
@@ -31,7 +33,7 @@ func (a *actor) Credit(date writer.DateInfo, amount writer.Money) {
 		return
 	}
 	a.balance.Incorporate(a.creditEffect, amount)
-	// fmt.Printf("Collect credit %s => %s\n", amount, a.balance)
+	log.Printf("Collect credit %s => %s\n", amount, a.balance)
 }
 
 func (a *actor) Debit(date writer.DateInfo, amount writer.Money) {
@@ -42,7 +44,7 @@ func (a *actor) Debit(date writer.DateInfo, amount writer.Money) {
 		return
 	}
 	a.balance.Incorporate(a.debitEffect, amount)
-	// fmt.Printf("Collect debit %s => %s\n", amount, a.balance)
+	log.Printf("Collect debit %s => %s\n", amount, a.balance)
 }
 
 func (a *actor) HasBalance() bool {
@@ -66,7 +68,7 @@ func (a *actor) Type() string {
 }
 
 func (a *actor) ShowBrackets() bool {
-	return a.ty == "EXPENSE"
+	return a.ty == "EXPENSE" || a.ty == "LIABILITY" || a.ty == "EQUITY"
 }
 
 func MakeAccount(yr int, ty string) Account {

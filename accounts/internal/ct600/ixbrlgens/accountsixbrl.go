@@ -35,6 +35,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret.AddContext(&ixbrl.Context{ID: "CY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "PY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: pyStart, ToDate: pyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "CYEnd", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, Instant: cyEnd})
+	ret.AddContext(&ixbrl.Context{ID: "PYEnd", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, Instant: pyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "CYAccountsType", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountsTypeDimension", "bus:FullAccounts")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYAccountsStatus", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountsStatusDimension", "bus:AuditExempt-NoAccountantsReport")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYAccountingStandards", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountingStandardsDimension", "bus:Micro-entities")}})
@@ -45,7 +46,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	ret.AddUnit(&ixbrl.Unit{ID: "Pure", Measure: "xbrli:pure"})
 
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:NameProductionSoftware", Text: "Ziniki HMRC"})
-	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:VersionProductionSoftware", Text: "2026-01-31"})
+	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:VersionProductionSoftware", Text: "2026-02-14"})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:EntityCurrentLegalOrRegisteredName", Text: g.config.Business.Name})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:UKCompaniesHouseRegisteredNumber", Text: g.config.Business.ID})
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "bus:StartDateForPeriodCoveredByReport", Text: cyStart.IsoDate()})
@@ -74,6 +75,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 
 	g.acctranges = make(map[string]map[string]reporter.Account)
 	for name, fy := range g.config.Ranges {
+		fmt.Printf("Collecting for FY %s\n", name)
 		compiler := &Compiler{accounts: make(map[string]reporter.Account)}
 		compiler.Configure(fy, g.config.Accounts)
 		accts.Regurgitate(compiler)
@@ -136,7 +138,11 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 							wantNeg = !wantNeg
 							gbp = -gbp
 						}
-						ixp := &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: col.Year, Unit: "GBP", Text: strconv.Itoa(gbp)}
+						cx := col.Year
+						if col.Scope == "End" {
+							cx = col.Year + "End"
+						}
+						ixp := &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: cx, Unit: "GBP", Text: strconv.Itoa(gbp)}
 						column = ixp
 						if wantNeg {
 							ixp.Sign = "-"
@@ -220,10 +226,12 @@ func (c *Compiler) Configure(fy config.DateRange, accts []config.Account) {
 
 func (c *Compiler) Credit(ac writer.AccountCredit) {
 	c.accounts[ac.Acct].Credit(ac.When, ac.Amount)
+	log.Printf("%s: Credit %s with %s ... now %v", ac.When.JustDate(), ac.Acct, ac.Amount, c.accounts[ac.Acct].Balance())
 }
 
 func (c *Compiler) Debit(ad writer.AccountDebit) {
 	c.accounts[ad.Acct].Debit(ad.When, ad.Amount)
+	log.Printf("%s: Debit %s with %s ... now %v\n", ad.When.JustDate(), ad.Acct, ad.Amount, c.accounts[ad.Acct].Balance())
 }
 
 func (c *Compiler) DoCalculations(calculations []config.Calculation) {
@@ -260,6 +268,12 @@ func invert(ty string) string {
 		return "EXPENSE"
 	case "EXPENSE":
 		return "INCOME"
+	case "BANK":
+		return "LIABILITY"
+	case "ASSET":
+		return "LIABILITY"
+	case "LIABILITY":
+		return "ASSET"
 	default:
 		panic(fmt.Sprintf("invalid type to invert: %s", ty))
 	}
@@ -299,5 +313,5 @@ func (c CalcAccount) Type() string {
 }
 
 func (c CalcAccount) ShowBrackets() bool {
-	return c.ty == "EXPENSE"
+	return c.ty == "EXPENSE" || c.ty == "LIABILITY" || c.ty == "EQUITY"
 }

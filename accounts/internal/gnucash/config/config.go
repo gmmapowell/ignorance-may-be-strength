@@ -10,6 +10,7 @@ type Configuration struct {
 	Spreadsheet  string
 	Output       string
 
+	Debug        DebugOptions
 	Business     Business
 	Ranges       map[string]DateRange
 	Accounts     []Account
@@ -25,6 +26,10 @@ type Configuration struct {
 
 	// Arguments for Polling
 	PollURI, CorrelationID string
+}
+
+type DebugOptions struct {
+	GatherTabs bool
 }
 
 type Business struct {
@@ -89,9 +94,10 @@ type ColumnDefn struct {
 	Value string
 	GBP   string
 
-	Unit string
-	Year string
-	Tag  string
+	Unit  string
+	Year  string
+	Scope string
+	Tag   string
 }
 
 func MakeConfiguration() *Configuration {

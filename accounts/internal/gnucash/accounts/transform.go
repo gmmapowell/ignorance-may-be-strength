@@ -48,6 +48,7 @@ func (at *AccountsTransformer) DeliverSheet(tabs []sheets.Tab) {
 			if r.Columns["Dest"] != nil && r.Columns["Dest"] != "" {
 				tx.SetDest(r.Columns["Dest"].(string))
 			}
+			// fmt.Printf("%s %s %s %d\n", tx.)
 		}
 	}
 	at.accts = accts

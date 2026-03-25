@@ -2,6 +2,7 @@ package writer
 
 import (
 	"encoding/xml"
+	"log"
 	"strings"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
@@ -445,6 +446,7 @@ func (g *Gnucash) Regurgitate(rcvr TxReceiver) {
 	for _, x := range g.book.Elements {
 		tx, ok := x.(*Transaction)
 		if ok {
+			log.Printf("%v %v\n", tx.debit, tx.credit)
 			rcvr.Credit(*tx.credit)
 			rcvr.Debit(*tx.debit)
 		}
