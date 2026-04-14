@@ -14,6 +14,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/HTTP"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.USER_LIBRARY/Utility"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
-	<classpathentry kind="lib" path="/deployer-qb/mvncache/log4j/log4j/1.2.17/log4j-1.2.17.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
