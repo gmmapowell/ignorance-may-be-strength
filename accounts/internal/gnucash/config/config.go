@@ -96,10 +96,11 @@ type ColumnDefn struct {
 	Value string
 	GBP   string
 
-	Unit  string
-	Year  string
-	Scope string
-	Tag   string
+	Unit       string
+	Year       string
+	Scope      string
+	Tag        string
+	DateFormat string
 }
 
 func MakeConfiguration() *Configuration {

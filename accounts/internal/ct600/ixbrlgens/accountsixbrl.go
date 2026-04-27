@@ -131,7 +131,31 @@ func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.
 			if col.Label != "" {
 				cols = append(cols, col.Label)
 			} else if col.Date != "" {
-				log.Printf("have a date: %s\n", col.Date)
+				cx := col.Year + "End"
+				dr := ranges[col.Year]
+				var dy string
+				switch col.Scope {
+				case "Start":
+					dy = dr.Start
+				case "End":
+					dy = dr.End
+				default:
+					log.Fatalf("invalid date start/end: %s", col.Scope)
+				}
+				// if col.Scope == "End" {
+				// 	cx = col.Year + "End"
+				// }
+				var fdate string
+				var ffmt string
+				switch col.DateFormat {
+				case "ukfulldate":
+					fdate = ixbrl.NewDate(dy).UKFullDate()
+					ffmt = "ixt:datelonguk"
+				default:
+					log.Fatalf("invalid date format: %s", col.DateFormat)
+				}
+				ixp := &ixbrl.IXProp{Type: ixbrl.NonNumeric, Name: col.Tag, Context: cx, Text: fdate, Format: ffmt}
+				cols = append(cols, ixp)
 			} else if col.Value != "" {
 				if acctranges[col.Year][col.Value] != nil {
 					cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: acctranges[col.Year][col.Value].Balance().String()})
