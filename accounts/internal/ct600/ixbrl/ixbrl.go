@@ -73,6 +73,10 @@ type Row struct {
 	Items []any
 }
 
+type Many struct {
+	Items []any
+}
+
 type Div struct {
 	Tag   string
 	Class string
@@ -322,6 +326,23 @@ func (r *Row) AsEtree() *etree.Element {
 	return xml.ElementWithNesting("tr", tds...)
 }
 
+func (r *Many) AsEtree() *etree.Element {
+	var tds []etree.Token
+	for _, i := range r.Items {
+		var val etree.Token
+		switch ti := i.(type) {
+		case string:
+			val = etree.NewText(ti)
+		case MakeEtree:
+			val = ti.AsEtree()
+		default:
+			panic(fmt.Sprintf("cannot handle %T", i))
+		}
+		tds = append(tds, val)
+	}
+	return xml.ElementWithNesting("span", tds...)
+}
+
 func NewDate(iso string) Date {
 	d, err := time.Parse(time.DateOnly, iso)
 	if err != nil {
@@ -340,4 +361,8 @@ func (d Date) IsoDate() string {
 
 func (d Date) UKFullDate() string {
 	return d.isoDate.Format("2 January 2006")
+}
+
+func (d Date) UKShortDate() string {
+	return d.isoDate.Format("02/01/2006")
 }

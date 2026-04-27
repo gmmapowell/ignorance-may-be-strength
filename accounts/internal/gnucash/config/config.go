@@ -18,6 +18,7 @@ type Configuration struct {
 	VerbMap      map[string]*Verb
 	Calculations []Calculation
 	Pages        []PageDefn
+	CompsPages   []PageDefn
 
 	// Fpr ct600
 	Sender, Password         string
@@ -91,6 +92,7 @@ type RowDefn struct {
 
 type ColumnDefn struct {
 	Label string
+	Date  string
 	Value string
 	GBP   string
 

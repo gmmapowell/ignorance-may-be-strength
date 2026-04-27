@@ -100,65 +100,78 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 	}
 	for _, pd := range g.config.Pages {
 		page := ret.AddPage()
-		page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: g.config.Business.Name})
-		page.Header = append(page.Header, &ixbrl.Div{Class: "company-details", Text: fmt.Sprintf("Company No. %s", g.config.Business.ID)})
+		page.Header = append(page.Header, &ixbrl.Div{Tag: "h1",
+			Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:EntityCurrentLegalOrRegisteredName", Text: g.config.Business.Name},
+		})
+		page.Header = append(page.Header, &ixbrl.Div{Class: "company-details",
+			Nest: &ixbrl.Many{Items: []any{
+				&ixbrl.Div{Tag: "span", Text: "Company Number: "},
+				&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "bus:UKCompaniesHouseRegisteredNumber", Text: g.config.Business.ID},
+				&ixbrl.Div{Tag: "span", Text: " (England and Wales)"},
+			}}})
 
-		if pd.Title != "" {
-			title := pd.Title
-			if pd.TitleArgs != nil {
-				args := g.MapArgs(pd.TitleArgs)
-				title = fmt.Sprintf(title, args...)
-			}
-			page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: title})
+		HandlePage(page, &pd, g.config.Ranges, g.acctranges)
+	}
+}
+
+func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.DateRange, acctranges map[string]map[string]reporter.Account) {
+	if pd.Title != "" {
+		title := pd.Title
+		if pd.TitleArgs != nil {
+			args := MapArgs(ranges, pd.TitleArgs)
+			title = fmt.Sprintf(title, args...)
 		}
+		page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Text: title})
+	}
 
-		for _, r := range pd.Rows {
-			var cols []any
-			elide := r.ElideIfAllZero
-			for _, col := range r.Columns {
-				if col.Label != "" {
-					cols = append(cols, col.Label)
-				} else if col.Value != "" {
-					if g.acctranges[col.Year][col.Value] != nil {
-						cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: g.acctranges[col.Year][col.Value].Balance().String()})
-						elide = false
-					} else {
-						log.Printf("there is no value for %s for %s", col.Value, col.Year)
-					}
-				} else if col.GBP != "" {
-					if g.acctranges[col.Year][col.GBP] != nil {
-						acct := g.acctranges[col.Year][col.GBP]
-						gbp := acct.Balance().Units
-						var column ixbrl.MakeEtree
-						wantNeg := acct.ShowBrackets()
-						if gbp != 0 {
-							elide = false
-						}
-						if gbp < 0 {
-							wantNeg = !wantNeg
-							gbp = -gbp
-						}
-						cx := col.Year
-						if col.Scope == "End" {
-							cx = col.Year + "End"
-						}
-						ixp := &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: cx, Unit: "GBP", Text: strconv.Itoa(gbp)}
-						column = ixp
-						if wantNeg {
-							ixp.Sign = "-"
-							column = &ixbrl.Div{Tag: "span", Class: "negative", Nest: column}
-						}
-						cols = append(cols, column)
-					} else {
-						log.Printf("there is no value for %s for %s", col.GBP, col.Year)
-					}
+	for _, r := range pd.Rows {
+		var cols []any
+		elide := r.ElideIfAllZero
+		for _, col := range r.Columns {
+			if col.Label != "" {
+				cols = append(cols, col.Label)
+			} else if col.Date != "" {
+				log.Printf("have a date: %s\n", col.Date)
+			} else if col.Value != "" {
+				if acctranges[col.Year][col.Value] != nil {
+					cols = append(cols, &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Context: col.Year, Unit: col.Unit, Text: acctranges[col.Year][col.Value].Balance().String()})
+					elide = false
 				} else {
-					panic("not a label, value or GBP")
+					log.Printf("there is no value for %s for %s", col.Value, col.Year)
 				}
+			} else if col.GBP != "" {
+				if acctranges[col.Year][col.GBP] != nil {
+					acct := acctranges[col.Year][col.GBP]
+					gbp := acct.Balance().Units
+					var column ixbrl.MakeEtree
+					wantNeg := acct.ShowBrackets()
+					if gbp != 0 {
+						elide = false
+					}
+					if gbp < 0 {
+						wantNeg = !wantNeg
+						gbp = -gbp
+					}
+					cx := col.Year
+					if col.Scope == "End" {
+						cx = col.Year + "End"
+					}
+					ixp := &ixbrl.IXProp{Type: ixbrl.NonFraction, Name: col.Tag, Decimals: "0", Context: cx, Unit: "GBP", Text: strconv.Itoa(gbp)}
+					column = ixp
+					if wantNeg {
+						ixp.Sign = "-"
+						column = &ixbrl.Div{Tag: "span", Class: "negative", Nest: column}
+					}
+					cols = append(cols, column)
+				} else {
+					log.Printf("there is no value for %s for %s", col.GBP, col.Year)
+				}
+			} else {
+				panic("not a label, value or GBP")
 			}
-			if !elide {
-				page.AddRow(cols...)
-			}
+		}
+		if !elide {
+			page.AddRow(cols...)
 		}
 	}
 }
@@ -179,11 +192,11 @@ func (g *GnuCashAccountsIXBRLGenerator) Statement(pg *ixbrl.Page, code string, m
 	pg.AddRow(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: code, Text: msg})
 }
 
-func (g *GnuCashAccountsIXBRLGenerator) MapArgs(args []config.ArgDefn) []any {
+func MapArgs(ranges map[string]config.DateRange, args []config.ArgDefn) []any {
 	ret := []any{}
 	for _, a := range args {
 		if a.Year != "" {
-			rng := g.config.Ranges[a.Year]
+			rng := ranges[a.Year]
 			var dt ixbrl.Date
 			switch a.Scope {
 			case "Start":

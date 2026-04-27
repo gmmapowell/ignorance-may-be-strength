@@ -3,6 +3,7 @@ package ixbrlgens
 import (
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrl"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/reporter"
 )
 
 type GnuCashComputationsIXBRLGenerator struct {
@@ -28,6 +29,22 @@ func (g *GnuCashComputationsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	pg.AddRow("ct-comp:StartOfPeriodCoveredByReturn", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:StartOfPeriodCoveredByReturn", Text: cyStart.IsoDate()})
 	pg.AddRow("ct-comp:EndOfPeriodCoveredByReturn", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:EndOfPeriodCoveredByReturn", Text: cyEnd.IsoDate()})
 	pg.AddRow("ct-comp:CompanyIsAPartnerInAFirm", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "ct-comp:CompanyIsAPartnerInAFirm", Text: "false"})
+
+	for _, pd := range g.config.CompsPages {
+		page := ret.AddPage()
+		page.Header = append(page.Header, &ixbrl.Div{Tag: "h1", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:CompanyName", Text: g.config.Business.Name}})
+		page.Header = append(page.Header, &ixbrl.Div{Nest: &ixbrl.Many{Items: []any{
+			&ixbrl.Div{Tag: "span", Text: "Utr "},
+			&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:TaxReference", Text: g.config.Utr},
+			&ixbrl.Div{Tag: "span", Text: " | Accounting Period: "},
+			&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountStartDate", Text: cyStart.UKShortDate(), Format: "ixt2:datedaymonthyear"},
+			&ixbrl.Div{Tag: "span", Text: " - "},
+			&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountEndDate", Text: cyEnd.UKShortDate(), Format: "ixt2:datedaymonthyear"},
+		}}})
+
+		HandlePage(page, &pd, g.config.Ranges, make(map[string]map[string]reporter.Account))
+	}
+
 	return ret
 }
 
