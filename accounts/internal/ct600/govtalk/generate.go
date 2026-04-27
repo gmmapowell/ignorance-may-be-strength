@@ -12,8 +12,13 @@ import (
 
 	"io"
 
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/accounts"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	conf "github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/sheets"
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 
+	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrlgens"
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 	"github.com/unix-world/smartgoplus/xml-utils/c14n"
@@ -28,7 +33,29 @@ func Generate(file string, runlint bool, conf *conf.Configuration, options *Enve
 	gtbs := xml.WriteXML(gtxml)
 
 	if options.IncludeBody {
-		bd := makeBody(options.IRenvelope)
+		w := writer.MakeWriter(conf)
+		accts := accounts.MakeAccounts(conf, w)
+		sheets.ReadSpreadsheet(conf, accts)
+
+		acctranges := make(map[string]map[string]config.ReporterAccount)
+		for name, fy := range conf.Ranges {
+			// fmt.Printf("Collecting for FY %s\n", name)
+			compiler := &ixbrlgens.Compiler{Accounts: make(map[string]config.ReporterAccount)}
+			compiler.Configure(fy, conf.Accounts)
+			accts.Regurgitate(compiler)
+
+			compiler.DoCalculations(conf.Calculations)
+			acctranges[name] = compiler.Accounts
+		}
+
+		for fy, accts := range acctranges {
+			fmt.Printf("FY %s\n", fy)
+			for acctName, acct := range accts {
+				fmt.Printf("  Acct %s %s %v\n", acctName, acct.Type(), acct.Balance())
+			}
+		}
+
+		bd := makeBody(options.IRenvelope, acctranges)
 		bs, err := canonicaliseBody(bd)
 		if err != nil {
 			return nil, err
@@ -66,8 +93,8 @@ func assembleGovTalkXML(conf *conf.Configuration, options *EnvelopeOptions) (*et
 	return msg.AsXML()
 }
 
-func makeBody(env *IRenvelope) *etree.Element {
-	body := xml.ElementWithNesting("Body", env.AsXML())
+func makeBody(env *IRenvelope, acctranges map[string]map[string]config.ReporterAccount) *etree.Element {
+	body := xml.ElementWithNesting("Body", env.AsXML(acctranges))
 	xml.AddAttr(body, "xmlns", "http://www.govtalk.gov.uk/CM/envelope")
 	xml.AddNSAttr(body, "xmlns", "xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	return body

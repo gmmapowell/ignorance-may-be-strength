@@ -1,6 +1,8 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Configuration struct {
 	APIKey       string
@@ -61,6 +63,24 @@ type Account struct {
 	Accounts    []Account
 }
 
+type ADate interface {
+}
+
+type MyMoney interface {
+	fmt.Stringer
+}
+
+type ReporterAccount interface {
+	Credit(date ADate, amount MyMoney)
+	Debit(date ADate, amount MyMoney)
+	Type() string
+	HasBalance() bool
+	Balance() MyMoney
+	IsPL() bool
+	PLEffect() int
+	ShowBrackets() bool
+}
+
 type Verb struct {
 	Name   string
 	Source string
@@ -69,6 +89,7 @@ type Verb struct {
 
 type Calculation struct {
 	AssignTo string
+	Type     string
 	Add      []string
 	Subtract []string
 }

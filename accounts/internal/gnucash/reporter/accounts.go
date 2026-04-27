@@ -1,21 +1,9 @@
 package reporter
 
 import (
-	"log"
-
+	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 )
-
-type Account interface {
-	Credit(date writer.DateInfo, amount writer.Money)
-	Debit(date writer.DateInfo, amount writer.Money)
-	Type() string
-	HasBalance() bool
-	Balance() writer.Money
-	IsPL() bool
-	PLEffect() int
-	ShowBrackets() bool
-}
 
 type actor struct {
 	debitEffect, creditEffect int
@@ -25,7 +13,9 @@ type actor struct {
 	ty                        string
 }
 
-func (a *actor) Credit(date writer.DateInfo, amount writer.Money) {
+func (a *actor) Credit(dt config.ADate, amt config.MyMoney) {
+	date := dt.(writer.DateInfo)
+	amount := amt.(writer.Money)
 	if a.justYear && date.Year != a.year {
 		return
 	}
@@ -33,10 +23,12 @@ func (a *actor) Credit(date writer.DateInfo, amount writer.Money) {
 		return
 	}
 	a.balance.Incorporate(a.creditEffect, amount)
-	log.Printf("Collect credit %s => %s\n", amount, a.balance)
+	// log.Printf("Collect credit %s => %s\n", amount, a.balance)
 }
 
-func (a *actor) Debit(date writer.DateInfo, amount writer.Money) {
+func (a *actor) Debit(dt config.ADate, amt config.MyMoney) {
+	date := dt.(writer.DateInfo)
+	amount := amt.(writer.Money)
 	if a.justYear && date.Year != a.year {
 		return
 	}
@@ -44,7 +36,7 @@ func (a *actor) Debit(date writer.DateInfo, amount writer.Money) {
 		return
 	}
 	a.balance.Incorporate(a.debitEffect, amount)
-	log.Printf("Collect debit %s => %s\n", amount, a.balance)
+	// log.Printf("Collect debit %s => %s\n", amount, a.balance)
 }
 
 func (a *actor) HasBalance() bool {
@@ -55,7 +47,7 @@ func (a *actor) IsPL() bool {
 	return a.justYear
 }
 
-func (a *actor) Balance() writer.Money {
+func (a *actor) Balance() config.MyMoney {
 	return a.balance
 }
 
@@ -71,7 +63,7 @@ func (a *actor) ShowBrackets() bool {
 	return a.ty == "EXPENSE" || a.ty == "LIABILITY" || a.ty == "EQUITY"
 }
 
-func MakeAccount(yr int, ty string) Account {
+func MakeAccount(yr int, ty string) config.ReporterAccount {
 	switch ty {
 	case "ASSET":
 		fallthrough

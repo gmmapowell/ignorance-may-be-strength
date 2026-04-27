@@ -8,7 +8,7 @@ import (
 )
 
 type reporter struct {
-	Accounts map[string]Account
+	Accounts map[string]config.ReporterAccount
 	Year     int
 }
 
@@ -31,7 +31,7 @@ func (r *reporter) Debit(c writer.AccountDebit) {
 }
 
 func NewReporter(conf *config.Configuration, yr int) *reporter {
-	ret := reporter{Year: yr, Accounts: make(map[string]Account)}
+	ret := reporter{Year: yr, Accounts: make(map[string]config.ReporterAccount)}
 	ret.Configure(conf.Accounts)
 	return &ret
 }
@@ -42,7 +42,7 @@ func (r *reporter) ProfitLoss(yr int) {
 	for name, acc := range r.Accounts {
 		if acc.IsPL() && acc.HasBalance() {
 			fmt.Printf("  %s: %s\n", name, acc.Balance())
-			total.Incorporate(acc.PLEffect(), acc.Balance())
+			total.Incorporate(acc.PLEffect(), acc.Balance().(writer.Money))
 		}
 	}
 	fmt.Printf("Net Profit/Loss: %s\n", total)

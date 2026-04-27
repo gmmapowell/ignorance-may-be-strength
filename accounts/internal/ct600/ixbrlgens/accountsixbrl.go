@@ -6,21 +6,19 @@ import (
 	"strconv"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrl"
-	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/accounts"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/reporter"
-	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/sheets"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/writer"
 )
 
 type GnuCashAccountsIXBRLGenerator struct {
-	config     *config.Configuration
-	acctranges map[string]map[string]reporter.Account
+	config *config.Configuration
+	// acctranges map[string]map[string]reporter.Account
 
 	styles string
 }
 
-func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
+func (g *GnuCashAccountsIXBRLGenerator) Generate(acctranges map[string]map[string]config.ReporterAccount) *ixbrl.IXBRL {
 	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Financial Statements", "https://xbrl.frc.org.uk/FRS-102/2025-01-01/FRS-102-2025-01-01.xsd", g.styles)
 	ret.AddSchema("bus", "http://xbrl.frc.org.uk/cd/2025-01-01/business")
 	ret.AddSchema("core", "http://xbrl.frc.org.uk/fr/2025-01-01/core")
@@ -69,35 +67,14 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 	front.Front = append(front.Front, &ixbrl.Div{Class: "document-type", Text: "Financial Statements"})
 	front.Front = append(front.Front, &ixbrl.Div{Class: "period", Text: fmt.Sprintf("For the Year Ended %s", cyEnd.IsoDate())})
 
-	w := writer.MakeWriter(g.config)
-	accts := accounts.MakeAccounts(g.config, w)
-	sheets.ReadSpreadsheet(g.config, accts)
-
-	g.acctranges = make(map[string]map[string]reporter.Account)
-	for name, fy := range g.config.Ranges {
-		fmt.Printf("Collecting for FY %s\n", name)
-		compiler := &Compiler{accounts: make(map[string]reporter.Account)}
-		compiler.Configure(fy, g.config.Accounts)
-		accts.Regurgitate(compiler)
-
-		compiler.DoCalculations(g.config.Calculations)
-		g.acctranges[name] = compiler.accounts
-	}
-
-	g.GenerateAccountsPages(ret)
+	g.GenerateAccountsPages(ret, acctranges)
 	dp := ret.AddPage()
 	g.DeclarationsPage(dp)
 
 	return ret
 }
 
-func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) {
-	for fy, accts := range g.acctranges {
-		fmt.Printf("FY %s\n", fy)
-		for acctName, acct := range accts {
-			fmt.Printf("  Acct %s %s %v\n", acctName, acct.Type(), acct.Balance())
-		}
-	}
+func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL, acctranges map[string]map[string]config.ReporterAccount) {
 	for _, pd := range g.config.Pages {
 		page := ret.AddPage()
 		page.Header = append(page.Header, &ixbrl.Div{Tag: "h1",
@@ -110,11 +87,11 @@ func (g *GnuCashAccountsIXBRLGenerator) GenerateAccountsPages(ret *ixbrl.IXBRL) 
 				&ixbrl.Div{Tag: "span", Text: " (England and Wales)"},
 			}}})
 
-		HandlePage(page, &pd, g.config.Ranges, g.acctranges)
+		HandlePage(page, &pd, g.config.Ranges, acctranges)
 	}
 }
 
-func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.DateRange, acctranges map[string]map[string]reporter.Account) {
+func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.DateRange, acctranges map[string]map[string]config.ReporterAccount) {
 	if pd.Title != "" {
 		title := pd.Title
 		if pd.TitleArgs != nil {
@@ -166,7 +143,7 @@ func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.
 			} else if col.GBP != "" {
 				if acctranges[col.Year][col.GBP] != nil {
 					acct := acctranges[col.Year][col.GBP]
-					gbp := acct.Balance().Units
+					gbp := acct.Balance().(writer.Money).Units
 					var column ixbrl.MakeEtree
 					wantNeg := acct.ShowBrackets()
 					if gbp != 0 {
@@ -246,7 +223,7 @@ func AccountsGenerator(config *config.Configuration, styles string) config.IXBRL
 }
 
 type Compiler struct {
-	accounts map[string]reporter.Account
+	Accounts map[string]config.ReporterAccount
 }
 
 func (c *Compiler) Configure(fy config.DateRange, accts []config.Account) {
@@ -256,36 +233,36 @@ func (c *Compiler) Configure(fy config.DateRange, accts []config.Account) {
 	}
 
 	for _, acc := range accts {
-		c.accounts[acc.Name] = reporter.MakeAccount(yr, acc.Type)
+		c.Accounts[acc.Name] = reporter.MakeAccount(yr, acc.Type)
 		c.Configure(fy, acc.Accounts)
 	}
 }
 
 func (c *Compiler) Credit(ac writer.AccountCredit) {
-	c.accounts[ac.Acct].Credit(ac.When, ac.Amount)
-	log.Printf("%s: Credit %s with %s ... now %v", ac.When.JustDate(), ac.Acct, ac.Amount, c.accounts[ac.Acct].Balance())
+	c.Accounts[ac.Acct].Credit(ac.When, ac.Amount)
+	// log.Printf("%s: Credit %s with %s ... now %v", ac.When.JustDate(), ac.Acct, ac.Amount, c.Accounts[ac.Acct].Balance())
 }
 
 func (c *Compiler) Debit(ad writer.AccountDebit) {
-	c.accounts[ad.Acct].Debit(ad.When, ad.Amount)
-	log.Printf("%s: Debit %s with %s ... now %v\n", ad.When.JustDate(), ad.Acct, ad.Amount, c.accounts[ad.Acct].Balance())
+	c.Accounts[ad.Acct].Debit(ad.When, ad.Amount)
+	// log.Printf("%s: Debit %s with %s ... now %v\n", ad.When.JustDate(), ad.Acct, ad.Amount, c.Accounts[ad.Acct].Balance())
 }
 
 func (c *Compiler) DoCalculations(calculations []config.Calculation) {
 	for _, calc := range calculations {
 		acct := calc.AssignTo
-		if c.accounts[acct] != nil {
+		if c.Accounts[acct] != nil {
 			panic(fmt.Sprintf("duplicate acct in calculation: %s", acct))
 		}
-		ty, total := c.processItems(acct, "", writer.Money{}, 1, calc.Add)
+		ty, total := c.processItems(acct, calc.Type, writer.Money{}, 1, calc.Add)
 		_, total = c.processItems(acct, invert(ty), total, -1, calc.Subtract)
-		c.accounts[acct] = CalcAccount{ty: ty, balance: total}
+		c.Accounts[acct] = CalcAccount{ty: ty, balance: total}
 	}
 }
 
 func (c *Compiler) processItems(acct string, ty string, total writer.Money, pm int, accts []string) (string, writer.Money) {
 	for _, ac := range accts {
-		adding := c.accounts[ac]
+		adding := c.Accounts[ac]
 		if adding == nil {
 			panic(fmt.Sprintf("in calc %s, there is no account %s", acct, ac))
 		}
@@ -294,7 +271,7 @@ func (c *Compiler) processItems(acct string, ty string, total writer.Money, pm i
 		} else if ty != adding.Type() {
 			panic(fmt.Sprintf("in calc %s, there are mismatched types %s and %s", acct, ty, adding.Type()))
 		}
-		total.Incorporate(pm, adding.Balance())
+		total.Incorporate(pm, adding.Balance().(writer.Money))
 	}
 	return ty, total
 }
@@ -321,15 +298,15 @@ type CalcAccount struct {
 	balance writer.Money
 }
 
-func (c CalcAccount) Balance() writer.Money {
+func (c CalcAccount) Balance() config.MyMoney {
 	return c.balance
 }
 
-func (c CalcAccount) Credit(date writer.DateInfo, amount writer.Money) {
+func (c CalcAccount) Credit(date config.ADate, amount config.MyMoney) {
 	panic("unimplemented")
 }
 
-func (c CalcAccount) Debit(date writer.DateInfo, amount writer.Money) {
+func (c CalcAccount) Debit(date config.ADate, amount config.MyMoney) {
 	panic("unimplemented")
 }
 

@@ -3,7 +3,6 @@ package ixbrlgens
 import (
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/ixbrl"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
-	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/reporter"
 )
 
 type GnuCashComputationsIXBRLGenerator struct {
@@ -11,7 +10,7 @@ type GnuCashComputationsIXBRLGenerator struct {
 	styles string
 }
 
-func (g *GnuCashComputationsIXBRLGenerator) Generate() *ixbrl.IXBRL {
+func (g *GnuCashComputationsIXBRLGenerator) Generate(acctranges map[string]map[string]config.ReporterAccount) *ixbrl.IXBRL {
 	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Tax Computations", "http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01/ct-comp-2024.xsd", g.styles)
 	ret.AddSchema("ct-comp", "http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01")
 
@@ -42,7 +41,7 @@ func (g *GnuCashComputationsIXBRLGenerator) Generate() *ixbrl.IXBRL {
 			&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountEndDate", Text: cyEnd.UKShortDate(), Format: "ixt2:datedaymonthyear"},
 		}}})
 
-		HandlePage(page, &pd, g.config.Ranges, make(map[string]map[string]reporter.Account))
+		HandlePage(page, &pd, g.config.Ranges, acctranges)
 	}
 
 	return ret

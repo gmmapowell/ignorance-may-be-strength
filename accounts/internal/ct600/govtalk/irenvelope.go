@@ -32,7 +32,7 @@ type IRenvelope struct {
 	ComputationsGenerator config.IXBRLGenerator
 }
 
-func (ire *IRenvelope) AsXML() *etree.Element {
+func (ire *IRenvelope) AsXML(acctranges map[string]map[string]config.ReporterAccount) *etree.Element {
 	ac := 0
 	if ire.NoAccountsReason != "" {
 		ac++
@@ -82,7 +82,7 @@ func (ire *IRenvelope) AsXML() *etree.Element {
 	calc := xml.ElementWithNesting("CompanyTaxCalculation", ire.taxCalc()...)
 	too := xml.ElementWithNesting("CalculationOfTaxOutstandingOrOverpaid", ire.cotoo()...)
 	decl := xml.ElementWithNesting("Declaration", decl()...)
-	attachments := ire.figureAttachments()
+	attachments := ire.figureAttachments(acctranges)
 	var attach *etree.Element
 	if attachments != nil {
 		attach = xml.ElementWithNesting("AttachedFiles", attachments)
@@ -155,14 +155,14 @@ func decl() []etree.Token {
 	}
 }
 
-func (ire *IRenvelope) figureAttachments() *etree.Element {
+func (ire *IRenvelope) figureAttachments(acctranges map[string]map[string]config.ReporterAccount) *etree.Element {
 	ret := []etree.Token{}
 	if ire.ComputationIXBRL != "" {
 		cxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", xml.ContentFromFile(ire.ComputationIXBRL))))
 		ret = append(ret, cxml)
 	}
 	if ire.ComputationsGenerator != nil {
-		compsXML := ire.ComputationsGenerator.Generate().AsEtree()
+		compsXML := ire.ComputationsGenerator.Generate(acctranges).AsEtree()
 		xml.WriteEtree("comps.xhtml", compsXML)
 		acxml := xml.ElementWithNesting("Computation", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", compsXML)))
 		ret = append(ret, acxml)
@@ -172,7 +172,7 @@ func (ire *IRenvelope) figureAttachments() *etree.Element {
 		ret = append(ret, acxml)
 	}
 	if ire.AccountsGenerator != nil {
-		accountsXML := ire.AccountsGenerator.Generate().AsEtree()
+		accountsXML := ire.AccountsGenerator.Generate(acctranges).AsEtree()
 		xml.WriteEtree("accounts.xhtml", accountsXML)
 		acxml := xml.ElementWithNesting("Accounts", xml.ElementWithNesting("Instance", xml.ElementWithNesting("InlineXBRLDocument", accountsXML)))
 		ret = append(ret, acxml)
