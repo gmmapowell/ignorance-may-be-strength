@@ -50,12 +50,22 @@ type Context struct {
 	Instant          Date
 	FromDate         Date
 	ToDate           Date
-	Segment          []*ExplicitMember
+	Segment          []SegmentMember
 }
 
 type Unit struct {
 	ID      string
 	Measure string
+}
+
+type SegmentMember interface {
+	AsEtree() *etree.Element
+}
+
+type TypedMember struct {
+	Dimension string
+	Member    string
+	Value     string
 }
 
 type ExplicitMember struct {
@@ -113,6 +123,11 @@ func (i *IXBRL) AddPage() *Page {
 
 func MakeExplicitMember(dim, member string) *ExplicitMember {
 	ret := ExplicitMember{Dimension: dim, Member: member}
+	return &ret
+}
+
+func MakeTypedMember(dim, member, value string) *TypedMember {
+	ret := TypedMember{Dimension: dim, Member: member, Value: value}
 	return &ret
 }
 
@@ -223,9 +238,7 @@ func (cx *Context) AsEtree() *etree.Element {
 	if cx.Segment != nil {
 		segment := xml.ElementWithNesting("xbrli:segment")
 		for _, sg := range cx.Segment {
-			expMember := xml.ElementWithText("xbrldi:explicitMember", sg.Member)
-			xml.AddAttr(expMember, "dimension", sg.Dimension)
-			segment.AddChild(expMember)
+			segment.AddChild(sg.AsEtree())
 		}
 		entity.AddChild(segment)
 	}
@@ -365,4 +378,17 @@ func (d Date) UKFullDate() string {
 
 func (d Date) UKShortDate() string {
 	return d.isoDate.Format("02/01/2006")
+}
+
+func (em *ExplicitMember) AsEtree() *etree.Element {
+	expMember := xml.ElementWithText("xbrldi:explicitMember", em.Member)
+	xml.AddAttr(expMember, "dimension", em.Dimension)
+	return expMember
+}
+
+func (em *TypedMember) AsEtree() *etree.Element {
+	expMember := xml.ElementWithText(em.Member, em.Value)
+	typedMember := xml.ElementWithNesting("xbrldi:typedMember", expMember)
+	xml.AddAttr(typedMember, "dimension", em.Dimension)
+	return typedMember
 }

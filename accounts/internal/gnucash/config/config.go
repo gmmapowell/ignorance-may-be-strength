@@ -120,6 +120,7 @@ type ColumnDefn struct {
 	Unit       string
 	Year       string
 	Scope      string
+	Context    string
 	Tag        string
 	DateFormat string
 }

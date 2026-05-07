@@ -34,11 +34,11 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate(acctranges map[string]map[strin
 	ret.AddContext(&ixbrl.Context{ID: "PY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: pyStart, ToDate: pyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "CYEnd", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, Instant: cyEnd})
 	ret.AddContext(&ixbrl.Context{ID: "PYEnd", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, Instant: pyEnd})
-	ret.AddContext(&ixbrl.Context{ID: "CYAccountsType", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountsTypeDimension", "bus:FullAccounts")}})
-	ret.AddContext(&ixbrl.Context{ID: "CYAccountsStatus", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountsStatusDimension", "bus:AuditExempt-NoAccountantsReport")}})
-	ret.AddContext(&ixbrl.Context{ID: "CYAccountingStandards", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:AccountingStandardsDimension", "bus:Micro-entities")}})
-	ret.AddContext(&ixbrl.Context{ID: "CYLegalFormEntity", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:LegalFormEntityDimension", "bus:PrivateLimitedCompanyLtd")}})
-	ret.AddContext(&ixbrl.Context{ID: "CYDirector", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []*ixbrl.ExplicitMember{ixbrl.MakeExplicitMember("bus:EntityOfficersDimension", "bus:Director1")}})
+	ret.AddContext(&ixbrl.Context{ID: "CYAccountsType", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("bus:AccountsTypeDimension", "bus:FullAccounts")}})
+	ret.AddContext(&ixbrl.Context{ID: "CYAccountsStatus", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("bus:AccountsStatusDimension", "bus:AuditExempt-NoAccountantsReport")}})
+	ret.AddContext(&ixbrl.Context{ID: "CYAccountingStandards", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("bus:AccountingStandardsDimension", "bus:Micro-entities")}})
+	ret.AddContext(&ixbrl.Context{ID: "CYLegalFormEntity", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("bus:LegalFormEntityDimension", "bus:PrivateLimitedCompanyLtd")}})
+	ret.AddContext(&ixbrl.Context{ID: "CYDirector", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("bus:EntityOfficersDimension", "bus:Director1")}})
 
 	ret.AddUnit(&ixbrl.Unit{ID: "GBP", Measure: "iso4217:GBP"})
 	ret.AddUnit(&ixbrl.Unit{ID: "Pure", Measure: "xbrli:pure"})
@@ -105,10 +105,13 @@ func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.
 		var cols []any
 		elide := r.ElideIfAllZero
 		for _, col := range r.Columns {
+			cx := col.Context
 			if col.Label != "" {
 				cols = append(cols, col.Label)
 			} else if col.Date != "" {
-				cx := col.Year + "End"
+				if cx == "" {
+					cx = col.Year + "End"
+				}
 				dr := ranges[col.Year]
 				var dy string
 				switch col.Scope {
@@ -119,9 +122,6 @@ func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.
 				default:
 					log.Fatalf("invalid date start/end: %s", col.Scope)
 				}
-				// if col.Scope == "End" {
-				// 	cx = col.Year + "End"
-				// }
 				var fdate string
 				var ffmt string
 				switch col.DateFormat {
@@ -153,7 +153,9 @@ func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.
 						wantNeg = !wantNeg
 						gbp = -gbp
 					}
-					cx := col.Year
+					if cx == "" {
+						cx = col.Year
+					}
 					if col.Scope == "End" {
 						cx = col.Year + "End"
 					}
@@ -165,7 +167,7 @@ func HandlePage(page *ixbrl.Page, pd *config.PageDefn, ranges map[string]config.
 					}
 					cols = append(cols, column)
 				} else {
-					log.Printf("there is no value for %s for %s", col.GBP, col.Year)
+					log.Fatalf("there is no value for %s for %s", col.GBP, col.Year)
 				}
 			} else {
 				panic("not a label, value or GBP")
