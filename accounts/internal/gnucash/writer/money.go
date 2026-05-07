@@ -6,6 +6,19 @@ type Money struct {
 	Units, Subunits int
 }
 
+func (m *Money) FloorAt(f float32) {
+	if m.Units < int(f) {
+		m.Units = 0
+		m.Subunits = 0
+	}
+}
+
+func (m *Money) ScaleBy(f float32) {
+	r := (float32(m.Units) * f * 100) + (float32(m.Subunits) * f)
+	m.Units = int(r / 100)
+	m.Subunits = int(r) % 100
+}
+
 func GBP(units int) Money {
 	if units < 0 {
 		panic("invalid money")

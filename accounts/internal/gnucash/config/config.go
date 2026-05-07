@@ -92,6 +92,8 @@ type Calculation struct {
 	Type     string
 	Add      []string
 	Subtract []string
+	Floor    *float32
+	Scale    *float32
 }
 
 type PageDefn struct {

@@ -258,6 +258,14 @@ func (c *Compiler) DoCalculations(calculations []config.Calculation) {
 		}
 		ty, total := c.processItems(acct, calc.Type, writer.Money{}, 1, calc.Add)
 		_, total = c.processItems(acct, invert(ty), total, -1, calc.Subtract)
+		if calc.Floor != nil {
+			total.FloorAt(*calc.Floor)
+			log.Printf("have floor %f, %s", *calc.Floor, total)
+		}
+		if calc.Scale != nil {
+			total.ScaleBy(*calc.Scale)
+			log.Printf("have scale %f %s", *calc.Scale, total)
+		}
 		c.Accounts[acct] = CalcAccount{ty: ty, balance: total}
 	}
 }
