@@ -1,7 +1,6 @@
 package govtalk
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
@@ -18,11 +17,11 @@ type IRenvelope struct {
 	PeriodEnd   string
 	Sender      string
 
-	Turnover             float64
-	TradingProfits       float64
-	LossesBroughtForward float64
-	TradingNetProfits    float64
-	CorporationTax       float64
+	Turnover             config.MyMoney
+	TradingProfits       config.MyMoney
+	LossesBroughtForward config.MyMoney
+	TradingNetProfits    config.MyMoney
+	CorporationTax       config.MyMoney
 
 	NoAccountsReason      string
 	AccountsIXBRL         string
@@ -78,7 +77,7 @@ func (ire *IRenvelope) AsXML(acctranges map[string]map[string]config.ReporterAcc
 	irh := xml.ElementWithNesting("IRheader", keys, pe, dc, manifest, xml.ElementWithText("Sender", ire.Sender))
 	ci := xml.ElementWithNesting("CompanyInformation", companyInfo(ire.Business, ire.UTR, ire.PeriodStart, ire.PeriodEnd)...)
 	summary := xml.ElementWithNesting("ReturnInfoSummary", ire.accounts(), ire.computations())
-	turnover := xml.ElementWithNesting("Turnover", xml.ElementWithText("Total", fmt.Sprintf("%.2f", ire.Turnover)))
+	turnover := xml.ElementWithNesting("Turnover", xml.ElementWithText("Total", ire.Turnover.NumberString()))
 	calc := xml.ElementWithNesting("CompanyTaxCalculation", ire.taxCalc()...)
 	too := xml.ElementWithNesting("CalculationOfTaxOutstandingOrOverpaid", ire.cotoo()...)
 	decl := xml.ElementWithNesting("Declaration", decl()...)
@@ -124,26 +123,26 @@ func (ire *IRenvelope) taxCalc() []etree.Token {
 	return []etree.Token{
 		xml.ElementWithNesting("Income",
 			xml.ElementWithNesting("Trading",
-				xml.ElementWithText("Profits", fmt.Sprintf("%.2f", ire.TradingProfits)),
+				xml.ElementWithText("Profits", ire.TradingProfits.NumberString()),
 				// if ire.LossesBroughtForward > 0 {
 				// xml.ElementWithText("LossesBroughtForward", fmt.Sprintf("%.2f", ire.LossesBroughtForward)),
 				// }
-				xml.ElementWithText("NetProfits", fmt.Sprintf("%.2f", ire.TradingNetProfits)),
+				xml.ElementWithText("NetProfits", ire.TradingNetProfits.NumberString()),
 			),
 		),
-		xml.ElementWithText("ProfitsBeforeOtherDeductions", fmt.Sprintf("%.2f", ire.TradingProfits)),
-		xml.ElementWithNesting("ChargesAndReliefs", xml.ElementWithText("ProfitsBeforeDonationsAndGroupRelief", fmt.Sprintf("%.2f", ire.TradingProfits))),
-		xml.ElementWithText("ChargeableProfits", fmt.Sprintf("%.2f", ire.TradingProfits)),
-		xml.ElementWithText("CorporationTax", fmt.Sprintf("%.2f", ire.CorporationTax)),
-		xml.ElementWithText("NetCorporationTaxChargeable", fmt.Sprintf("%.2f", ire.CorporationTax)),
+		xml.ElementWithText("ProfitsBeforeOtherDeductions", ire.TradingProfits.NumberString()),
+		xml.ElementWithNesting("ChargesAndReliefs", xml.ElementWithText("ProfitsBeforeDonationsAndGroupRelief", ire.TradingProfits.NumberString())),
+		xml.ElementWithText("ChargeableProfits", ire.TradingProfits.NumberString()),
+		xml.ElementWithText("CorporationTax", ire.CorporationTax.NumberString()),
+		xml.ElementWithText("NetCorporationTaxChargeable", ire.CorporationTax.NumberString()),
 	}
 }
 
 func (ire *IRenvelope) cotoo() []etree.Token {
 	return []etree.Token{
-		xml.ElementWithText("NetCorporationTaxLiability", fmt.Sprintf("%.2f", ire.CorporationTax)),
-		xml.ElementWithText("TaxChargeable", fmt.Sprintf("%.2f", ire.CorporationTax)),
-		xml.ElementWithText("TaxPayable", fmt.Sprintf("%.2f", ire.CorporationTax)),
+		xml.ElementWithText("NetCorporationTaxLiability", ire.CorporationTax.NumberString()),
+		xml.ElementWithText("TaxChargeable", ire.CorporationTax.NumberString()),
+		xml.ElementWithText("TaxPayable", ire.CorporationTax.NumberString()),
 	}
 }
 

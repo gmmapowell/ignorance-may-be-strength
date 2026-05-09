@@ -23,8 +23,6 @@ func Submit(conf *config.Configuration) error {
 
 		UTR:         utr,
 		PeriodStart: conf.Ranges["CY"].Start, PeriodEnd: conf.Ranges["CY"].End,
-		Turnover: 100000.0, TradingProfits: 0, LossesBroughtForward: 0, TradingNetProfits: 0,
-		CorporationTax: 0,
 
 		AccountsGenerator:     ixbrlgens.AccountsGenerator(conf, "ct600/acct-styles.css"),
 		ComputationsGenerator: ixbrlgens.ComputationsGenerator(conf, "ct600/comp-styles.css"),

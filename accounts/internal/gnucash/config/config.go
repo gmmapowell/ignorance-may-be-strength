@@ -21,6 +21,7 @@ type Configuration struct {
 	Calculations []Calculation
 	Pages        []PageDefn
 	CompsPages   []PageDefn
+	CT600        map[string]*CT600Entry
 
 	// Fpr ct600
 	Sender, Password         string
@@ -29,6 +30,11 @@ type Configuration struct {
 
 	// Arguments for Polling
 	PollURI, CorrelationID string
+}
+
+type CT600Entry struct {
+	Year string
+	From string
 }
 
 type DebugOptions struct {
@@ -68,6 +74,7 @@ type ADate interface {
 
 type MyMoney interface {
 	fmt.Stringer
+	NumberString() string
 }
 
 type ReporterAccount interface {

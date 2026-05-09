@@ -55,7 +55,7 @@ func Generate(file string, runlint bool, conf *conf.Configuration, options *Enve
 			}
 		}
 
-		bd := makeBody(options.IRenvelope, acctranges)
+		bd := makeBody(conf, options.IRenvelope, acctranges)
 		bs, err := canonicaliseBody(bd)
 		if err != nil {
 			return nil, err
@@ -93,11 +93,28 @@ func assembleGovTalkXML(conf *conf.Configuration, options *EnvelopeOptions) (*et
 	return msg.AsXML()
 }
 
-func makeBody(env *IRenvelope, acctranges map[string]map[string]config.ReporterAccount) *etree.Element {
+func makeBody(conf *config.Configuration, env *IRenvelope, acctranges map[string]map[string]config.ReporterAccount) *etree.Element {
+	env.Turnover = fillIn(conf.CT600, acctranges, "Turnover")
+	env.TradingProfits = fillIn(conf.CT600, acctranges, "TradingProfits")
+	env.LossesBroughtForward = fillIn(conf.CT600, acctranges,  "LossesBroughtForward")
+	env.TradingNetProfits = fillIn(conf.CT600, acctranges, "TradingNetProfits")
+	env.CorporationTax = fillIn(conf.CT600, acctranges, "CorporationTax")
 	body := xml.ElementWithNesting("Body", env.AsXML(acctranges))
 	xml.AddAttr(body, "xmlns", "http://www.govtalk.gov.uk/CM/envelope")
 	xml.AddNSAttr(body, "xmlns", "xsi", "http://www.w3.org/2001/XMLSchema-instance")
 	return body
+}
+
+func fillIn(entries map[string]*conf.CT600Entry, acctranges map[string]map[string]config.ReporterAccount, field string) conf.MyMoney {
+	entry := entries[field]
+	if entry == nil {
+		panic("no entry found for " + field)
+	}
+	value := acctranges[entry.Year][entry.From]
+	if value == nil {
+		panic("no value found for " + field)
+	}
+	return value.Balance()
 }
 
 func attachBodyTo(bs []byte, body string) ([]byte, error) {

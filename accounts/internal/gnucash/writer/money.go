@@ -6,6 +6,10 @@ type Money struct {
 	Units, Subunits int
 }
 
+func (m Money) NumberString() string {
+	return fmt.Sprintf("%d.%02d", m.Units, m.Subunits)
+}
+
 func (m *Money) FloorAt(f float32) {
 	if m.Units < int(f) {
 		m.Units = 0

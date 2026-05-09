@@ -14,7 +14,7 @@ func (g *GnuCashComputationsIXBRLGenerator) Generate(acctranges map[string]map[s
 	ret := ixbrl.NewIXBRL(g.config.Business.Name+" - Tax Computations", "http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01/ct-comp-2024.xsd", g.styles)
 	ret.AddSchema("ct", "http://www.govtalk.gov.uk/taxation/CT/5")
 	ret.AddSchema("ct-comp", "http://www.hmrc.gov.uk/schemas/ct/comp/2024-01-01")
-	ret.AddSchema("uk-gaap", "http://www.xbrl.org/uk/gaap/core/2009-09-01")
+	ret.AddSchema("uk-core", "http://xbrl.frc.org.uk/cd/2026-01-01/business")
 
 	ret.AddUnit(&ixbrl.Unit{ID: "GBP", Measure: "iso4217:GBP"})
 
