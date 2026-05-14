@@ -81,6 +81,17 @@
 					"${userHome}/Ziniki/stsd-config"
                                 ],
 				"cwd": "${workspaceFolder:Accounts}"
+			},
+                        {
+                                "name": "CT600 Submit Live",
+                                "type": "go",
+                                "request": "launch",
+                                "program": "${workspaceFolder:Accounts}/cmd/ct600",
+                                "args": [
+					"${userHome}/Ziniki/accounts-config",
+					"${userHome}/Ziniki/ziniki-config"
+                                ],
+				"cwd": "${workspaceFolder:Accounts}"
                         },
                         {
                                 "name": "Neptune Create",

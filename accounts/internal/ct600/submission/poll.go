@@ -3,13 +3,14 @@ package submission
 import (
 	"bytes"
 	"log"
+	"os"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/govtalk"
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
 
-func Poll(conf *config.Configuration) (*etree.Element, error) {
+func Poll(saveAs string, conf *config.Configuration) (*etree.Element, error) {
 	pollOptions := &govtalk.EnvelopeOptions{Qualifier: "poll", Function: "submit", SendCorrelationID: true, CorrelationID: conf.CorrelationID, IncludeSender: false}
 	send, err := govtalk.Generate("", false, conf, pollOptions)
 	if err != nil {
@@ -36,5 +37,8 @@ func Poll(conf *config.Configuration) (*etree.Element, error) {
 	ws := etree.WriteSettings{}
 	elt.WriteTo(&w, &ws)
 	log.Printf("%s\n", w.String())
+	if saveAs != "" {
+		os.WriteFile(saveAs, w.Bytes(), 0666)
+	}
 	return nil, nil
 }

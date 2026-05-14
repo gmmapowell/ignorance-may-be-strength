@@ -46,7 +46,7 @@ func (gtm *GovTalkMessage) AsXML() (*etree.Element, error) {
 	}
 	msgDetails := xml.ElementWithNesting(
 		"MessageDetails",
-		xml.ElementWithText("Class", "HMRC-CT-CT600"),
+		xml.ElementWithText("Class", "HMRC-CT-CT600-TIL"),
 		xml.ElementWithText("Qualifier", gtm.opts.Qualifier),
 		xml.ElementWithText("Function", gtm.opts.Function),
 		corrId,

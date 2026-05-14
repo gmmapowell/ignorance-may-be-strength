@@ -2,6 +2,7 @@ package writer
 
 import (
 	"encoding/xml"
+	"fmt"
 	"os"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/gnucash/config"
@@ -23,7 +24,10 @@ func (w *Writer) Deliver(accts *Gnucash) {
 
 	withHeader := header + string(bs)
 
-	os.WriteFile(w.Config.Output, []byte(withHeader), 0666)
+	err = os.WriteFile(w.Config.Output, []byte(withHeader), 0666)
+	if err != nil {
+		panic(fmt.Sprintf("could not write to %s, error = %v", w.Config.Output, err))
+	}
 }
 
 func MakeWriter(conf *config.Configuration) *Writer {

@@ -11,6 +11,7 @@ type Configuration struct {
 	RedirectPort int
 	Spreadsheet  string
 	Output       string
+	SubmitDir    string
 
 	Debug        DebugOptions
 	Business     Business

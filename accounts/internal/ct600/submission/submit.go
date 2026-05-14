@@ -2,7 +2,10 @@ package submission
 
 import (
 	"bytes"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -14,6 +17,17 @@ import (
 )
 
 func Submit(conf *config.Configuration) error {
+	if _, err := os.Stat(conf.SubmitDir); err != nil {
+		panic(fmt.Sprintf("submit dir does not exist: %s", conf.SubmitDir))
+	}
+	writeTo := filepath.Join(conf.SubmitDir, conf.Ranges["CY"].End)
+	if _, err := os.Stat(writeTo); err == nil {
+		panic(fmt.Sprintf("output dir already exists: %s", writeTo))
+	}
+	log.Printf("writing to %s", writeTo)
+	if err := os.Mkdir(writeTo, 0777); err != nil {
+		panic(fmt.Sprintf("failed to created dir %s, %v", writeTo, err))
+	}
 	utr := conf.Utr
 	if conf.Utr == "" {
 		conf.Utr = conf.Business.TaxNum
@@ -29,7 +43,7 @@ func Submit(conf *config.Configuration) error {
 	}
 
 	submitOptions := &govtalk.EnvelopeOptions{Qualifier: "request", Function: "submit", IncludeSender: true, IncludeKeys: true, IncludeBody: true, IRenvelope: ctr}
-	send, err := govtalk.Generate("submit.xml", false, conf, submitOptions)
+	send, err := govtalk.Generate(filepath.Join(writeTo, "submit.xml"), false, conf, submitOptions)
 	if err != nil {
 		return err
 	}
@@ -43,6 +57,7 @@ func Submit(conf *config.Configuration) error {
 	doc := etree.Document{}
 	doc.ReadFrom(bytes.NewReader(msg))
 	elt := doc.Element.ChildElements()[0]
+	rf := filepath.Join(writeTo, "response.xml")
 	for {
 		var waitFor time.Duration = 1
 		pollOn := config.MakeConfiguration()
@@ -70,7 +85,7 @@ func Submit(conf *config.Configuration) error {
 		log.Printf("ResponseEndPoint: %s\n", rep.Text())
 
 		time.Sleep(waitFor * time.Second)
-		elt, err = Poll(pollOn)
+		elt, err = Poll(rf, pollOn)
 
 		if elt == nil || err != nil {
 			return err

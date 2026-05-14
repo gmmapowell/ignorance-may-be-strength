@@ -29,7 +29,7 @@ func main() {
 			return
 		}
 	case config.POLL_MODE:
-		resp, err := submission.Poll(conf)
+		resp, err := submission.Poll("", conf)
 		if err != nil {
 			fmt.Printf("polling failed: %v\n", err)
 			return
