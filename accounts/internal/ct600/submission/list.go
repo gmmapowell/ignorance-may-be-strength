@@ -26,7 +26,7 @@ func List(conf *config.Configuration) error {
 		return err
 	}
 
-	msg, err := transmit(send)
+	msg, err := transmitTo(conf.Dest, send)
 
 	if err != nil {
 		return err

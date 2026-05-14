@@ -17,6 +17,12 @@ import (
 )
 
 func Submit(conf *config.Configuration) error {
+	if conf.GWTest == nil {
+		panic("conf.GWTest not set (must be 0 or 1)")
+	}
+	if conf.TestInLive == nil {
+		panic("conf.TestInLive not set (must be false or true)")
+	}
 	if _, err := os.Stat(conf.SubmitDir); err != nil {
 		panic(fmt.Sprintf("submit dir does not exist: %s", conf.SubmitDir))
 	}
@@ -48,7 +54,7 @@ func Submit(conf *config.Configuration) error {
 		return err
 	}
 
-	msg, err := transmit(send)
+	msg, err := transmitTo(conf.Dest, send)
 
 	if err != nil {
 		return err
@@ -81,6 +87,8 @@ func Submit(conf *config.Configuration) error {
 			log.Printf("ResponseEndPoint PollInterval: %s\n", a.Value)
 			waitFor = time.Duration(tmp)
 		}
+		pollOn.GWTest = conf.GWTest
+		pollOn.TestInLive = conf.TestInLive
 		pollOn.PollURI = rep.Text()
 		log.Printf("ResponseEndPoint: %s\n", rep.Text())
 

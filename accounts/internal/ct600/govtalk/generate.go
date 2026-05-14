@@ -90,13 +90,14 @@ func assembleGovTalkXML(conf *conf.Configuration, options *EnvelopeOptions) (*et
 	msg.Identity(conf.Sender, conf.Password)
 	msg.Utr(conf.Utr)
 	msg.Product(conf.Vendor, conf.Product, conf.Version)
+	msg.Testing(*conf.GWTest, *conf.TestInLive)
 	return msg.AsXML()
 }
 
 func makeBody(conf *config.Configuration, env *IRenvelope, acctranges map[string]map[string]config.ReporterAccount) *etree.Element {
 	env.Turnover = fillIn(conf.CT600, acctranges, "Turnover")
 	env.TradingProfits = fillIn(conf.CT600, acctranges, "TradingProfits")
-	env.LossesBroughtForward = fillIn(conf.CT600, acctranges,  "LossesBroughtForward")
+	env.LossesBroughtForward = fillIn(conf.CT600, acctranges, "LossesBroughtForward")
 	env.TradingNetProfits = fillIn(conf.CT600, acctranges, "TradingNetProfits")
 	env.CorporationTax = fillIn(conf.CT600, acctranges, "CorporationTax")
 	body := xml.ElementWithNesting("Body", env.AsXML(acctranges))

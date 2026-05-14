@@ -1,6 +1,9 @@
 package govtalk
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
 	"github.com/unix-world/smartgoext/xml-utils/etree"
 )
@@ -9,6 +12,7 @@ type GovTalk interface {
 	Identity(send, pwd string)
 	Utr(utr string)
 	Product(vendor, product, version string)
+	Testing(gwtest int, testinlive bool)
 	AsXML() (*etree.Element, error)
 }
 
@@ -20,6 +24,8 @@ type GovTalkMessage struct {
 	sender, password         string
 	utr                      string
 	vendor, product, version string
+	gwtest                   int
+	testinlive               bool
 	opts                     *EnvelopeOptions
 }
 
@@ -38,12 +44,18 @@ func (gtm *GovTalkMessage) Product(vendor, product, version string) {
 	gtm.version = version
 }
 
+func (gtm *GovTalkMessage) Testing(gwtest int, testinlive bool) {
+	gtm.gwtest = gwtest
+	gtm.testinlive = testinlive
+}
+
 func (gtm *GovTalkMessage) AsXML() (*etree.Element, error) {
 	env := xml.ElementWithText("EnvelopeVersion", "2.0")
 	var corrId *etree.Element
 	if gtm.opts.SendCorrelationID {
 		corrId = xml.ElementWithText("CorrelationID", gtm.opts.CorrelationID)
 	}
+	fmt.Printf("TIL = %v", gtm.testinlive)
 	msgDetails := xml.ElementWithNesting(
 		"MessageDetails",
 		xml.ElementWithText("Class", "HMRC-CT-CT600-TIL"),
@@ -51,7 +63,7 @@ func (gtm *GovTalkMessage) AsXML() (*etree.Element, error) {
 		xml.ElementWithText("Function", gtm.opts.Function),
 		corrId,
 		xml.ElementWithText("Transformation", "XML"),
-		xml.ElementWithText("GatewayTest", "1"),
+		xml.ElementWithText("GatewayTest", strconv.Itoa(gtm.gwtest)),
 	)
 	var sndrDetails *etree.Element
 	if gtm.opts.IncludeSender {

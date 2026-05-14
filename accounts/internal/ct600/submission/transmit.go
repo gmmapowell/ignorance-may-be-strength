@@ -9,11 +9,10 @@ import (
 	"net/http"
 )
 
-func transmit(body io.Reader) ([]byte, error) {
-	return transmitTo("https://test-transaction-engine.tax.service.gov.uk/submission", body)
-}
-
 func transmitTo(uri string, body io.Reader) ([]byte, error) {
+	if uri == "" {
+		panic("no uri to transmit to")
+	}
 	cli := &http.Client{}
 	resp, err := cli.Post(uri, "application/x-binary", body)
 	if err != nil {

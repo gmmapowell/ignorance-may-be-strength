@@ -25,6 +25,9 @@ type Configuration struct {
 	CT600        map[string]*CT600Entry
 
 	// Fpr ct600
+	Dest                     string
+	GWTest                   *int
+	TestInLive               *bool
 	Sender, Password         string
 	Utr                      string
 	Vendor, Product, Version string
