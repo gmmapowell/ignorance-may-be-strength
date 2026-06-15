@@ -33,12 +33,16 @@ func Poll(saveAs string, conf *config.Configuration) (*etree.Element, error) {
 		}
 	}
 	elt.IndentWithSettings(&etree.IndentSettings{Spaces: 2})
-	w := bytes.Buffer{}
-	ws := etree.WriteSettings{}
-	elt.WriteTo(&w, &ws)
-	log.Printf("%s\n", w.String())
 	if saveAs != "" {
+		w := bytes.Buffer{}
+		ws := etree.WriteSettings{}
+		elt.WriteTo(&w, &ws)
 		os.WriteFile(saveAs, w.Bytes(), 0666)
 	}
+	mesg := elt.FindElement("/GovTalkMessage/Body/SuccessResponse/IRmarkReceipt/Message")
+	if mesg == nil {
+		panic("there was no message in the response")
+	}
+	log.Printf("Response message was: " + mesg.Text())
 	return nil, nil
 }

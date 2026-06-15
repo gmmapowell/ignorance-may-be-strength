@@ -28,7 +28,13 @@ func Submit(conf *config.Configuration) error {
 	}
 	writeTo := filepath.Join(conf.SubmitDir, conf.Ranges["CY"].End)
 	if _, err := os.Stat(writeTo); err == nil {
-		panic(fmt.Sprintf("output dir already exists: %s", writeTo))
+		if *conf.GWTest == 1 {
+			if err := os.RemoveAll(writeTo); err != nil {
+				panic(fmt.Sprintf("could not delete dir: %s: %s", writeTo, err))
+			}
+		} else {
+			panic(fmt.Sprintf("output dir already exists: %s", writeTo))
+		}
 	}
 	log.Printf("writing to %s", writeTo)
 	if err := os.Mkdir(writeTo, 0777); err != nil {

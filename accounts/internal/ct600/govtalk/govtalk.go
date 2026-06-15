@@ -1,7 +1,6 @@
 package govtalk
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/gmmapowell/ignorance/accounts/internal/ct600/xml"
@@ -55,10 +54,14 @@ func (gtm *GovTalkMessage) AsXML() (*etree.Element, error) {
 	if gtm.opts.SendCorrelationID {
 		corrId = xml.ElementWithText("CorrelationID", gtm.opts.CorrelationID)
 	}
-	fmt.Printf("TIL = %v", gtm.testinlive)
+	// fmt.Printf("TIL = %v", gtm.testinlive)
+	clz := "HMRC-CT-CT600"
+	if gtm.testinlive {
+		clz += "-TIL"
+	}
 	msgDetails := xml.ElementWithNesting(
 		"MessageDetails",
-		xml.ElementWithText("Class", "HMRC-CT-CT600-TIL"),
+		xml.ElementWithText("Class", clz),
 		xml.ElementWithText("Qualifier", gtm.opts.Qualifier),
 		xml.ElementWithText("Function", gtm.opts.Function),
 		corrId,
