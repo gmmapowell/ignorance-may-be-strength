@@ -25,14 +25,14 @@ func (g *GnuCashComputationsIXBRLGenerator) Generate(acctranges map[string]map[s
 	ret.AddContext(&ixbrl.Context{ID: "CY", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("ct-comp:BusinessTypeDimension", "ct-comp:Company"), ixbrl.MakeExplicitMember("ct-comp:DetailedAnalysisDimension", "ct-comp:Item1")}})
 	ret.AddContext(&ixbrl.Context{ID: "CYBus", IdentifierScheme: "http://www.companieshouse.gov.uk/", Identifier: g.config.Business.ID, FromDate: cyStart, ToDate: cyEnd, Segment: []ixbrl.SegmentMember{ixbrl.MakeExplicitMember("ct-comp:BusinessTypeDimension", "ct-comp:Trade"), ixbrl.MakeExplicitMember("ct-comp:TerritoryDimension", "ct-comp:UK"), ixbrl.MakeTypedMember("ct-comp:BusinessNameDimension", "ct-comp:BusinessNameDomain", g.config.Business.Name)}})
 
-	pg := ret.AddPage()
-	pg.AddRow("ct-comp:CompanyName", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:CompanyName", Text: g.config.Business.Name})
-	pg.AddRow("ct-comp:TaxReference", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:TaxReference", Text: g.config.Utr})
-	pg.AddRow("ct-comp:PeriodOfAccountStartDate", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountStartDate", Text: cyStart.IsoDate()})
-	pg.AddRow("ct-comp:PeriodOfAccountEndDate", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountEndDate", Text: cyEnd.IsoDate()})
-	pg.AddRow("ct-comp:StartOfPeriodCoveredByReturn", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:StartOfPeriodCoveredByReturn", Text: cyStart.IsoDate()})
-	pg.AddRow("ct-comp:EndOfPeriodCoveredByReturn", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:EndOfPeriodCoveredByReturn", Text: cyEnd.IsoDate()})
-	pg.AddRow("ct-comp:CompanyIsAPartnerInAFirm", &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "ct-comp:CompanyIsAPartnerInAFirm", Text: "false"})
+	front := ret.AddPage()
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-name", Tag: "h1", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:CompanyName", Text: g.config.Business.Name}})
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-utr", Text: "Utr:", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:TaxReference", Text: g.config.Utr}})
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-acct-dates", Text: "Start date of accounts:", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountStartDate", Text: cyStart.UKFullDate(), Format: "ixt:datelonguk"}})
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-acct-dates", Text: "End date of accounts:", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:PeriodOfAccountEndDate", Text: cyEnd.UKFullDate(), Format: "ixt:datelonguk"}})
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-acct-dates", Text: "Start of period covered by return:", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:StartOfPeriodCoveredByReturn", Text: cyStart.UKFullDate(), Format: "ixt:datelonguk"}})
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-acct-dates", Text: "End of period covered by return:", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYEnd", Name: "ct-comp:EndOfPeriodCoveredByReturn", Text: cyEnd.UKFullDate(), Format: "ixt:datelonguk"}})
+	front.Front = append(front.Front, &ixbrl.Div{Class: "company-not-partner", Text: "Company is not a partner in a larger firm", Nest: &ixbrl.Div{Class: "hidden", Nest: &ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CY", Name: "ct-comp:CompanyIsAPartnerInAFirm", Text: "false"}}})
 
 	for _, pd := range g.config.CompsPages {
 		page := ret.AddPage()

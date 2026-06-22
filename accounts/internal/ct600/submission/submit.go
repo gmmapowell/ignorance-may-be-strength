@@ -27,6 +27,9 @@ func Submit(conf *config.Configuration) error {
 		panic(fmt.Sprintf("submit dir does not exist: %s", conf.SubmitDir))
 	}
 	writeTo := filepath.Join(conf.SubmitDir, conf.Ranges["CY"].End)
+	if *conf.GWTest == 1 {
+		writeTo = writeTo + "-test"
+	}
 	if _, err := os.Stat(writeTo); err == nil {
 		if *conf.GWTest == 1 {
 			if err := os.RemoveAll(writeTo); err != nil {

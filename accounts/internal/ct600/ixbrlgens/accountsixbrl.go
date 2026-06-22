@@ -63,7 +63,7 @@ func (g *GnuCashAccountsIXBRLGenerator) Generate(acctranges map[string]map[strin
 	ret.AddHidden(&ixbrl.IXProp{Type: ixbrl.NonNumeric, Context: "CYDirector", Name: "bus:NameEntityOfficer", Text: g.config.Business.Contact})
 
 	front := ret.AddPage()
-	front.Front = append(front.Front, &ixbrl.Div{Class: "company-name", Text: g.config.Business.Name})
+	front.Front = append(front.Front, &ixbrl.Div{Tag: "h1", Class: "company-name", Text: g.config.Business.Name})
 	front.Front = append(front.Front, &ixbrl.Div{Class: "document-type", Text: "Financial Statements"})
 	front.Front = append(front.Front, &ixbrl.Div{Class: "period", Text: fmt.Sprintf("For the Year Ended %s", cyEnd.IsoDate())})
 

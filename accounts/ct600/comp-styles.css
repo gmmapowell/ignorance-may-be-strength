@@ -1,0 +1,66 @@
+.hidden {
+	display: none;
+}
+
+.negative::before {
+  content: "("
+}
+
+.negative::after {
+  content: ")"
+}
+
+.center {
+	text-align: center;
+}
+
+.page {
+	position: relative;
+	height: 261mm;
+	width: 185mm;
+	break-after: page;
+	margin: 0 auto;
+}
+
+.page-footer {
+	box-sizing: border-box;
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	padding-top: 135%;
+}
+
+.company-utr, .company-acct-dates, .company-not-partner {
+	font-weight: bold;
+	position: relative;
+}
+
+.company-utr *, .company-acct-dates * {
+	font-weight: normal;
+	position: absolute;
+	left: 100mm;
+}
+
+.frontpage-content div {
+	padding-bottom: 10px;
+}
+
+td {
+	padding-right: 10px;
+}
+
+td:nth-child(1) {
+	font-weight: bold;
+}
+
+td:nth-child(2) {
+	text-align: right;
+}
+
+@media print {
+	._hr {
+		display: none;
+	}
+}
